@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              MinWidth="550" MinHeight="300"
              Background="White">
-    <ListBox Margin="10">
+    <ListBox Margin="10 5">
         
     </ListBox>
 </UserControl>
