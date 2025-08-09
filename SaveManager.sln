@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.36105.23 d17.13
+VisualStudioVersion = 17.13.36105.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveManager", "SaveManager\SaveManager.csproj", "{4ADD5797-8E58-419A-8D32-4E3FED16185E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveManagerTests", "SaveManagerTests\SaveManagerTests.csproj", "{E62650BA-394E-4A64-B3C8-5922751A4508}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{4ADD5797-8E58-419A-8D32-4E3FED16185E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4ADD5797-8E58-419A-8D32-4E3FED16185E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4ADD5797-8E58-419A-8D32-4E3FED16185E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E62650BA-394E-4A64-B3C8-5922751A4508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E62650BA-394E-4A64-B3C8-5922751A4508}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E62650BA-394E-4A64-B3C8-5922751A4508}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E62650BA-394E-4A64-B3C8-5922751A4508}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

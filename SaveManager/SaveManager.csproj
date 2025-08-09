@@ -8,4 +8,10 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>SaveManagerTests</_Parameter1>
+	</AssemblyAttribute>
+  </ItemGroup>
+
 </Project>
