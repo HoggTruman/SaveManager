@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace SaveManagerTests.Services;
 
-public class AppDataServiceTests
+public class AppdataServiceTests
 {
     #region ConvertToXElement Tests
 
