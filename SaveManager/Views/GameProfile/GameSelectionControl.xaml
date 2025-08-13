@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:SaveManager.Views.GameProfile"
              mc:Ignorable="d" 
              MinHeight="65" MinWidth="500"
+             Width="500"
              Background="White">
     <Grid>
         <Grid.RowDefinitions>
@@ -15,7 +16,9 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400"/>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="37.5"/>
+            <ColumnDefinition Width="25"/>
+            <ColumnDefinition Width="37.5"/>
         </Grid.ColumnDefinitions>
 
         <Label Target="{Binding ElementName=GameComboBox}" 
@@ -33,10 +36,22 @@
                   Grid.Column="0"
                   Margin="10"/>
 
-        <Button Width="Auto"
+        <Button Width="25"
                 Height="25"
                 Grid.Row="1"
                 Grid.Column="1"
-                Margin="10">Add Game</Button>
+                Margin="4,0,5,0">+</Button>
+
+        <Button Width="25"
+                Height="25"
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="0">-</Button>
+
+        <Button Width="25"
+                Height="25"
+                Grid.Row="1"
+                Grid.Column="3"
+                Margin="5,0,4,0">R</Button>
     </Grid>
 </UserControl>

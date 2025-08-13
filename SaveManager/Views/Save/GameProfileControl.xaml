@@ -57,7 +57,7 @@
                 Width="80"
                 Height="25"                
                 Margin="10,0,10,0">
-            Edit Profiles
+            Edit
         </Button>
 
     </Grid>

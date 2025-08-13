@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="Configure Games / Profiles" 
         MinHeight="400" MinWidth="500"
+        Width="500"
         ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
