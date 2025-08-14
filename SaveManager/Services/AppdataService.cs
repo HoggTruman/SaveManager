@@ -16,7 +16,9 @@ public class AppdataService
     private static readonly string AppdataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppdataDirectoryName);
     private static readonly string AppdataPath = Path.Combine(AppdataFolder, "appdata.xml");
 
-    private XElement _tree = new("Appdata", new XElement(GamesName), new XElement(SettingsName));
+    private XElement _tree = EmptyTree;
+
+    public static XElement EmptyTree => new("Appdata", new XElement(GamesName), new XElement(SettingsName));
 
 
     /// <summary>
