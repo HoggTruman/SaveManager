@@ -5,33 +5,187 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SaveManager.Views.GameProfile"
         mc:Ignorable="d"
-        Title="Configure Games / Profiles" 
-        MinHeight="400" MinWidth="500"
+        Title="Configure Games / Profiles"
+        Height="415"
         Width="500"
+        SizeToContent="WidthAndHeight"
         ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
         
-        <local:GameSelectionControl Width="Auto"
-                                    Height="60"/>
+        <Grid Width="500"
+              Height="65">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="45" />
+            </Grid.RowDefinitions>
 
-        <Separator Grid.Row="1" Margin="0 1 0 1"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400" />
+                <ColumnDefinition Width="37.5" />
+                <ColumnDefinition Width="25" />
+                <ColumnDefinition Width="37.5" />
+            </Grid.ColumnDefinitions>
 
-        <local:DirectorySelectionControl Width="Auto"
-                                         Height="120"
-                                         Grid.Row="2"/>
+            <Label Target="{Binding ElementName=GameComboBox}"
+                   Content="Game:"
+                   HorizontalAlignment="Left"
+                   Grid.Column="0"
+                   FontSize="14"
+                   Margin="10, 2, 0, 0"
+                   Padding="0" />
 
-        <Separator Grid.Row="3" Margin="0 1 0 1"/>
+            <ComboBox Name="GameComboBox"
+                      Width="Auto"
+                      Height="25"
+                      Grid.Row="1"
+                      Grid.Column="0"
+                      Margin="10" />
 
-        <local:EditProfilesControl Width="Auto"
-                                   Height="200"
-                                   Grid.Row="4"/>
+            <Button Width="25"
+                    Height="25"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="4,0,5,0">+</Button>
 
+            <Button Width="25"
+                    Height="25"
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Margin="0">-</Button>
+
+            <Button Width="25"
+                    Height="25"
+                    Grid.Row="1"
+                    Grid.Column="3"
+                    Margin="5,0,4,0">R</Button>
+        </Grid>
+
+
+        <Separator Grid.Row="1"
+                   Margin="0 1 0 1" />
+
+
+        <Grid Width="500"
+              Height="130"
+              Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="45" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="45" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400" />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+
+            <Label Target="{Binding ElementName=SaveLocationTextBox}"
+                   Content="Location of Savefile:"
+                   HorizontalAlignment="Left"
+                   FontSize="14"
+                   Margin="10,2,0,0"
+                   Padding="0" />
+
+            <TextBox Name="SaveLocationTextBox"
+                     Width="Auto"
+                     Height="25"
+                     Grid.Row="1"
+                     Grid.Column="0"
+                     Margin="10" />
+
+            <Button Content="Browse"
+                    Width="Auto"
+                    Height="25"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="10" />
+
+            <Label Target="{Binding ElementName=ProfilesDirectoryTextBox}"
+                   Content="Profiles Directory:"
+                   HorizontalAlignment="Left"
+                   Grid.Row="2"
+                   FontSize="14"
+                   Margin="10,2,0,0"
+                   Padding="0" />
+
+            <TextBox Name="ProfilesDirectoryTextBox"
+                     Width="Auto"
+                     Height="25"
+                     Grid.Row="3"
+                     Margin="10" />
+
+            <Button Content="Browse"
+                    Width="Auto"
+                    Height="25"
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="10" />
+        </Grid>
+
+
+        <Separator Grid.Row="3"
+                   Margin="0 1 0 1" />
+
+
+        <Grid Width="500"
+              Height="200"
+              Grid.Row="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="45" />
+                <RowDefinition Height="45" />
+                <RowDefinition Height="45" />
+                <RowDefinition Height="45" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400" />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+
+            <Label Target="{Binding ElementName=ProfilesListBox}"
+                   HorizontalAlignment="Left"
+                   FontSize="14"
+                   Margin="10,2,0,0"
+                   Padding="0">
+                Profiles:
+            </Label>
+            <ListBox Name="ProfilesListBox"
+                     Width="Auto"
+                     Height="Auto"
+                     Grid.Row="1"
+                     Grid.RowSpan="4"
+                     Margin="10" />
+
+            <Button Content="New"
+                    Width="Auto"
+                    Height="25"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="10" />
+
+            <Button Content="Rename"
+                    Width="Auto"
+                    Height="25"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="10" />
+
+            <Button Content="Delete"
+                    Width="Auto"
+                    Height="25"
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="10" />
+        </Grid>
     </Grid>
 </Window>
