@@ -64,7 +64,8 @@
                       Height="25"
                       Margin="10,0,10,0" />
 
-            <Button Content="Edit"
+            <Button Click="Button_Click"
+                    Content="Edit"
                     HorizontalAlignment="Center"
                     Grid.Row="1"
                     Grid.Column="2"
