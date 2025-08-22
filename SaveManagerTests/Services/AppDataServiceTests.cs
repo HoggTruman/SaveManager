@@ -11,46 +11,46 @@ public class AppdataServiceTests
     #region Tree Modification Tests (USES CONVERSION METHODS)
 
     [Fact]
-    public void AddGameToTree_AddsGameElement()
+    public void AddGameToDocument_AddsGameElement()
     {
-        XElement tree = AppdataService.EmptyTree;
+        XDocument document = AppdataService.DefaultDocument;
         Game game = new() { Name = "test", ProfilesDirectory = "profiles", SavefileLocation = "savefile" };
-        AppdataService.AddGameToTree(tree, game);
-        var gameElements = tree.Elements().First(x => x.Name.LocalName == AppdataService.GamesName).Elements();        
+        AppdataService.AddGameToDocument(document, game);
+        var gameElements = document.Root!.Element(AppdataService.GamesName)!.Elements();        
 
-        Assert.Equal(2, tree.Elements().Count());
+        Assert.Equal(2, document.Root.Elements().Count());
         Assert.Single(gameElements);
     }
 
     [Fact]
-    public void RenameGameInTree_RenamesGameElement()
+    public void RenameGameInDocument_RenamesGameElement()
     {
-        XElement tree = AppdataService.EmptyTree;
+        XDocument document = AppdataService.DefaultDocument;
         Game game = new() { Name = "test", ProfilesDirectory = "profiles", SavefileLocation = "savefile" };
         GameAppdataDTO gameDTO = game.ToGameAppdataDTO();
-        var gameElements = tree.Elements().First(x => x.Name.LocalName == AppdataService.GamesName);
-        gameElements.Add(AppdataService.ConvertToXElement(gameDTO));
+        var gamesElement = document.Root!.Element(AppdataService.GamesName)!;
+        gamesElement.Add(AppdataService.ConvertToXElement(gameDTO));
         string newName = "new name";
 
-        AppdataService.RenameGameInTree(tree, game, newName);
+        AppdataService.RenameGameInDocument(document, game, newName);
 
-        XElement gameElement = gameElements.Elements().First();
-        XElement nameElement = gameElement.Elements().First(x => x.Name.LocalName == nameof(Game.Name));
+        XElement gameElement = gamesElement.Elements().First();
+        XElement nameElement = gameElement.Element(nameof(Game.Name))!;
         Assert.Equal(newName, nameElement.Value);
     }
 
     [Fact]
-    public void DeleteGameInTree_DeletesGameElement()
+    public void DeleteGameInDocument_DeletesGameElement()
     {
-        XElement tree = AppdataService.EmptyTree;
+        XDocument document = AppdataService.DefaultDocument;
         Game game = new() { Name = "test", ProfilesDirectory = "profiles", SavefileLocation = "savefile" };
         GameAppdataDTO gameDTO = game.ToGameAppdataDTO();
-        var gameElements = tree.Elements().First(x => x.Name.LocalName == AppdataService.GamesName);
-        gameElements.Add(AppdataService.ConvertToXElement(gameDTO));
+        var gamesElement = document.Root!.Element(AppdataService.GamesName)!;
+        gamesElement.Add(AppdataService.ConvertToXElement(gameDTO));
 
-        AppdataService.DeleteGameInTree(tree, game);
+        AppdataService.DeleteGameInDocument(document, game);
 
-        Assert.Empty(gameElements.Elements());
+        Assert.Empty(gamesElement.Elements());
     }
 
     #endregion
