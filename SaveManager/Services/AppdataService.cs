@@ -1,45 +1,69 @@
-﻿using SaveManager.Models;
+﻿using SaveManager.DTOs;
+using SaveManager.Exceptions;
+using SaveManager.Models;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using System.Xml.XPath;
 
 
 namespace SaveManager.Services;
 
 public class AppdataService
 {
+    internal const string RootName = "Appdata";
     internal const string GamesName = "Games";
     internal const string SettingsName = "Settings";
     private const string AppdataDirectoryName = "Save Manager";
-    private static readonly string AppdataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppdataDirectoryName);
-    private static readonly string AppdataPath = Path.Combine(AppdataFolder, "appdata.xml");
 
-    private XElement _tree = EmptyTree;
+    private static readonly string AppdataFolder;
+    private static readonly string AppdataPath;
 
-    public static XElement EmptyTree => new("Appdata", new XElement(GamesName), new XElement(SettingsName));
+    internal static XDocument DefaultDocument => new(new XElement(RootName, new XElement(GamesName), new XElement(SettingsName)));
+
+    private static XDocument _document = DefaultDocument;
+
+    static AppdataService()
+    {
+        string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppdataDirectoryName);
+        #if DEBUG
+            AppdataFolder = Path.Combine(basePath, "Debug");
+        #else
+            AppdataFolder = Path.Combine(basePath, "Release");
+        #endif
+
+        AppdataPath = Path.Combine(AppdataFolder, "appdata.xml");
+        Initialize();
+    }    
+      
 
 
     /// <summary>
-    /// Ensures the appdata file exists and loads it as an XElement.
+    /// Loads / creates the appdata file.
     /// </summary>
-    /// <exception cref="IOException"/>
-    public void Initialize()
+    /// <exception cref="AppdataException"/>
+    internal static void Initialize()
     {
-        if (!Directory.Exists(AppdataFolder))
+        try
         {
-            Directory.CreateDirectory(AppdataFolder);
-        }
+            if (!Directory.Exists(AppdataFolder))
+            {
+                Directory.CreateDirectory(AppdataFolder);
+            }
 
-        if (!Path.Exists(AppdataPath))
-        {
-            _tree.Save(AppdataPath);
+            if (Path.Exists(AppdataPath))
+            {
+                _document = XDocument.Load(AppdataPath);         
+            }
+            else
+            {
+                _document.Save(AppdataPath);
+            }
         }
-        else
+        catch (Exception e)
         {
-            _tree = XElement.Load(AppdataPath);
-        }
+            throw new AppdataException(e.Message, e.InnerException);
+        }        
     }
 
 
@@ -48,13 +72,10 @@ public class AppdataService
     /// Adds a new game to the appdata file.
     /// </summary>
     /// <param name="game"></param> 
-    /// <exception cref="IOException"/>
+    /// <exception cref="AppdataException"/>
     public void AddGame(Game game)
     {
-        XElement newTree = new(_tree);
-        AddGameToTree(newTree, game);
-        _tree.Save(AppdataPath);
-        _tree = newTree;
+        ModifyDocument(doc => AddGameToDocument(doc, game));
     }
 
 
@@ -63,13 +84,10 @@ public class AppdataService
     /// </summary>
     /// <param name="game"></param>
     /// <param name="newName"></param>
-    /// <exception cref="IOException"/>
+    /// <exception cref="AppdataException"/>
     public void RenameGame(Game game, string newName)
     {
-        XElement newTree = new(_tree);
-        RenameGameInTree(newTree, game, newName);
-        _tree.Save(AppdataPath);
-        _tree = newTree;
+        ModifyDocument(doc => RenameGameInDocument(doc, game, newName));
     }
 
 
@@ -77,29 +95,58 @@ public class AppdataService
     /// Deletes a game in the appdata file.
     /// </summary>
     /// <param name="game"></param>
-    /// <exception cref="IOException"/>
+    /// <exception cref="AppdataException"/>
     public void DeleteGame(Game game)
     {
-        XElement newTree = new(_tree);
-        DeleteGameInTree(newTree, game);
-        _tree.Save(AppdataPath);
-        _tree = newTree;
+        ModifyDocument(doc => DeleteGameInDocument(doc, game));
     }
 
 
-
-
-    internal static void AddGameToTree(XElement tree, Game game)
+    /// <summary>
+    /// Retrieves games from the appdata file.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<Game> GetGames()
     {
-        XElement gamesElement = tree.Elements().First(x => x.Name.LocalName == GamesName);
-        gamesElement.Add(ConvertToXElement(game));
+        XElement gamesElement = _document.Root!.Element(GamesName)!;
+        return gamesElement.Elements().Select(ConvertFromXElement<GameAppdataDTO>)
+            .Select(x => new Game() { Name = x.Name, ProfilesDirectory = x.ProfilesDirectory, SavefileLocation = x.SavefileLocation });
     }
 
 
-    internal static void RenameGameInTree(XElement tree, Game game, string newName)
+    /// <summary>
+    /// Applies the action to a temporary document and attempts to overwrite appdata.xml.
+    /// If successful in saving, then the internal XDocument is overwritten too.
+    /// </summary>
+    /// <param name="modify"></param>
+    /// <exception cref="AppdataException"></exception>
+    internal void ModifyDocument(Action<XDocument> modify)
     {
-        XElement nameElement = tree.Elements()
-            .First(x => x.Name.LocalName == GamesName)
+        XDocument newDocument = new(_document);
+        modify(newDocument);
+        try
+        {
+            newDocument.Save(AppdataPath);
+        }
+        catch (Exception e)
+        {
+            throw new AppdataException(e.Message, e.InnerException);
+        }
+        
+        _document = newDocument;
+    }
+
+
+    internal static void AddGameToDocument(XDocument document, Game game)
+    {
+        XElement? gamesElement = document.Element(RootName)!.Element(GamesName)!;
+        gamesElement.Add(ConvertToXElement(game.ToGameAppdataDTO()));
+    }
+
+
+    internal static void RenameGameInDocument(XDocument document, Game game, string newName)
+    {
+        XElement nameElement = document.Root!.Element(GamesName)!
             .Descendants()
             .First(x => x.Name.LocalName == nameof(Game.Name) && x.Value == game.Name);
 
@@ -107,12 +154,11 @@ public class AppdataService
     }
 
 
-    internal static void DeleteGameInTree(XElement tree, Game game)
+    internal static void DeleteGameInDocument(XDocument document, Game game)
     {
-        XElement gameElement = tree.Elements()
-            .First(x => x.Name.LocalName == GamesName)
+        XElement gameElement = document.Root!.Element(GamesName)!
             .Elements()
-            .First(x => x.Elements().First(y => y.Name.LocalName == nameof(Game.Name)).Value == game.Name);
+            .First(x => x.Element(nameof(Game.Name))!.Value == game.Name);
 
         gameElement.Remove();
     }
@@ -125,14 +171,17 @@ public class AppdataService
             throw new ArgumentNullException(nameof(item), "Can not convert null to an XElement");
         }
 
-        XDocument doc = new();
+        XDocument document = new();
         XmlSerializer serializer = new(typeof(T));
-        using (XmlWriter xmlWriter = doc.CreateWriter())
+        var namespaces = new XmlSerializerNamespaces();
+        namespaces.Add("", "");
+
+        using (XmlWriter xmlWriter = document.CreateWriter())
         {
-            serializer.Serialize(xmlWriter, item);
+            serializer.Serialize(xmlWriter, item, namespaces);
         }
 
-        return doc.Root!;
+        return document.Root!;
     }
 
 
