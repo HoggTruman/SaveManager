@@ -23,20 +23,20 @@ public class AppdataServiceTests
     }
 
     [Fact]
-    public void RenameGameInDocument_RenamesGameElement()
+    public void UpdateGameInDocument_RenamesGameElement()
     {
         XDocument document = AppdataService.DefaultDocument;
         Game game = new() { Name = "test", ProfilesDirectory = "profiles", SavefileLocation = "savefile" };
         GameAppdataDTO gameDTO = game.ToGameAppdataDTO();
         var gamesElement = document.Root!.Element(AppdataService.GamesName)!;
         gamesElement.Add(AppdataService.ConvertToXElement(gameDTO));
-        string newName = "new name";
+        GameUpdateDTO updateDTO = new(){ Name = "new name" };
 
-        AppdataService.RenameGameInDocument(document, game, newName);
+        AppdataService.UpdateGameInDocument(document, game, updateDTO);
 
         XElement gameElement = gamesElement.Elements().First();
         XElement nameElement = gameElement.Element(nameof(Game.Name))!;
-        Assert.Equal(newName, nameElement.Value);
+        Assert.Equal(updateDTO.Name, nameElement.Value);
     }
 
     [Fact]
