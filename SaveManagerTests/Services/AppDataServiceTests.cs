@@ -14,7 +14,7 @@ public class AppdataServiceTests
     public void AddGameToDocument_AddsGameElement()
     {
         XDocument document = AppdataService.DefaultDocument;
-        Game game = new() { Name = "test", ProfilesDirectory = "profiles", SavefileLocation = "savefile" };
+        Game game = new("test", "savefile", "profiles");
         AppdataService.AddGameToDocument(document, game);
         var gameElements = document.Root!.Element(AppdataService.GamesName)!.Elements();        
 
@@ -26,7 +26,7 @@ public class AppdataServiceTests
     public void UpdateGameInDocument_RenamesGameElement()
     {
         XDocument document = AppdataService.DefaultDocument;
-        Game game = new() { Name = "test", ProfilesDirectory = "profiles", SavefileLocation = "savefile" };
+        Game game = new("test", "savefile", "profiles");
         GameAppdataDTO gameDTO = game.ToGameAppdataDTO();
         var gamesElement = document.Root!.Element(AppdataService.GamesName)!;
         gamesElement.Add(AppdataService.ConvertToXElement(gameDTO));
@@ -43,7 +43,7 @@ public class AppdataServiceTests
     public void DeleteGameInDocument_DeletesGameElement()
     {
         XDocument document = AppdataService.DefaultDocument;
-        Game game = new() { Name = "test", ProfilesDirectory = "profiles", SavefileLocation = "savefile" };
+        Game game = new("test", "savefile", "profiles");
         GameAppdataDTO gameDTO = game.ToGameAppdataDTO();
         var gamesElement = document.Root!.Element(AppdataService.GamesName)!;
         gamesElement.Add(AppdataService.ConvertToXElement(gameDTO));
