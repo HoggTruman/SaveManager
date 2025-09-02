@@ -1,0 +1,30 @@
+﻿<Window x:Class="SaveManager.Components.OkDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SaveManager.Components"
+        mc:Ignorable="d"
+        Title="OkDialog"
+        SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label x:Name="PromptLabel"
+               MinWidth="250">Prompt</Label>
+
+
+        <Button x:Name="OkButton"
+                IsDefault="True"
+                Click="OkButton_Click"
+                Width="60"
+                HorizontalAlignment="Center"
+                Margin="0,15,0,0"
+                Grid.Row="1">_Ok</Button>
+    </Grid>
+</Window>
