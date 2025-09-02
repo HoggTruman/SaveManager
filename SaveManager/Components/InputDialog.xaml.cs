@@ -1,5 +1,4 @@
-﻿using SaveManager.Validators;
-using System.Windows;
+﻿using System.Windows;
 
 namespace SaveManager.Components;
 
@@ -8,28 +7,20 @@ namespace SaveManager.Components;
 /// </summary>
 public partial class InputDialog : Window
 {
-    private readonly IValidator? _validator;
-
     public string Input => InputTextBox.Text;
+    public string Prompt => PromptLabel.Content.ToString()!;
 
-    public InputDialog(string title, string prompt, int maxLength=0, string startingInput="", IValidator? validator=null)
+    public InputDialog(string title, string prompt, string startingInput="", int maxLength=0)
     {
         InitializeComponent();
         Title = title;
         PromptLabel.Content = prompt;
-        InputTextBox.MaxLength = maxLength;
         InputTextBox.Text = startingInput;
-        _validator = validator;
+        InputTextBox.MaxLength = maxLength;        
     }
 
     private void OkButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_validator != null && !_validator.IsValid(Input))
-        {
-            MessageBox.Show(_validator.Message);
-            return;
-        }
-
         DialogResult = true;             
     }
 
