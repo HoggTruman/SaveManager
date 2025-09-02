@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace SaveManager.Models;
+namespace SaveManager.ViewModels;
 
-public abstract class BaseModel : INotifyPropertyChanged
+public abstract class NotifyPropertyChanged : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
