@@ -1,11 +1,10 @@
 ﻿using SaveManager.Models;
 using SaveManager.Services;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace SaveManager.ViewModels;
 
-public class SaveViewModel
+public class SaveViewModel : NotifyPropertyChanged
 {
     private readonly AppdataService _appdataService;
 
