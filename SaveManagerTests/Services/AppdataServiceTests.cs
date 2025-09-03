@@ -1,5 +1,4 @@
 ﻿using SaveManager.DTOs;
-using SaveManager.Models;
 using SaveManager.Services;
 using System.Reflection;
 using System.Xml.Linq;
@@ -8,52 +7,49 @@ namespace SaveManagerTests.Services;
 
 public class AppdataServiceTests
 {
+    public static GameAppdataDTO TestGameDTO => new() { Name = "test", ProfilesDirectory = "testDir", SavefileLocation = "testLocation" };
+
+
+
+
     #region Tree Modification Tests (USES CONVERSION METHODS)
 
     [Fact]
-    public void AddGameToDocument_AddsGameElement()
+    public void ReplaceGamesInDocument_WithEmpty_LeavesDocumentWithNoGames()
     {
         XDocument document = AppdataService.DefaultDocument;
-        Game game = new("test", "savefile", "profiles");
-        AppdataService.AddGameToDocument(document, game);
-        var gameElements = document.Root!.Element(AppdataService.GamesName)!.Elements();        
+        XElement gamesElement = document.Root!.Element(AppdataService.GamesName)!;
+        gamesElement.Add(new XElement(AppdataService.ConvertToXElement(TestGameDTO)));
 
-        Assert.Equal(2, document.Root.Elements().Count());
-        Assert.Single(gameElements);
-    }
-
-    [Fact]
-    public void UpdateGameInDocument_RenamesGameElement()
-    {
-        XDocument document = AppdataService.DefaultDocument;
-        Game game = new("test", "savefile", "profiles");
-        GameAppdataDTO gameDTO = game.ToGameAppdataDTO();
-        var gamesElement = document.Root!.Element(AppdataService.GamesName)!;
-        gamesElement.Add(AppdataService.ConvertToXElement(gameDTO));
-        GameUpdateDTO updateDTO = new(){ Name = "new name" };
-
-        AppdataService.UpdateGameInDocument(document, game, updateDTO);
-
-        XElement gameElement = gamesElement.Elements().First();
-        XElement nameElement = gameElement.Element(nameof(Game.Name))!;
-        Assert.Equal(updateDTO.Name, nameElement.Value);
-    }
-
-    [Fact]
-    public void DeleteGameInDocument_DeletesGameElement()
-    {
-        XDocument document = AppdataService.DefaultDocument;
-        Game game = new("test", "savefile", "profiles");
-        GameAppdataDTO gameDTO = game.ToGameAppdataDTO();
-        var gamesElement = document.Root!.Element(AppdataService.GamesName)!;
-        gamesElement.Add(AppdataService.ConvertToXElement(gameDTO));
-
-        AppdataService.DeleteGameInDocument(document, game);
-
+        AppdataService.ReplaceGamesInDocument(document, []);
         Assert.Empty(gamesElement.Elements());
     }
 
+
+    [Fact]
+    public void ReplaceGamesInDocument_WithNewGames_ReplacesGames()
+    {
+        XDocument document = AppdataService.DefaultDocument;
+        XElement gamesElement = document.Root!.Element(AppdataService.GamesName)!;
+        gamesElement.Add(new XElement(AppdataService.ConvertToXElement(TestGameDTO)));
+        List<GameAppdataDTO> newGames = [
+            new() { Name = "first" },
+            new() { Name = "second" },
+            new() { Name = "third" }];
+
+        AppdataService.ReplaceGamesInDocument(document, newGames);
+        
+        Assert.Equal(newGames.Count, gamesElement.Elements().Count());
+        
+        // check new games each have a corresponding Name element.
+        IEnumerable<XElement> descendants = gamesElement.Descendants();
+        foreach (GameAppdataDTO game in newGames)
+            Assert.NotNull(descendants.FirstOrDefault(x => x.Name.LocalName == nameof(GameAppdataDTO.Name) && x.Value == game.Name));
+    }
+
     #endregion
+
+
 
 
     #region ConvertToXElement Tests
@@ -68,9 +64,9 @@ public class AppdataServiceTests
     [Fact]
     public void ConvertToXElement_ConvertsGameAppdataDTO()
     {
-        GameAppdataDTO gameAppdataDTO = new() { Name = "test game", ProfilesDirectory = "test directory", SavefileLocation = "test savefilelocation" };
+        GameAppdataDTO gameAppdataDTO = TestGameDTO;
 
-        XElement gameElement = AppdataService.ConvertToXElement(gameAppdataDTO);
+        XElement gameElement = AppdataService.ConvertToXElement(TestGameDTO);
 
         foreach (XElement element in gameElement.Elements())
         {
@@ -96,7 +92,7 @@ public class AppdataServiceTests
     [Fact]
     public void ConvertFromXElement_WithGameAppdataDTOElement_ReturnsGameAppDTO()
     {
-        GameAppdataDTO expectedGameDTO = new() { Name = "test game", ProfilesDirectory = "test directory", SavefileLocation = "test savefilelocation" };
+        GameAppdataDTO expectedGameDTO = TestGameDTO;
         var children = typeof(GameAppdataDTO).GetProperties().Select(prop => new XElement(prop.Name, prop.GetValue(expectedGameDTO)));
 
         XElement gameElement = new("Game", children);
