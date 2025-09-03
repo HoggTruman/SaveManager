@@ -3,7 +3,7 @@
 namespace SaveManager.DTOs;
 
 [XmlType(TypeName = "Game")]
-public class GameAppdataDTO
+public class GameDTO
 {
     public required string Name { get; set; }
     public string? SavefileLocation { get; set; }

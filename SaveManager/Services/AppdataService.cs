@@ -85,7 +85,7 @@ public class AppdataService
     /// <exception cref="AppdataException"/>
     public void ReplaceGames(IEnumerable<Game> newGames)
     {
-        IEnumerable<GameAppdataDTO> gameDTOs = newGames.Select(x => x.ToGameAppdataDTO());
+        IEnumerable<GameDTO> gameDTOs = newGames.Select(x => x.ToGameDTO());
         ModifyDocument(doc => ReplaceGamesInDocument(doc, gameDTOs));
     }
 
@@ -101,7 +101,7 @@ public class AppdataService
         try
         {
             XElement gamesElement = _document.Root!.Element(GamesName)!;
-            return gamesElement.Elements().Select(ConvertFromXElement<GameAppdataDTO>)
+            return gamesElement.Elements().Select(ConvertFromXElement<GameDTO>)
                 .Select(x => new Game(x.Name, x.SavefileLocation, x.ProfilesDirectory));
         }
         catch (ValidationException)
@@ -139,11 +139,11 @@ public class AppdataService
     /// </summary>
     /// <param name="document"></param>
     /// <param name="newGames"></param>
-    internal static void ReplaceGamesInDocument(XDocument document, IEnumerable<GameAppdataDTO> newGames)
+    internal static void ReplaceGamesInDocument(XDocument document, IEnumerable<GameDTO> newGames)
     {
-        XElement newGamesElement = new(GamesName, newGames.Select(ConvertToXElement));
-        XElement? gamesElement = document.Element(RootName)!.Element(GamesName)!;
-        gamesElement.ReplaceWith(newGamesElement);
+        XElement gamesElement = document.Element(RootName)!.Element(GamesName)!;
+        IEnumerable<XElement> newChildren = newGames.Select(ConvertToXElement);        
+        gamesElement.ReplaceNodes(newChildren);
     }
 
 

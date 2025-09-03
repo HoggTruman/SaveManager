@@ -7,7 +7,7 @@ namespace SaveManagerTests.Services;
 
 public class AppdataServiceTests
 {
-    public static GameAppdataDTO TestGameDTO => new() { Name = "test", ProfilesDirectory = "testDir", SavefileLocation = "testLocation" };
+    public static GameDTO TestGameDTO => new() { Name = "test", ProfilesDirectory = "testDir", SavefileLocation = "testLocation" };
 
 
 
@@ -32,7 +32,7 @@ public class AppdataServiceTests
         XDocument document = AppdataService.DefaultDocument;
         XElement gamesElement = document.Root!.Element(AppdataService.GamesName)!;
         gamesElement.Add(new XElement(AppdataService.ConvertToXElement(TestGameDTO)));
-        List<GameAppdataDTO> newGames = [
+        List<GameDTO> newGames = [
             new() { Name = "first" },
             new() { Name = "second" },
             new() { Name = "third" }];
@@ -43,8 +43,8 @@ public class AppdataServiceTests
         
         // check new games each have a corresponding Name element.
         IEnumerable<XElement> descendants = gamesElement.Descendants();
-        foreach (GameAppdataDTO game in newGames)
-            Assert.NotNull(descendants.FirstOrDefault(x => x.Name.LocalName == nameof(GameAppdataDTO.Name) && x.Value == game.Name));
+        foreach (GameDTO game in newGames)
+            Assert.NotNull(descendants.FirstOrDefault(x => x.Name.LocalName == nameof(GameDTO.Name) && x.Value == game.Name));
     }
 
     #endregion
@@ -64,14 +64,14 @@ public class AppdataServiceTests
     [Fact]
     public void ConvertToXElement_ConvertsGameAppdataDTO()
     {
-        GameAppdataDTO gameAppdataDTO = TestGameDTO;
+        GameDTO gameAppdataDTO = TestGameDTO;
 
         XElement gameElement = AppdataService.ConvertToXElement(TestGameDTO);
 
         foreach (XElement element in gameElement.Elements())
         {
             string propertyName = element.Name.LocalName;
-            PropertyInfo? prop = typeof(GameAppdataDTO).GetProperty(propertyName);
+            PropertyInfo? prop = typeof(GameDTO).GetProperty(propertyName);
             Assert.NotNull(prop);
             Assert.Equal(prop.GetValue(gameAppdataDTO), element.Value);
         }
@@ -92,11 +92,11 @@ public class AppdataServiceTests
     [Fact]
     public void ConvertFromXElement_WithGameAppdataDTOElement_ReturnsGameAppDTO()
     {
-        GameAppdataDTO expectedGameDTO = TestGameDTO;
-        var children = typeof(GameAppdataDTO).GetProperties().Select(prop => new XElement(prop.Name, prop.GetValue(expectedGameDTO)));
+        GameDTO expectedGameDTO = TestGameDTO;
+        var children = typeof(GameDTO).GetProperties().Select(prop => new XElement(prop.Name, prop.GetValue(expectedGameDTO)));
 
         XElement gameElement = new("Game", children);
-        GameAppdataDTO result = AppdataService.ConvertFromXElement<GameAppdataDTO>(gameElement);
+        GameDTO result = AppdataService.ConvertFromXElement<GameDTO>(gameElement);
 
         Assert.Equivalent(expectedGameDTO, result, true);
     }

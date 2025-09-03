@@ -4,7 +4,7 @@ namespace SaveManager.DTOs;
 
 public static class Mappers
 {
-    public static GameAppdataDTO ToGameAppdataDTO(this Game game)
+    public static GameDTO ToGameDTO(this Game game)
     {
         return new()
         {
