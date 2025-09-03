@@ -67,38 +67,14 @@ public class AppdataService
     }
 
 
-
     /// <summary>
-    /// Adds a new game to the appdata file.
+    /// Replaces the games in the appdata file with those provided. 
     /// </summary>
-    /// <param name="game"></param> 
+    /// <param name="newGames"></param>
     /// <exception cref="AppdataException"/>
-    public void AddGame(Game game)
+    public void ReplaceGames(IEnumerable<Game> newGames)
     {
-        ModifyDocument(doc => AddGameToDocument(doc, game));
-    }
-
-
-    /// <summary>
-    /// Renames a game in the appdata file.
-    /// </summary>
-    /// <param name="game"></param>
-    /// <param name="newName"></param>
-    /// <exception cref="AppdataException"/>
-    public void RenameGame(Game game, string newName)
-    {
-        ModifyDocument(doc => RenameGameInDocument(doc, game, newName));
-    }
-
-
-    /// <summary>
-    /// Deletes a game in the appdata file.
-    /// </summary>
-    /// <param name="game"></param>
-    /// <exception cref="AppdataException"/>
-    public void DeleteGame(Game game)
-    {
-        ModifyDocument(doc => DeleteGameInDocument(doc, game));
+        ModifyDocument(doc => ReplaceGamesInDocument(doc, newGames));
     }
 
 
@@ -106,11 +82,20 @@ public class AppdataService
     /// Retrieves games from the appdata file.
     /// </summary>
     /// <returns></returns>
+    /// <exception cref="AppdataException"></exception>
+    /// <exception cref="FilesystemException"></exception>
     public IEnumerable<Game> GetGames()
     {
-        XElement gamesElement = _document.Root!.Element(GamesName)!;
-        return gamesElement.Elements().Select(ConvertFromXElement<GameAppdataDTO>)
-            .Select(x => new Game() { Name = x.Name, ProfilesDirectory = x.ProfilesDirectory, SavefileLocation = x.SavefileLocation });
+        try
+        {
+            XElement gamesElement = _document.Root!.Element(GamesName)!;
+            return gamesElement.Elements().Select(ConvertFromXElement<GameAppdataDTO>)
+                .Select(x => new Game(x.Name, x.SavefileLocation, x.ProfilesDirectory));
+        }
+        catch (ValidationException)
+        {
+            throw new AppdataException("Invalid appdata found\n Do not edit appdata.xml manually.");
+        }        
     }
 
 
@@ -137,31 +122,13 @@ public class AppdataService
     }
 
 
-    internal static void AddGameToDocument(XDocument document, Game game)
+    internal static void ReplaceGamesInDocument(XDocument document, IEnumerable<Game> newGames)
     {
+        XElement newGamesElement = new(GamesName, newGames.Select(x => ConvertToXElement(x.ToGameAppdataDTO())));
         XElement? gamesElement = document.Element(RootName)!.Element(GamesName)!;
-        gamesElement.Add(ConvertToXElement(game.ToGameAppdataDTO()));
+        gamesElement.ReplaceWith(newGamesElement);
     }
 
-
-    internal static void RenameGameInDocument(XDocument document, Game game, string newName)
-    {
-        XElement nameElement = document.Root!.Element(GamesName)!
-            .Descendants()
-            .First(x => x.Name.LocalName == nameof(Game.Name) && x.Value == game.Name);
-
-        nameElement.Value = newName;
-    }
-
-
-    internal static void DeleteGameInDocument(XDocument document, Game game)
-    {
-        XElement gameElement = document.Root!.Element(GamesName)!
-            .Elements()
-            .First(x => x.Element(nameof(Game.Name))!.Value == game.Name);
-
-        gameElement.Remove();
-    }
 
 
     internal static XElement ConvertToXElement<T>(T item) where T : notnull
