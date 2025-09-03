@@ -16,25 +16,36 @@ public class AppdataService
     internal const string SettingsName = "Settings";
     private const string AppdataDirectoryName = "Save Manager";
 
-    private static readonly string AppdataFolder;
-    private static readonly string AppdataPath;
+    /// <summary>
+    /// The full path of the directory containing the appdata file.
+    /// </summary>
+    private static readonly string AppdataDirectory;
+
+    /// <summary>
+    /// The full path of the appdata file.
+    /// </summary>
+    private static readonly string AppdataLocation;
 
     internal static XDocument DefaultDocument => new(new XElement(RootName, new XElement(GamesName), new XElement(SettingsName)));
 
-    private static XDocument _document = DefaultDocument;
+    private XDocument _document = DefaultDocument;
 
     static AppdataService()
     {
         string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppdataDirectoryName);
         #if DEBUG
-            AppdataFolder = Path.Combine(basePath, "Debug");
+            AppdataDirectory = Path.Combine(basePath, "Debug");
         #else
-            AppdataFolder = Path.Combine(basePath, "Release");
+            AppdataDirectory = Path.Combine(basePath, "Release");
         #endif
 
-        AppdataPath = Path.Combine(AppdataFolder, "appdata.xml");
+        AppdataLocation = Path.Combine(AppdataDirectory, "appdata.xml");        
+    }
+
+    public AppdataService()
+    {
         Initialize();
-    }    
+    }
       
 
 
@@ -42,22 +53,22 @@ public class AppdataService
     /// Loads / creates the appdata file.
     /// </summary>
     /// <exception cref="AppdataException"/>
-    internal static void Initialize()
+    internal void Initialize()
     {
         try
         {
-            if (!Directory.Exists(AppdataFolder))
+            if (!Directory.Exists(AppdataDirectory))
             {
-                Directory.CreateDirectory(AppdataFolder);
+                Directory.CreateDirectory(AppdataDirectory);
             }
 
-            if (Path.Exists(AppdataPath))
+            if (Path.Exists(AppdataLocation))
             {
-                _document = XDocument.Load(AppdataPath);         
+                _document = XDocument.Load(AppdataLocation);         
             }
             else
             {
-                _document.Save(AppdataPath);
+                _document.Save(AppdataLocation);
             }
         }
         catch (Exception e)
@@ -74,7 +85,8 @@ public class AppdataService
     /// <exception cref="AppdataException"/>
     public void ReplaceGames(IEnumerable<Game> newGames)
     {
-        ModifyDocument(doc => ReplaceGamesInDocument(doc, newGames));
+        IEnumerable<GameAppdataDTO> gameDTOs = newGames.Select(x => x.ToGameAppdataDTO());
+        ModifyDocument(doc => ReplaceGamesInDocument(doc, gameDTOs));
     }
 
 
@@ -111,7 +123,7 @@ public class AppdataService
         modify(newDocument);
         try
         {
-            newDocument.Save(AppdataPath);
+            newDocument.Save(AppdataLocation);
         }
         catch (Exception e)
         {
@@ -122,9 +134,14 @@ public class AppdataService
     }
 
 
-    internal static void ReplaceGamesInDocument(XDocument document, IEnumerable<Game> newGames)
+    /// <summary>
+    /// Replaces the games in the document with those provided.
+    /// </summary>
+    /// <param name="document"></param>
+    /// <param name="newGames"></param>
+    internal static void ReplaceGamesInDocument(XDocument document, IEnumerable<GameAppdataDTO> newGames)
     {
-        XElement newGamesElement = new(GamesName, newGames.Select(x => ConvertToXElement(x.ToGameAppdataDTO())));
+        XElement newGamesElement = new(GamesName, newGames.Select(ConvertToXElement));
         XElement? gamesElement = document.Element(RootName)!.Element(GamesName)!;
         gamesElement.ReplaceWith(newGamesElement);
     }
