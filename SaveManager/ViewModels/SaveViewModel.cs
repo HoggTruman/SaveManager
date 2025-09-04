@@ -17,9 +17,11 @@ public class SaveViewModel : NotifyPropertyChanged
     public ObservableCollection<IFilesystemItem> SaveListItems { get; set; } = [];
     public IFilesystemItem? SelectedItem { get; set; }
 
-    public SaveViewModel(AppdataService appdataService)
+    public SaveViewModel(AppdataService appdataService, IEnumerable<Game> games)
     {
         _appdataService = appdataService;
+        Games = [..games];
+        ActiveGame = games.FirstOrDefault();
     }
     
 }

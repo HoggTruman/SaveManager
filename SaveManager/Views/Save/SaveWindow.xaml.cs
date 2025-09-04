@@ -20,7 +20,7 @@ public partial class SaveWindow : Window
 
     private void GameProfileEditButton_Click(object sender, RoutedEventArgs e)
     {
-        GameProfileWindow gameProfileWindow = new(ViewModelFactory.CreateGameProfileViewModel());
+        GameProfileWindow gameProfileWindow = new(ViewModelFactory.CreateGameProfileViewModel(SaveViewModel.Games));
         gameProfileWindow.ShowDialog(this);
     }
 }

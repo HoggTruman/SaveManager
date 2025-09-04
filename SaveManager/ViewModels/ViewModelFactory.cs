@@ -1,4 +1,5 @@
-﻿using SaveManager.Services;
+﻿using SaveManager.Models;
+using SaveManager.Services;
 
 namespace SaveManager.ViewModels;
 
@@ -6,7 +7,7 @@ public static class ViewModelFactory
 {
     private static AppdataService? _appdataService;
 
-    private static AppdataService AppdataService 
+    public static AppdataService AppdataService 
     { 
         get
         {
@@ -15,13 +16,13 @@ public static class ViewModelFactory
         }        
     }
 
-    public static SaveViewModel CreateSaveViewModel()
+    public static SaveViewModel CreateSaveViewModel(IEnumerable<Game> games)
     {
-        return new(AppdataService);
+        return new(AppdataService, games);
     }
 
-    public static GameProfileViewModel CreateGameProfileViewModel()
+    public static GameProfileViewModel CreateGameProfileViewModel(IEnumerable<Game> games)
     {
-        return new(AppdataService);
+        return new(AppdataService, games);
     }
 }
