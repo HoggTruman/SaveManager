@@ -1,5 +1,8 @@
 ﻿namespace SaveManager.Exceptions;
 
+/// <summary>
+/// An exception thrown when the user provides some invalid data.
+/// </summary>
 public class ValidationException : Exception
 {
     public ValidationException() { }

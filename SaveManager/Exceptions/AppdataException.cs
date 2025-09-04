@@ -1,5 +1,8 @@
 ﻿namespace SaveManager.Exceptions;
 
+/// <summary>
+/// An exception thrown when failing to interact with the appdata file.
+/// </summary>
 public class AppdataException : Exception
 {
     public AppdataException() { }
