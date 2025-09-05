@@ -42,6 +42,12 @@ public class AppdataService
         AppdataLocation = Path.Combine(AppdataDirectory, "appdata.xml");        
     }
 
+
+    /// <summary>
+    /// Initalizes a new <see cref="AppdataService"/> instance.
+    /// Loads an existing appdata file if present, otherwise creates a new one.
+    /// </summary>
+    /// <exception cref="AppdataException"></exception>
     public AppdataService()
     {
         Initialize();
@@ -71,9 +77,9 @@ public class AppdataService
                 _document.Save(AppdataLocation);
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            throw new AppdataException(e.Message, e.InnerException);
+            throw new AppdataException(ex.Message, ex);
         }        
     }
 
@@ -91,23 +97,13 @@ public class AppdataService
 
 
     /// <summary>
-    /// Retrieves games from the appdata file.
+    /// Retrieves game data ordered by name from the appdata file.
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="AppdataException"></exception>
-    /// <exception cref="FilesystemException"></exception>
-    public IEnumerable<Game> GetGames()
+    public IEnumerable<GameDTO> GetGameData()
     {
-        try
-        {
-            XElement gamesElement = _document.Root!.Element(GamesName)!;
-            return gamesElement.Elements().Select(ConvertFromXElement<GameDTO>)
-                .Select(x => new Game(x.Name, x.SavefileLocation, x.ProfilesDirectory));
-        }
-        catch (ValidationException)
-        {
-            throw new AppdataException("Invalid appdata found\n Do not edit appdata.xml manually.");
-        }        
+        XElement gamesElement = _document.Root!.Element(GamesName)!;
+        return gamesElement.Elements().Select(ConvertFromXElement<GameDTO>).OrderBy(x => x.Name);      
     }
 
 

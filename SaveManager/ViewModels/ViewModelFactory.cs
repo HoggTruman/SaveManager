@@ -7,22 +7,24 @@ public static class ViewModelFactory
 {
     private static AppdataService? _appdataService;
 
-    public static AppdataService AppdataService 
-    { 
-        get
-        {
-            _appdataService ??= new();            
-            return _appdataService;
-        }        
+    /// <summary>
+    /// Sets up ViewModelFactory with the dependencies needed to create view models.
+    /// </summary>
+    /// <param name="appdataService"></param>
+    public static void Initialize(AppdataService appdataService)
+    {
+        _appdataService = appdataService;
     }
 
     public static SaveViewModel CreateSaveViewModel(IEnumerable<Game> games)
     {
-        return new(AppdataService, games);
+        if (_appdataService == null) throw new InvalidOperationException("ViewModelFactory has not been initialized.");
+        return new(_appdataService, games);
     }
 
     public static GameProfileViewModel CreateGameProfileViewModel(IEnumerable<Game> games)
     {
-        return new(AppdataService, games);
+        if (_appdataService == null) throw new InvalidOperationException("ViewModelFactory has not been initialized.");
+        return new(_appdataService, games);
     }
 }
