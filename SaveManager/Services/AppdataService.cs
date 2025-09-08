@@ -121,9 +121,9 @@ public class AppdataService
         {
             newDocument.Save(AppdataLocation);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            throw new AppdataException(e.Message, e.InnerException);
+            throw new AppdataException(ex.Message, ex);
         }
         
         _document = newDocument;
