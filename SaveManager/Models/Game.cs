@@ -46,7 +46,6 @@ public class Game : NotifyPropertyChanged
     /// The full path of the directory containing profile directories.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public string? ProfilesDirectory
     { 
         get => _profilesFolder?.Location; 
@@ -68,7 +67,7 @@ public class Game : NotifyPropertyChanged
                 catch (Exception ex)
                 {
                     // If profiles directory can not be accessed, remove it to prevent locking app.
-                    if (ex is FileAccessException or FilesystemException)
+                    if (ex is FilesystemException)
                     {
                         SetProperty(ref _profilesFolder, null);
                         Profiles = [];
@@ -99,7 +98,6 @@ public class Game : NotifyPropertyChanged
     /// <param name="profilesDirectory"></param>
     /// <exception cref="ValidationException">An invalid name is provided.</exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public Game(string name, string? savefileLocation=null, string? profilesDirectory=null)
     {
         Name = name;
@@ -112,7 +110,7 @@ public class Game : NotifyPropertyChanged
         {
             // Games are only constructed with a profilesDirectory on app startup.
             // If the directory is no longer accessible, it will be set to null in ProfilesDirectory setter and we can continue.
-            if (ex is FilesystemException or FileAccessException)
+            if (ex is FilesystemException)
                 return;
 
             throw;
@@ -124,7 +122,6 @@ public class Game : NotifyPropertyChanged
     /// Reloads the game's profiles from the filesystem.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void RefreshProfiles()
     {
         ProfilesDirectory = _profilesFolder?.Location;

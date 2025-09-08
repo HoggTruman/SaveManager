@@ -21,6 +21,5 @@ public interface IFilesystemItem
     /// </summary>
     /// <param name="newLocation"></param>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void UpdateLocation(string newLocation);
 }

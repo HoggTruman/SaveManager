@@ -113,7 +113,6 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <param name="location"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void SetProfilesDirectory(string location)
     {
         if (ActiveGame == null)
@@ -139,7 +138,6 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <param name="name"></param>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void CreateProfile(string name)
     {
         if (ActiveGame == null)
@@ -157,7 +155,6 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <param name="newName"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void RenameProfile(string newName)
     {
         if (SelectedProfile == null)
@@ -173,7 +170,6 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// Deletes the selected profile.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void DeleteProfile()
     {
         if (SelectedProfile == null)

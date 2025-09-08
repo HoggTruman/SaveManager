@@ -25,7 +25,6 @@ public class File : IFilesystemItem
     /// </summary>
     /// <param name="newLocation"></param>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void UpdateLocation(string newLocation)
     {
         try
@@ -34,11 +33,8 @@ public class File : IFilesystemItem
         }
         catch (Exception ex)
         {
-            if (ex is PathTooLongException or ArgumentException or NotSupportedException)
+            if (ex is PathTooLongException or ArgumentException or NotSupportedException or SecurityException or UnauthorizedAccessException)
                 throw new FilesystemException(ex.Message, ex);
-
-            if (ex is SecurityException or UnauthorizedAccessException)
-                throw new FileAccessException(ex.Message, ex);
 
             throw;
         }

@@ -30,7 +30,6 @@ public class Profile
     /// <param name="game"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public static Profile Create(string name, Game game)
     {
         if (game.ProfilesFolder == null)
@@ -57,7 +56,6 @@ public class Profile
     /// <param name="newName"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void Rename(string newName)
     {
         if (Game.Profiles.Any(x => x.Name.Equals(newName, StringComparison.CurrentCultureIgnoreCase)))
@@ -74,7 +72,6 @@ public class Profile
     /// Deletes the <see cref="Profile"/>.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void Delete()
     {
         Folder.Delete();

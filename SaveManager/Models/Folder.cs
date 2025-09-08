@@ -34,7 +34,6 @@ public class Folder : IFilesystemItem
     }
 
     /// <inheritdoc cref="Folder(DirectoryInfo, Folder?)"/>
-    /// <exception cref="FileAccessException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public Folder(string location, Folder? parent)
     {
@@ -44,11 +43,8 @@ public class Folder : IFilesystemItem
         }
         catch (Exception ex)
         {
-            if (ex is ArgumentException or PathTooLongException)
+            if (ex is ArgumentException or PathTooLongException or System.Security.SecurityException)
                 throw new FilesystemException(ex.Message, ex);
-
-            if (ex is System.Security.SecurityException)
-                throw new FileAccessException(ex.Message, ex);
 
             throw;
         }
@@ -68,7 +64,6 @@ public class Folder : IFilesystemItem
     /// <returns></returns>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public static Folder Create(string name, Folder parent)
     {
         ValidateFolderName(name, parent.Children); 
@@ -81,11 +76,8 @@ public class Folder : IFilesystemItem
         }
         catch (Exception ex)
         {
-            if (ex is IOException or DirectoryNotFoundException)
+            if (ex is IOException or UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException or NotSupportedException)
                 throw new FilesystemException(ex.Message, ex);
-
-            if (ex is UnauthorizedAccessException)
-                throw new FileAccessException(ex.Message, ex);
 
             throw;
         }        
@@ -98,7 +90,6 @@ public class Folder : IFilesystemItem
     /// <param name="newName"></param>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void Rename(string newName)
     {
         if (Parent == null)
@@ -121,12 +112,9 @@ public class Folder : IFilesystemItem
         }
         catch(Exception ex)
         {
-            if (ex is IOException or DirectoryNotFoundException)
+            if (ex is ArgumentException or IOException or System.Security.SecurityException or DirectoryNotFoundException)
                 throw new FilesystemException(ex.Message, ex);
 
-            if (ex is System.Security.SecurityException)
-                throw new FileAccessException(ex.Message, ex);
-                
             throw;
         }       
 
@@ -137,7 +125,6 @@ public class Folder : IFilesystemItem
     /// <summary>
     /// Deletes the Folder and underlying directory in the filesystem.
     /// </summary>
-    /// <exception cref="FileAccessException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public void Delete()
     {
@@ -153,10 +140,7 @@ public class Folder : IFilesystemItem
         }
         catch (Exception ex)
         {
-            if (ex is UnauthorizedAccessException or System.Security.SecurityException)
-                throw new FileAccessException(ex.Message, ex);
-
-            if (ex is DirectoryNotFoundException or IOException)
+            if (ex is UnauthorizedAccessException or DirectoryNotFoundException or IOException or System.Security.SecurityException)
                 throw new FilesystemException(ex.Message, ex);
 
             throw;
@@ -169,7 +153,6 @@ public class Folder : IFilesystemItem
     /// Does not actually affect any files or directories.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
     public void UpdateLocation(string newLocation)
     {
         try
@@ -178,7 +161,7 @@ public class Folder : IFilesystemItem
         }
         catch (Exception ex)
         {
-            if (ex is PathTooLongException or ArgumentException)
+            if (ex is System.Security.SecurityException or ArgumentException or PathTooLongException)
                 throw new FilesystemException(ex.Message, ex);
 
             throw;
@@ -197,7 +180,6 @@ public class Folder : IFilesystemItem
     /// Loads child files and directories from the filesystem and sets Children.
     /// </summary>
     /// <exception cref="FilesystemException"/>
-    /// <exception cref="FileAccessException"/>
     public void LoadChildren()
     {
         try
@@ -218,11 +200,8 @@ public class Folder : IFilesystemItem
         }
         catch (Exception ex)
         {
-            if (ex is DirectoryNotFoundException)
+            if (ex is DirectoryNotFoundException or System.Security.SecurityException or UnauthorizedAccessException)
                 throw new FilesystemException(ex.Message, ex);
-
-            if (ex is System.Security.SecurityException or UnauthorizedAccessException)
-                throw new FileAccessException(ex.Message, ex);
 
             throw;
         }
