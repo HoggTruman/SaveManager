@@ -7,6 +7,7 @@ TODO.txt
 
 # dotenv files
 .env
+Development/
 
 # User-specific files
 *.rsuser
