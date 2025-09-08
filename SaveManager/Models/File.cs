@@ -24,8 +24,8 @@ public class File : IFilesystemItem
     /// Does not actually affect any files or directories.
     /// </summary>
     /// <param name="newLocation"></param>
-    /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FileAccessException"></exception>
     public void UpdateLocation(string newLocation)
     {
         try
@@ -34,14 +34,11 @@ public class File : IFilesystemItem
         }
         catch (Exception ex)
         {
-            if (ex is PathTooLongException)
-                throw new ValidationException($"Filepath is too long");
-
-            if (ex is ArgumentException or NotSupportedException)
-                throw new ValidationException($"Filepath contains invalid characters: {newLocation}");
+            if (ex is PathTooLongException or ArgumentException or NotSupportedException)
+                throw new FilesystemException(ex.Message, ex);
 
             if (ex is SecurityException or UnauthorizedAccessException)
-                throw new FilesystemException($"Could not access file: {newLocation}");
+                throw new FileAccessException(ex.Message, ex);
 
             throw;
         }
