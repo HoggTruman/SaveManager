@@ -9,7 +9,9 @@
         Height="415"
         Width="500"
         SizeToContent="WidthAndHeight"
-        ResizeMode="NoResize">
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -19,7 +21,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        
+
         <Grid Width="500"
               Height="65">
             <Grid.RowDefinitions>
@@ -42,26 +44,35 @@
                    Margin="10, 2, 0, 0"
                    Padding="0" />
 
-            <ComboBox Name="GameComboBox"
+            <ComboBox x:Name="GameComboBox"
+                      ItemsSource="{Binding Games}"
+                      SelectedItem="{Binding ActiveGame}"
+                      DisplayMemberPath="Name"
                       Width="Auto"
                       Height="25"
                       Grid.Row="1"
                       Grid.Column="0"
                       Margin="10" />
 
-            <Button Width="25"
+            <Button x:Name="AddGameButton"
+                    Click="AddGameButton_Click"
+                    Width="25"
                     Height="25"
                     Grid.Row="1"
                     Grid.Column="1"
                     Margin="4,0,5,0">+</Button>
 
-            <Button Width="25"
+            <Button x:Name="RemoveGameButton"
+                    Click="RemoveGameButton_Click"
+                    Width="25"
                     Height="25"
                     Grid.Row="1"
                     Grid.Column="2"
                     Margin="0">-</Button>
 
-            <Button Width="25"
+            <Button x:Name="RenameGameButton"
+                    Click="RenameGameButton_Click"
+                    Width="25"
                     Height="25"
                     Grid.Row="1"
                     Grid.Column="3"
@@ -88,42 +99,48 @@
                 <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
 
-            <Label Target="{Binding ElementName=SaveLocationTextBox}"
-                   Content="Location of Savefile:"
+            <Label Content="Location of Savefile:"
                    HorizontalAlignment="Left"
                    FontSize="14"
                    Margin="10,2,0,0"
                    Padding="0" />
 
-            <TextBox Name="SaveLocationTextBox"
-                     Width="Auto"
-                     Height="25"
-                     Grid.Row="1"
-                     Grid.Column="0"
-                     Margin="10" />
+            <Label Content="{Binding Path=ActiveGame.SavefileLocation}"
+                   Width="Auto"
+                   Height="25"
+                   Grid.Row="1"
+                   Grid.Column="0"
+                   Margin="10"
+                   BorderBrush="DarkGray"
+                   BorderThickness="1" />
 
-            <Button Content="Browse"
+            <Button x:Name="SavefileBrowseButton"
+                    Click="SavefileBrowseButton_Click"
+                    Content="Browse"
                     Width="Auto"
                     Height="25"
                     Grid.Row="1"
                     Grid.Column="1"
                     Margin="10" />
 
-            <Label Target="{Binding ElementName=ProfilesDirectoryTextBox}"
-                   Content="Profiles Directory:"
+            <Label Content="Profiles Directory:"
                    HorizontalAlignment="Left"
                    Grid.Row="2"
                    FontSize="14"
                    Margin="10,2,0,0"
                    Padding="0" />
 
-            <TextBox Name="ProfilesDirectoryTextBox"
-                     Width="Auto"
-                     Height="25"
-                     Grid.Row="3"
-                     Margin="10" />
+            <Label Content="{Binding Path=ActiveGame.ProfilesDirectory}"
+                   Width="Auto"
+                   Height="25"
+                   Grid.Row="3"
+                   Margin="10"
+                   BorderBrush="DarkGray"
+                   BorderThickness="1" />
 
-            <Button Content="Browse"
+            <Button x:Name="ProfilesDirectoryBrowseButton"
+                    Click="ProfilesDirectoryBrowseButton_Click"
+                    Content="Browse"
                     Width="Auto"
                     Height="25"
                     Grid.Row="3"
@@ -159,28 +176,38 @@
                    Padding="0">
                 Profiles:
             </Label>
-            <ListBox Name="ProfilesListBox"
+            <ListBox ItemsSource="{Binding Path=ActiveGame.Profiles}"
+                     SelectedItem="{Binding SelectedProfile}"
+                     DisplayMemberPath="Name"
+                     SelectionMode="Single"
+                     x:Name="ProfilesListBox"
                      Width="Auto"
                      Height="Auto"
                      Grid.Row="1"
                      Grid.RowSpan="4"
                      Margin="10" />
 
-            <Button Content="New"
+            <Button x:Name="NewProfileButton"
+                    Click="NewProfileButton_Click"
+                    Content="New"
                     Width="Auto"
                     Height="25"
                     Grid.Row="1"
                     Grid.Column="1"
                     Margin="10" />
 
-            <Button Content="Rename"
+            <Button x:Name="RenameProfileButton"
+                    Click="RenameProfileButton_Click"
+                    Content="Rename"
                     Width="Auto"
                     Height="25"
                     Grid.Row="2"
                     Grid.Column="1"
                     Margin="10" />
 
-            <Button Content="Delete"
+            <Button x:Name="DeleteProfileButton"
+                    Click="DeleteProfileButton_Click"
+                    Content="Delete"
                     Width="Auto"
                     Height="25"
                     Grid.Row="3"
