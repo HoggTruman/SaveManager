@@ -147,7 +147,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
             return;
         }
 
-        ActiveGame?.CreateProfile(name);
+        Profile.Create(name, ActiveGame);
     }
 
 

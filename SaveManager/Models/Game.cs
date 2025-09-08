@@ -36,6 +36,11 @@ public class Game : NotifyPropertyChanged
         set => SetProperty(ref _savefileLocation, value); 
     }
 
+    /// <summary>
+    /// The <see cref="Folder"/> representing the profiles directory if one has been set. Otherwise, null.
+    /// </summary>
+    public Folder? ProfilesFolder => _profilesFolder;
+
 
     /// <summary>
     /// The full path of the directory containing profile directories.
@@ -113,36 +118,6 @@ public class Game : NotifyPropertyChanged
             throw;
         }        
     }
-
-
-    /// <summary>
-    /// Creates a new profile in the game's profiles directory.
-    /// Returns a <see cref="Profile"/> instance representing it.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <exception cref="ValidationException"></exception>
-    /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FileAccessException"></exception>
-    public Profile CreateProfile(string name)
-    {
-        if (ProfilesDirectory == null || _profilesFolder == null)
-        {
-            throw new InvalidOperationException("ProfilesDirectory must be set before a profile can be created");
-        }
-
-        if (Profiles.Any(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)))
-        {
-            throw new ValidationException($"A profile already exists with name: {name}");
-        }
-
-        Folder profileFolder = Folder.Create(name, _profilesFolder);
-        Profile profile = new(profileFolder, this);
-        _profiles.Add(profile);
-        SortProfiles();
-        return profile;
-    }
-
-
 
 
     /// <summary>
