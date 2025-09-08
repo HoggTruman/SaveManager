@@ -1,142 +1,208 @@
 ﻿using SaveManager.Exceptions;
+using SaveManager.Helpers;
 using SaveManager.Models;
 using SaveManager.Services;
-using SaveManager.Validators;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace SaveManager.ViewModels;
 
-public class GameProfileViewModel
+public class GameProfileViewModel : NotifyPropertyChanged
 {
     private readonly AppdataService _appdataService;
 
-    public ObservableCollection<Game> Games { get; set; } = [];
-    public Game? ActiveGame { get; set; }
+    private ObservableCollection<Game> _games = [];
+    private Game? _activeGame;
+    private Profile? _selectedProfile;
 
-    public ObservableCollection<Profile> Profiles { get; set; } = [];
-    public Profile? ActiveProfile { get; set; }
 
-    public GameNameValidator GameNameValidator { get; }
+    public ObservableCollection<Game> Games 
+    { 
+        get => _games; 
+        set => SetProperty(ref _games, value);
+    }
 
-    public GameProfileViewModel(AppdataService appdataService)
+    public Game? ActiveGame
+    { 
+        get => _activeGame; 
+        set => SetProperty(ref _activeGame, value);
+    }
+
+    public Profile? SelectedProfile
+    { 
+        get => _selectedProfile;
+        set => SetProperty(ref _selectedProfile, value);
+    }
+    
+
+
+
+    /// <summary>
+    /// Instantiates a new GameProfileViewModel.
+    /// </summary>
+    /// <param name="appdataService"></param>
+    public GameProfileViewModel(AppdataService appdataService, IEnumerable<Game> games)
     {
         _appdataService = appdataService;
-        GameNameValidator = new(this);
+        Games = [..games];
+        ActiveGame = games.FirstOrDefault();
     }
 
 
 
 
     /// <summary>
-    /// Adds a new game and updates appdata.
+    /// Adds a new game.
     /// </summary>
-    /// <param name="gameName"></param>
-    /// <exception cref="InvalidOperationException"></exception>
-    /// <exception cref="AppdataException"></exception>
-    public void AddGame(string gameName)
+    /// <param name="name">The name of the new game.</param>
+    /// <exception cref="ValidationException"></exception>
+    public void AddGame(string name)
     {
-        if (Games.Any(x => x.Name.Equals(gameName, StringComparison.CurrentCultureIgnoreCase)))
+        if (Games.Any(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)))
         {
-            throw new InvalidOperationException($"A game already exists with name: {gameName}");
+            throw new ValidationException($"A game already exists with this name.");
         }
 
-        Game newGame = new() { Name = gameName };
-        _appdataService.AddGame(newGame);
-
+        Game newGame = new(name);
         Games = [..Games.Append(newGame).OrderBy(x => x.Name)];
         ActiveGame = newGame;
-        Profiles = [];
-        ActiveProfile = null;
+        SelectedProfile = null;
     }
 
 
     /// <summary>
-    /// Renames a game and updates appdata.
+    /// Renames the active game.
     /// </summary>
-    /// <param name="game"></param>
     /// <param name="newName"></param>
-    /// <exception cref="InvalidOperationException"></exception>
-    /// <exception cref="AppdataException"></exception>
-    public void RenameGame(Game game, string newName)
+    /// <exception cref="ValidationException"></exception>
+    public void RenameGame(string newName)
     {
-        if (game == null)
+        if (ActiveGame == null)
         {
             return;
         }
 
         if (Games.Any(x => x.Name.Equals(newName, StringComparison.CurrentCultureIgnoreCase)))
         {
-            throw new InvalidOperationException($"A game already exists with name: {newName}");
+            throw new ValidationException($"A game already exists with name.");
         }
 
-        _appdataService.RenameGame(game, newName);
-        game.Name = newName;
+        ActiveGame.Name = newName;
         Games = [..Games.OrderBy(x => x.Name)];
     }
 
 
     /// <summary>
-    /// Deletes a game and updates appdata.
+    /// Removes the active game.
     /// </summary>
-    /// <param name="game"></param>
-    /// <exception cref="AppdataException"></exception>
-    public void DeleteGame(Game game)
+    public void RemoveGame()
     {
-        if (game == null)
+        if (ActiveGame == null)
         {
             return;
         }
 
-        _appdataService.DeleteGame(game);
-        Games = [..Games.Where(x => x != game)];
+        Games = [..Games.Where(x => x != ActiveGame)];
         ActiveGame = Games.LastOrDefault();
-        Profiles = ActiveGame != null? [..ActiveGame.Profiles.OrderBy(x => x.Name)]: [];
-        ActiveProfile = null;
+        SelectedProfile = null;
     }
 
+
+    /// <summary>
+    /// Sets the profiles directory of the active game.
+    /// </summary>
+    /// <param name="location"></param>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FileAccessException"></exception>
+    public void SetProfilesDirectory(string location)
+    {
+        if (ActiveGame == null)
+        {
+            return;
+        }
+
+        IEnumerable<string> otherProfilesDirectories = Games.Where(x => x != ActiveGame && x.ProfilesDirectory != null).Select(x => x.ProfilesDirectory!);
+
+        if (otherProfilesDirectories.Contains(location))
+            throw new ValidationException("Another game uses this folder as a profiles directory.");
+
+        if (otherProfilesDirectories.Any(x => PathHelpers.AreParentChildDirectories(location, x)))
+            throw new ValidationException("This folder is the parent / child of another game's profiles directory");
+
+        ActiveGame.ProfilesDirectory = location;        
+    }
+
+
+    /// <summary>
+    /// Creates a new profile.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FileAccessException"></exception>
+    public void CreateProfile(string name)
+    {
+        if (ActiveGame == null)
+        {
+            return;
+        }
+
+        ActiveGame?.CreateProfile(name);
+    }
+
+
+    /// <summary>
+    /// Renames the selected profile.
+    /// </summary>
+    /// <param name="newName"></param>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FileAccessException"></exception>
+    public void RenameProfile(string newName)
+    {
+        if (SelectedProfile == null)
+        {
+            return;
+        }
+
+        SelectedProfile.Rename(newName);        
+    }
+
+
+    /// <summary>
+    /// Deletes the selected profile.
+    /// </summary>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FileAccessException"></exception>
+    public void DeleteProfile()
+    {
+        if (SelectedProfile == null)
+        {
+            return;
+        }
+
+        SelectedProfile.Delete();
+    }
 
 
 
     /// <summary>
-    /// Reloads the Games and Profiles from the filesystem.
+    /// Saves the current games to the appdata file.
     /// </summary>
-    /// <exception cref="IOException"/>
-    public void Refresh()
+    /// <exception cref="AppdataException"/>
+    public void SaveGameChanges()
     {
-        LoadGames();
-        LoadProfiles();
+        _appdataService.ReplaceGames(Games);
     }
 
 
-    internal void LoadGames()
+    /// <summary>
+    /// Reloads the active game's profiles from the filesystem.
+    /// </summary>
+    /// <exception cref="FilesystemException"></exception>
+    public void RefreshGame()
     {
-        Games = [.. _appdataService.GetGames().OrderBy(x => x.Name)];
-        Game? gameWithSameName = Games.FirstOrDefault(x => x.Name == ActiveGame?.Name);
-        ActiveGame = gameWithSameName ?? Games.FirstOrDefault();
-    }
-
-    internal void LoadProfiles()
-    {
-        foreach (Game game in Games)
-        {
-            game.LoadProfiles();
-            foreach (Profile profile in game.Profiles)
-            {
-                profile.LoadChildren();
-            }
-        }
-
-        if (ActiveGame == null)
-        {
-            ActiveProfile = null;
-            Profiles = [];
-        }
-        else
-        {
-            Profiles = [..ActiveGame.Profiles.OrderBy(x => x.Name)];
-            Profile? profileWithSameLocation = Profiles.FirstOrDefault(x => x.Location == ActiveProfile?.Location);
-            ActiveProfile = profileWithSameLocation ?? Profiles.FirstOrDefault();
-        }
+        ActiveGame?.RefreshProfiles();
+        SelectedProfile = null;
     }
 }
