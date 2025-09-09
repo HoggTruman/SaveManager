@@ -1,6 +1,7 @@
 ﻿using SaveManager.Exceptions;
 using SaveManager.ViewModels;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace SaveManager.Models;
 
@@ -44,8 +45,10 @@ public class Game : NotifyPropertyChanged
 
     /// <summary>
     /// The full path of the directory containing profile directories.
+    /// If setting to a path that doesn't exist, throws a <see cref="FilesystemItemNotFoundException"/>.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public string? ProfilesDirectory
     { 
         get => _profilesFolder?.Location; 
@@ -58,23 +61,14 @@ public class Game : NotifyPropertyChanged
             }
             else
             {
-                try
+                if (!Directory.Exists(value))
                 {
-                    Folder newFolder = new(value, null);
-                    SetProperty(ref _profilesFolder, newFolder);
-                    Profiles = [..newFolder.Children.Where(x => x is Folder).Select(x => new Profile((Folder)x, this))];
-                }
-                catch (Exception ex)
-                {
-                    // If profiles directory can not be accessed, remove it to prevent locking app.
-                    if (ex is FilesystemException)
-                    {
-                        SetProperty(ref _profilesFolder, null);
-                        Profiles = [];
-                    }
-                    
-                    throw;
-                }
+                    throw new FilesystemItemNotFoundException("The directory provided does not exist.");
+                }                    
+
+                Folder newProfilesFolder = new(value, null);
+                SetProperty(ref _profilesFolder, newProfilesFolder);
+                Profiles = [..newProfilesFolder.Children.Where(x => x is Folder).Select(x => new Profile((Folder)x, this))];             
             }
         }
     }
@@ -90,38 +84,24 @@ public class Game : NotifyPropertyChanged
 
 
     /// <summary>
-    /// Initializes a new <see cref="Game"/> instance. 
-    /// Automatically loads its profiles from the filesystem.
+    /// Initializes a new <see cref="Game"/> instance.
     /// </summary>
     /// <param name="name"></param>
     /// <param name="savefileLocation"></param>
     /// <param name="profilesDirectory"></param>
     /// <exception cref="ValidationException">An invalid name is provided.</exception>
-    /// <exception cref="FilesystemException"></exception>
-    public Game(string name, string? savefileLocation=null, string? profilesDirectory=null)
+    public Game(string name)
     {
-        Name = name;
-        SavefileLocation = savefileLocation;
-        try
-        {
-            ProfilesDirectory = profilesDirectory;
-        }
-        catch (Exception ex)
-        {
-            // Games are only constructed with a profilesDirectory on app startup.
-            // If the directory is no longer accessible, it will be set to null in ProfilesDirectory setter and we can continue.
-            if (ex is FilesystemException)
-                return;
-
-            throw;
-        }        
+        Name = name;     
     }
 
 
     /// <summary>
-    /// Reloads the game's profiles from the filesystem.
+    /// Reloads the game's profiles from the filesystem.<br/>
+    /// If the profiles directory no longer exists, throws a <see cref="FilesystemItemNotFoundException"/>.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void RefreshProfiles()
     {
         ProfilesDirectory = _profilesFolder?.Location;

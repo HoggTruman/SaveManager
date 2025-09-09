@@ -113,6 +113,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <param name="location"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void SetProfilesDirectory(string location)
     {
         if (ActiveGame == null)
@@ -178,6 +179,28 @@ public class GameProfileViewModel : NotifyPropertyChanged
         }
 
         SelectedProfile.Delete();
+    }
+
+
+    /// <summary>
+    /// Refreshes profiles or resets the profiles directory to handle a file or folder no longer existing in the filesystem.
+    /// </summary>
+    /// <exception cref="FilesystemException"></exception>
+    public void HandleFilesystemItemNotFound()
+    {
+        if (ActiveGame == null)
+            return;
+
+        try
+        {
+            ActiveGame.RefreshProfiles();
+        }
+        catch (FilesystemItemNotFoundException)
+        {
+            ActiveGame.ProfilesDirectory = null;
+        }
+
+        SelectedProfile = null;
     }
 
 

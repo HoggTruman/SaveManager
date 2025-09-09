@@ -10,12 +10,19 @@ public class Folder : IFilesystemItem
 
     public string Location => _directoryInfo.FullName;
     public string Name => _directoryInfo.Name;
+    public bool Exists => _directoryInfo.Exists;
     public ObservableCollection<IFilesystemItem> Children { get; set; } = [];
 
     /// <summary>
     /// The parent folder. It is only null for a folder representing a game's profiles directory.
     /// </summary>
     public Folder? Parent { get; set; }
+
+    /// <summary>
+    /// The root <see cref="Folder"/> of the current filesystem item.<br/>
+    /// It represents a game's profiles directory.
+    /// </summary>
+    public Folder Root => Parent == null? this: Parent.Root;
 
 
 
@@ -35,6 +42,7 @@ public class Folder : IFilesystemItem
 
     /// <inheritdoc cref="Folder(DirectoryInfo, Folder?)"/>
     /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public Folder(string location, Folder? parent)
     {
         try
@@ -64,9 +72,13 @@ public class Folder : IFilesystemItem
     /// <returns></returns>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public static Folder Create(string name, Folder parent)
     {
-        ValidateFolderName(name, parent.Children); 
+        ValidateFolderName(name, parent.Children);
+
+        if (!parent.Exists)
+            throw new FilesystemItemNotFoundException("The parent folder does not exist.");
 
         try
         {
@@ -90,14 +102,16 @@ public class Folder : IFilesystemItem
     /// <param name="newName"></param>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void Rename(string newName)
     {
         if (Parent == null)
-        {
             throw new InvalidOperationException("A Folder representing a game's profiles directory should not be renamed. Create a new instance instead");
-        }
 
-        ValidateFolderName(newName, Parent.Children);         
+        ValidateFolderName(newName, Parent.Children);
+        
+        if (!Exists)
+            throw new FilesystemItemNotFoundException("The folder you are trying to rename does not exist.");
 
         try
         {
@@ -114,7 +128,7 @@ public class Folder : IFilesystemItem
         {
             if (ex is ArgumentException or IOException or System.Security.SecurityException or DirectoryNotFoundException)
                 throw new FilesystemException(ex.Message, ex);
-
+                
             throw;
         }       
 
@@ -126,12 +140,14 @@ public class Folder : IFilesystemItem
     /// Deletes the Folder and underlying directory in the filesystem.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void Delete()
     {
         if (Parent == null)
-        {
             throw new InvalidOperationException("A Folder representing a game's profiles directory should not be deleted.");
-        }
+
+        if (!Exists)
+            throw new FilesystemItemNotFoundException("The folder you are trying to delete does not exist.");
 
         try
         {
@@ -150,7 +166,7 @@ public class Folder : IFilesystemItem
 
     /// <summary>
     /// Updates the Folder's location for the internal filesystem representation.
-    /// Does not actually affect any files or directories.
+    /// Does not actually affect any files or directories in the filesytem.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
     public void UpdateLocation(string newLocation)
@@ -173,7 +189,6 @@ public class Folder : IFilesystemItem
             child.UpdateLocation(newChildLocation);
         }
     }
-    
 
 
     /// <summary>
@@ -206,8 +221,6 @@ public class Folder : IFilesystemItem
             throw;
         }
     }
-
-    
 
 
     /// <summary>

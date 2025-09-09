@@ -27,8 +27,21 @@ public partial class App : Application
             {
                 try
                 {
-                    // When games are constructed, if the profiles directory is inaccessible, the field is set to null.
-                    Game game = new(gameDTO.Name, gameDTO.SavefileLocation, gameDTO.ProfilesDirectory);
+                    Game game = new(gameDTO.Name) { SavefileLocation = gameDTO.SavefileLocation };
+                    try
+                    {
+                        game.ProfilesDirectory = gameDTO.ProfilesDirectory;
+                    }
+                    catch (FilesystemItemNotFoundException)
+                    {
+                        // Profiles directory no longer exists so leave it null.
+                    }
+                    catch (FilesystemException)
+                    {
+                        MessageBox.Show("Failed to initialize app.");
+                        return;
+                    }
+
                     games.Add(game);
                 }
                 catch (ValidationException)
@@ -51,5 +64,6 @@ public partial class App : Application
         {
             MessageBox.Show(ex.Message);
         }
+        
     }
 }
