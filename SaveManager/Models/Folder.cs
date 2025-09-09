@@ -18,12 +18,6 @@ public class Folder : IFilesystemItem
     /// </summary>
     public Folder? Parent { get; set; }
 
-    /// <summary>
-    /// The root <see cref="Folder"/> of the current filesystem item.<br/>
-    /// It represents a game's profiles directory.
-    /// </summary>
-    public Folder Root => Parent == null? this: Parent.Root;
-
 
 
 
