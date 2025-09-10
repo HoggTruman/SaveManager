@@ -193,10 +193,10 @@ public class Folder : IFilesystemItem
     {
         try
         {
+            Children = [];
             foreach (DirectoryInfo childDirectoryInfo in _directoryInfo.GetDirectories())
             {
                 Folder childFolder = new(childDirectoryInfo, this);
-                childFolder.LoadChildren();
                 Children.Add(childFolder);
             }
 
