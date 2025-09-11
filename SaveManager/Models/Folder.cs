@@ -78,7 +78,10 @@ public class Folder : IFilesystemItem
         {
             string location = Path.Join(parent.Location, name);
             DirectoryInfo directoryInfo = Directory.CreateDirectory(location);
-            return new(directoryInfo, parent);
+            Folder newFolder = new(directoryInfo, parent);
+            parent.Children.Add(newFolder);
+            parent.SortChildren();
+            return newFolder;
         }
         catch (Exception ex)
         {
