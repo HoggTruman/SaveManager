@@ -80,4 +80,10 @@ public class Profile
         Folder.Delete();
         Game.Profiles = [..Game.Profiles.Where(x => x != this)];
     }
+
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

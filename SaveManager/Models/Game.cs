@@ -122,4 +122,10 @@ public class Game : NotifyPropertyChanged
         if (string.IsNullOrWhiteSpace(name))
             throw new ValidationException("Game name can not be empty or whitespace.");
     }
+
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }
