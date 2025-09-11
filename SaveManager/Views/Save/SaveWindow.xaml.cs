@@ -14,8 +14,9 @@ public partial class SaveWindow : Window
 
     public SaveWindow(SaveViewModel saveViewModel)
     {
-        SaveViewModel = saveViewModel;
         InitializeComponent();
+        SaveViewModel = saveViewModel;
+        DataContext = SaveViewModel;
     }
 
     private void GameProfileEditButton_Click(object sender, RoutedEventArgs e)

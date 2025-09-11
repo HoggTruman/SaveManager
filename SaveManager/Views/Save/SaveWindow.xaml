@@ -10,7 +10,8 @@
         Width="570"
         MinHeight="450"
         MinWidth="570"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        DataContext="{Binding SaveViewModel}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60" />
@@ -41,7 +42,10 @@
                    Margin="10, 2, 0, 0"
                    Padding="0" />
 
-            <ComboBox Name="GameComboBox"
+            <ComboBox x:Name="GameComboBox"
+                      ItemsSource="{Binding Games}"
+                      SelectedItem="{Binding ActiveGame}"
+                      DisplayMemberPath="Name"
                       HorizontalAlignment="center"
                       Grid.Row="1"
                       Grid.Column="0"
@@ -57,7 +61,10 @@
                    Margin="10, 2, 0, 0"
                    Padding="0" />
 
-            <ComboBox Name="ProfileComboBox"
+            <ComboBox x:Name="ProfileComboBox"
+                      ItemsSource="{Binding ActiveGame.Profiles}"
+                      SelectedItem="{Binding ActiveProfile}"
+                      DisplayMemberPath="Name"
                       HorizontalAlignment="Stretch"
                       Grid.Row="1"
                       Grid.Column="1"
@@ -77,7 +84,8 @@
 
 
 
-        <ListBox Margin="10 5"
+        <ListBox x:Name="SavesListBox"
+                 Margin="10 5"
                  Width="Auto"
                  Grid.Row="1">
         </ListBox>
@@ -92,25 +100,29 @@
                 <ColumnDefinition Width="50" />
             </Grid.ColumnDefinitions>
 
-            <Button Content="Backup Save"
+            <Button x:Name="BackupSaveButton"
+                    Content="Backup Save"
                     Width="Auto"
                     Height="30"
                     Grid.Column="0"
                     Margin="10" />
 
-            <Button Content="Load Save"
+            <Button x:Name="LoadSaveButton"
+                    Content="Load Save"
                     Width="Auto"
                     Height="30"
                     Grid.Column="1"
                     Margin="10" />
 
-            <Button Content="Replace Save"
+            <Button x:Name="ReplaceSaveButton"
+                    Content="Replace Save"
                     Width="Auto"
                     Height="30"
                     Grid.Column="2"
                     Margin="10" />
 
-            <Button Content="Settings"
+            <Button x:Name="SettingsButton"
+                    Content="Settings"
                     Width="30"
                     Height="30"
                     Grid.Column="3"
