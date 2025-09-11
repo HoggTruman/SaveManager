@@ -205,7 +205,7 @@ public class Folder : IFilesystemItem
 
             foreach (FileInfo childFileInfo in _directoryInfo.GetFiles())
             {
-                Children.Add(new File(childFileInfo));
+                Children.Add(new File(childFileInfo, this));
             }
 
             SortChildren();

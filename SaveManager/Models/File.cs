@@ -11,11 +11,19 @@ public class File : IFilesystemItem
     public string Location => _fileInfo.FullName;
     public string Name => _fileInfo.Name;
 
-    public File(string location) : this(new FileInfo(location)) { }
+    /// <summary>
+    /// The parent folder. It is only null for a folder representing a game's profiles directory.
+    /// </summary>
+    public Folder? Parent { get; set; }
 
-    public File(FileInfo fileInfo)
+
+
+    public File(string location, Folder? parent) : this(new FileInfo(location), parent) { }
+
+    public File(FileInfo fileInfo, Folder? parent)
     {
         _fileInfo = fileInfo;
+        Parent = parent;
     }
 
 

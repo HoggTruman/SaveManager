@@ -14,6 +14,11 @@ public interface IFilesystemItem
     /// </summary>
     public string Name { get; }
 
+    /// <summary>
+    /// The parent folder. It is only null for a folder representing a game's profiles directory.
+    /// </summary>
+    public Folder? Parent { get; set; }
+
 
     /// <summary>
     /// Updates the IFilesystemItem's location for the internal filesystem representation.
