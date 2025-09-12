@@ -258,17 +258,11 @@ public partial class GameProfileWindow : Window
             catch (AppdataException)
             {
                 YesNoDialog tryAgainDialog = new("Failed to save",
-                    "Failed to save changes to games (appdata.xml might be being accessed by another program)\nWould you like to try again?");
+                    "Failed to save changes to games (appdata.xml might be in use by another program)\nWould you like to try again?");
 
                 if (tryAgainDialog.ShowDialog(this) != true)
                 {
-                    YesNoDialog exitWithoutSavingDialog = new("Exit without saving?", "Exit without saving changes to games?");
-
-                    if (exitWithoutSavingDialog.ShowDialog(this) != true)
-                    {
-                        e.Cancel = true;                        
-                    }
-
+                    e.Cancel = true;
                     shouldAttemptSave = false;
                 }
             }
