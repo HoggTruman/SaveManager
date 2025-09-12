@@ -14,13 +14,13 @@ namespace SaveManager.Views.GameProfile;
 /// </summary>
 public partial class GameProfileWindow : Window
 {
-    public readonly GameProfileViewModel _gameProfileViewModel;
+    public GameProfileViewModel GameProfileViewModel { get; }
 
     public GameProfileWindow(GameProfileViewModel gameProfileViewModel)
     {
         InitializeComponent();
-        _gameProfileViewModel = gameProfileViewModel;
-        DataContext = _gameProfileViewModel;
+        GameProfileViewModel = gameProfileViewModel;
+        DataContext = GameProfileViewModel;
     }
 
 
@@ -32,7 +32,7 @@ public partial class GameProfileWindow : Window
         {
             try
             {
-                _gameProfileViewModel.AddGame(addGameDialog.Input);
+                GameProfileViewModel.AddGame(addGameDialog.Input);
                 break;
             }
             catch (ValidationException ex)
@@ -46,35 +46,35 @@ public partial class GameProfileWindow : Window
 
     private void RemoveGameButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_gameProfileViewModel.ActiveGame == null)
+        if (GameProfileViewModel.ActiveGame == null)
         {
             return;
         }
 
         YesNoDialog confirmationDialog = new("Remove Game",
-            $"Are you sure you want to remove '{_gameProfileViewModel.ActiveGame.Name}'?\nIts profiles directory will not be deleted.");
+            $"Are you sure you want to remove '{GameProfileViewModel.ActiveGame.Name}'?\nIts profiles directory will not be deleted.");
 
         if (confirmationDialog.ShowDialog(this) == true)
         {
-            _gameProfileViewModel.RemoveGame();
+            GameProfileViewModel.RemoveGame();
         }
     }
 
 
     private void RenameGameButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_gameProfileViewModel.ActiveGame == null)
+        if (GameProfileViewModel.ActiveGame == null)
         {
             return;
         }
 
-        InputDialog renameGameDialog = new("Rename Game", "Enter the new name of the game:", _gameProfileViewModel.ActiveGame.Name);
+        InputDialog renameGameDialog = new("Rename Game", "Enter the new name of the game:", GameProfileViewModel.ActiveGame.Name);
 
         while (renameGameDialog.ShowDialog(this) == true)
         {
             try
             {
-                _gameProfileViewModel.RenameGame(renameGameDialog.Input);
+                GameProfileViewModel.RenameGame(renameGameDialog.Input);
                 break;
             }
             catch (ValidationException ex)
@@ -88,7 +88,7 @@ public partial class GameProfileWindow : Window
 
     private void SavefileBrowseButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_gameProfileViewModel.ActiveGame == null)
+        if (GameProfileViewModel.ActiveGame == null)
         {
             return;
         }
@@ -97,19 +97,19 @@ public partial class GameProfileWindow : Window
         {
             IsFolderPicker = false,
             Title = "Select a savefile",
-            InitialDirectory = Path.GetDirectoryName(_gameProfileViewModel.ActiveGame.SavefileLocation)            
+            InitialDirectory = Path.GetDirectoryName(GameProfileViewModel.ActiveGame.SavefileLocation)            
         };
 
         if (openFileDialog.ShowDialog(this) == CommonFileDialogResult.Ok)
         {
-            _gameProfileViewModel.ActiveGame.SavefileLocation = openFileDialog.FileName;       
+            GameProfileViewModel.ActiveGame.SavefileLocation = openFileDialog.FileName;       
         }
     }   
 
 
     private void ProfilesDirectoryBrowseButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_gameProfileViewModel.ActiveGame == null)
+        if (GameProfileViewModel.ActiveGame == null)
         {
             return;
         }
@@ -118,14 +118,14 @@ public partial class GameProfileWindow : Window
         {
             IsFolderPicker = true,
             Title = "Select a profiles directory",
-            InitialDirectory = _gameProfileViewModel.ActiveGame?.ProfilesDirectory
+            InitialDirectory = GameProfileViewModel.ActiveGame?.ProfilesDirectory
         };
 
         while (openFolderDialog.ShowDialog(this) == CommonFileDialogResult.Ok)
         {
             try
             {
-                _gameProfileViewModel.SetProfilesDirectory(openFolderDialog.FileName);
+                GameProfileViewModel.SetProfilesDirectory(openFolderDialog.FileName);
                 return;
             }
             catch (ValidationException ex)
@@ -148,7 +148,7 @@ public partial class GameProfileWindow : Window
 
     private void NewProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_gameProfileViewModel.ActiveGame == null)
+        if (GameProfileViewModel.ActiveGame == null)
         {
             return;
         }
@@ -159,7 +159,7 @@ public partial class GameProfileWindow : Window
         {
             try
             {
-                _gameProfileViewModel.CreateProfile(newProfileDialog.Input);
+                GameProfileViewModel.CreateProfile(newProfileDialog.Input);
                 return;
             }
             catch (ValidationException ex)
@@ -169,7 +169,7 @@ public partial class GameProfileWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                _gameProfileViewModel.HandleFilesystemItemNotFound();
+                GameProfileViewModel.HandleFilesystemItemNotFound();
                 return;
             }
             catch (FilesystemException)
@@ -183,18 +183,18 @@ public partial class GameProfileWindow : Window
 
     private void RenameProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_gameProfileViewModel.SelectedProfile == null)
+        if (GameProfileViewModel.SelectedProfile == null)
         {
             return;
         }
 
-        InputDialog renameProfileDialog = new("Rename Profile", "Enter the new name of the profile:", _gameProfileViewModel.SelectedProfile.Name);
+        InputDialog renameProfileDialog = new("Rename Profile", "Enter the new name of the profile:", GameProfileViewModel.SelectedProfile.Name);
 
         while (renameProfileDialog.ShowDialog(this) == true)
         {
             try
             {
-                _gameProfileViewModel.RenameProfile(renameProfileDialog.Input);
+                GameProfileViewModel.RenameProfile(renameProfileDialog.Input);
                 return;
             }
             catch (ValidationException ex)
@@ -204,7 +204,7 @@ public partial class GameProfileWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                _gameProfileViewModel.HandleFilesystemItemNotFound();
+                GameProfileViewModel.HandleFilesystemItemNotFound();
                 return;
             }
             catch (FilesystemException)
@@ -218,7 +218,7 @@ public partial class GameProfileWindow : Window
 
     private void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_gameProfileViewModel.SelectedProfile == null)
+        if (GameProfileViewModel.SelectedProfile == null)
         {
             return;
         }
@@ -229,11 +229,11 @@ public partial class GameProfileWindow : Window
         {
             try
             {
-                _gameProfileViewModel.DeleteProfile();
+                GameProfileViewModel.DeleteProfile();
             }
             catch (FilesystemItemNotFoundException)
             {
-                _gameProfileViewModel.HandleFilesystemItemNotFound();
+                GameProfileViewModel.HandleFilesystemItemNotFound();
                 return;
             }
             catch (FilesystemException)
@@ -252,7 +252,7 @@ public partial class GameProfileWindow : Window
         {      
             try
             {
-                _gameProfileViewModel.SaveGameChanges();
+                GameProfileViewModel.SaveGameChanges();
                 shouldAttemptSave = false;
             }
             catch (AppdataException)
@@ -278,14 +278,14 @@ public partial class GameProfileWindow : Window
 
     private void HandleFilesystemItemNotFoundException(FilesystemException exception)
     {
-        if (_gameProfileViewModel.ActiveGame == null)
+        if (GameProfileViewModel.ActiveGame == null)
             return;
 
         try
         {
-            _gameProfileViewModel.HandleFilesystemItemNotFound();
+            GameProfileViewModel.HandleFilesystemItemNotFound();
 
-            if (_gameProfileViewModel.ActiveGame.ProfilesDirectory == null)
+            if (GameProfileViewModel.ActiveGame.ProfilesDirectory == null)
             {
                 new OkDialog("Profiles directory reset", 
                     "The current game's profiles directory no longer exists and has been reset.\nPlease set a new one.").ShowDialog(this);

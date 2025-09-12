@@ -9,8 +9,9 @@ public class Game : NotifyPropertyChanged
 {
     private string _name = "";
     private string? _savefileLocation;
-    private Folder? _profilesFolder;
+    private Folder? _profilesFolder;    
     private ObservableCollection<Profile> _profiles = [];
+    private Profile? _activeProfile;
     
 
 
@@ -28,6 +29,7 @@ public class Game : NotifyPropertyChanged
         }
     }
 
+
     /// <summary>
     /// The full path of the savefile.
     /// </summary>
@@ -36,6 +38,7 @@ public class Game : NotifyPropertyChanged
         get => _savefileLocation; 
         set => SetProperty(ref _savefileLocation, value); 
     }
+
 
     /// <summary>
     /// The <see cref="Folder"/> representing the profiles directory if one has been set. Otherwise, null.
@@ -73,14 +76,24 @@ public class Game : NotifyPropertyChanged
         }
     }
 
+
     public ObservableCollection<Profile> Profiles 
     { 
         get => _profiles; 
-        set => SetProperty(ref _profiles, value); 
+        set 
+        {
+            SetProperty(ref _profiles, value);
+            if (ActiveProfile == null || !_profiles.Contains(ActiveProfile))
+                ActiveProfile = _profiles.FirstOrDefault();
+        }
     }
 
 
-
+    public Profile? ActiveProfile
+    {
+        get => _activeProfile;
+        set => SetProperty(ref _activeProfile, value);
+    }
 
 
     /// <summary>

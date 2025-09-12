@@ -22,9 +22,9 @@ public static class ViewModelFactory
         return new(_appdataService, games);
     }
 
-    public static GameProfileViewModel CreateGameProfileViewModel(IEnumerable<Game> games)
+    public static GameProfileViewModel CreateGameProfileViewModel(IEnumerable<Game> games, Game? activeGame)
     {
         if (_appdataService == null) throw new InvalidOperationException("ViewModelFactory has not been initialized.");
-        return new(_appdataService, games);
+        return new(_appdataService, games, activeGame);
     }
 }

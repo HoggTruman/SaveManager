@@ -63,7 +63,7 @@
 
             <ComboBox x:Name="ProfileComboBox"
                       ItemsSource="{Binding ActiveGame.Profiles}"
-                      SelectedItem="{Binding ActiveProfile}"
+                      SelectedItem="{Binding ActiveGame.ActiveProfile}"
                       DisplayMemberPath="Name"
                       HorizontalAlignment="Stretch"
                       Grid.Row="1"

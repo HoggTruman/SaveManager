@@ -40,11 +40,11 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// Instantiates a new GameProfileViewModel.
     /// </summary>
     /// <param name="appdataService"></param>
-    public GameProfileViewModel(AppdataService appdataService, IEnumerable<Game> games)
+    public GameProfileViewModel(AppdataService appdataService, IEnumerable<Game> games, Game? activeGame)
     {
         _appdataService = appdataService;
         Games = [..games];
-        ActiveGame = games.FirstOrDefault();
+        ActiveGame = activeGame;
     }
 
 
