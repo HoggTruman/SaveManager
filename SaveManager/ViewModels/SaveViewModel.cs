@@ -41,5 +41,20 @@ public class SaveViewModel : NotifyPropertyChanged
         _appdataService = appdataService;
         Games = [..games];
         ActiveGame = games.FirstOrDefault();
-    }    
+    }
+
+
+
+
+    public void OpenCloseSelectedEntry()
+    {
+        if (SelectedEntry == null || SelectedEntry is File)
+        {
+            return;
+        }            
+
+        Folder folder = (Folder)SelectedEntry;
+        folder.IsOpen = !folder.IsOpen;
+        ActiveGame?.ActiveProfile?.UpdateSaveListEntries();
+    }
 }

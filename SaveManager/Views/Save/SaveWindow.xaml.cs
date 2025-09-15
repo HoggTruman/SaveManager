@@ -2,6 +2,7 @@
 using SaveManager.ViewModels;
 using SaveManager.Views.GameProfile;
 using System.Windows;
+using System.Windows.Input;
 
 namespace SaveManager.Views.Save;
 
@@ -25,5 +26,13 @@ public partial class SaveWindow : Window
         gameProfileWindow.ShowDialog(this);
         SaveViewModel.Games = gameProfileWindow.GameProfileViewModel.Games;
         SaveViewModel.ActiveGame = gameProfileWindow.GameProfileViewModel.ActiveGame;
+    }
+
+    private void SaveListItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Left)
+        {
+            SaveViewModel.OpenCloseSelectedEntry();
+        }        
     }
 }

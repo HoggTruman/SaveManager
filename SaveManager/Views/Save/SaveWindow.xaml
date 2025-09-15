@@ -85,16 +85,20 @@
 
 
 
-        <ListBox x:Name="SavesListBox"
+        <ListBox x:Name="SaveListBox"
                  ItemsSource="{Binding ActiveGame.ActiveProfile.SaveListEntries}"
                  SelectedItem="{Binding SelectedEntry}"
+                 HorizontalContentAlignment="Stretch"
                  Margin="10 5"
                  Width="Auto"
                  Grid.Row="1">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type models:Folder}">
-                    <TextBlock Text="{Binding Name}" 
-                               FontWeight="Bold"/>
+                    <ContentControl MouseDoubleClick="SaveListItem_MouseDoubleClick">
+                        <TextBlock Text="{Binding Name}"
+                                   FontWeight="Bold" />
+                    </ContentControl>
+
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type models:File}">
                     <TextBlock Text="{Binding Name}" />
