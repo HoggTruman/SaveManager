@@ -1,14 +1,20 @@
 ﻿using SaveManager.Exceptions;
+using SaveManager.ViewModels;
 
 namespace SaveManager.Models;
 
-public class Profile
+public class Profile : NotifyPropertyChanged
 {
+    private List<IFilesystemItem> _saveListEntries = [];
+
     public Game Game { get; }
     public Folder Folder { get; }
-
     public string Name => Folder.Name;
-
+    public List<IFilesystemItem> SaveListEntries 
+    { 
+        get => _saveListEntries; 
+        set => SetProperty(ref _saveListEntries, value); 
+    }
 
     /// <summary>
     /// Initializes a new <see cref="Profile"/> instance.
@@ -19,6 +25,7 @@ public class Profile
     {
         Folder = folder;
         Game = game;
+        UpdateSaveListEntries();
     }
 
 
@@ -82,8 +89,37 @@ public class Profile
     }
 
 
+    /// <summary>
+    /// Updates <see cref="SaveListEntries"/> based on the current state of <see cref="Folder"/>.
+    /// </summary>
+    public void UpdateSaveListEntries()
+    {
+        SaveListEntries = GetSaveListEntries(Folder);
+    }
+
+
     public override string ToString()
     {
         return Name;
+    }
+
+
+    /// <summary>
+    /// Returns a list of visible entries for a given <see cref="Folder"/>, ordered by folder then alphabetical.
+    /// The <see cref="Folder"/> for the active <see cref="Profile"/> should be passed in.
+    /// </summary>
+    /// <param name="folder"></param>
+    /// <returns></returns>
+    internal static List<IFilesystemItem> GetSaveListEntries(Folder folder)
+    {
+        List<IFilesystemItem> entries = [];
+        foreach (IFilesystemItem item in folder.Children.OrderByDescending(x => x is Folder)) // this maintains alphabetical??
+        {
+            entries.Add(item);
+            if (item is Folder childFolder && childFolder.IsOpen)
+                entries.AddRange(GetSaveListEntries(childFolder));
+        }
+
+        return entries;
     }
 }

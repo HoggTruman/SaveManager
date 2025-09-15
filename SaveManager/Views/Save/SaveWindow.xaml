@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SaveManager.Views.Save"
+        xmlns:models="clr-namespace:SaveManager.Models"
         mc:Ignorable="d"
         Title="Save Manager"
         Height="450"
@@ -85,9 +86,20 @@
 
 
         <ListBox x:Name="SavesListBox"
+                 ItemsSource="{Binding ActiveGame.ActiveProfile.SaveListEntries}"
+                 SelectedItem="{Binding SelectedEntry}"
                  Margin="10 5"
                  Width="Auto"
                  Grid.Row="1">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type models:Folder}">
+                    <TextBlock Text="{Binding Name}" 
+                               FontWeight="Bold"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type models:File}">
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ListBox.Resources>
         </ListBox>
 
 

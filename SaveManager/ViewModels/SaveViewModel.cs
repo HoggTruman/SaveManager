@@ -10,7 +10,7 @@ public class SaveViewModel : NotifyPropertyChanged
 
     private ObservableCollection<Game> _games = [];
     private Game? _activeGame;
-    private IFilesystemItem? _selectedItem;
+    private IFilesystemItem? _selectedEntry;
 
 
     public ObservableCollection<Game> Games 
@@ -19,6 +19,7 @@ public class SaveViewModel : NotifyPropertyChanged
         set => SetProperty(ref _games, value);
     }
 
+
     public Game? ActiveGame
     { 
         get => _activeGame; 
@@ -26,10 +27,10 @@ public class SaveViewModel : NotifyPropertyChanged
     }
 
 
-    public IFilesystemItem? SelectedItem
+    public IFilesystemItem? SelectedEntry
     { 
-        get => _selectedItem; 
-        set => SetProperty(ref _selectedItem, value); 
+        get => _selectedEntry; 
+        set => SetProperty(ref _selectedEntry, value); 
     }
 
 
@@ -40,5 +41,5 @@ public class SaveViewModel : NotifyPropertyChanged
         _appdataService = appdataService;
         Games = [..games];
         ActiveGame = games.FirstOrDefault();
-    }
+    }    
 }

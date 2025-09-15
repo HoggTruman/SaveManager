@@ -18,6 +18,8 @@ public class Folder : IFilesystemItem
     /// </summary>
     public Folder? Parent { get; set; }
 
+    public bool IsOpen { get; set; } = false;
+
 
 
 
