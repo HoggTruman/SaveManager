@@ -88,6 +88,7 @@
         <ListBox x:Name="SaveListBox"
                  ItemsSource="{Binding ActiveGame.ActiveProfile.SaveListEntries}"
                  SelectedItem="{Binding SelectedEntry}"
+                 MouseDown="SaveListBox_MouseDown"
                  HorizontalContentAlignment="Stretch"
                  Margin="10 5"
                  Width="Auto"

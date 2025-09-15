@@ -2,7 +2,9 @@
 using SaveManager.ViewModels;
 using SaveManager.Views.GameProfile;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace SaveManager.Views.Save;
 
@@ -28,11 +30,23 @@ public partial class SaveWindow : Window
         SaveViewModel.ActiveGame = gameProfileWindow.GameProfileViewModel.ActiveGame;
     }
 
+
+    private void SaveListBox_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Left || e.ChangedButton == MouseButton.Right)
+        {
+            HitTestResult r = VisualTreeHelper.HitTest(this, e.GetPosition(this));
+            if (r.VisualHit.GetType() != typeof(ListBoxItem))
+                SaveViewModel.SelectedEntry = null;
+        }
+    }
+
+
     private void SaveListItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (e.ChangedButton == MouseButton.Left)
         {
             SaveViewModel.OpenCloseSelectedEntry();
         }        
-    }
+    }    
 }
