@@ -11,8 +11,7 @@
         Width="570"
         MinHeight="450"
         MinWidth="570"
-        WindowStartupLocation="CenterScreen"
-        DataContext="{Binding SaveViewModel}">
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60" />
@@ -94,9 +93,11 @@
                  Width="Auto"
                  Grid.Row="1">
             <ListBox.Resources>
+                <local:SaveListItemPaddingConverter x:Key="paddingConverter" />
                 <DataTemplate DataType="{x:Type models:Folder}">
                     <ItemsControl MouseDoubleClick="SaveListItem_MouseDoubleClick"
-                                  Height="16">
+                                  Height="16"
+                                  Padding="{Binding Converter={StaticResource paddingConverter}}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Grid >
@@ -138,7 +139,8 @@
                 <DataTemplate DataType="{x:Type models:File}">
                     <TextBlock Text="{Binding Name}"
                                VerticalAlignment="Center"
-                               Height="16" />
+                               Height="16"
+                               Padding="{Binding Converter={StaticResource paddingConverter}}"/>
                 </DataTemplate>
             </ListBox.Resources>
         </ListBox>
