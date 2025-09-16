@@ -38,7 +38,6 @@ public class Folder : IFilesystemItem
 
     /// <inheritdoc cref="Folder(DirectoryInfo, Folder?)"/>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public Folder(string location, Folder? parent)
     {
         try
