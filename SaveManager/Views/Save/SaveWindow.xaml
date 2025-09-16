@@ -95,14 +95,50 @@
                  Grid.Row="1">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type models:Folder}">
-                    <ContentControl MouseDoubleClick="SaveListItem_MouseDoubleClick">
+                    <ItemsControl MouseDoubleClick="SaveListItem_MouseDoubleClick"
+                                  Height="16">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <Image Height="16"
+                               Width="16">
+                            <Image.Style>
+                                <Style TargetType="{x:Type Image}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOpen}"
+                                                     Value="false">
+                                            <Setter Property="Source"
+                                                    Value="/Assets/FolderClosed.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsOpen}"
+                                                     Value="true">
+                                            <Setter Property="Source"
+                                                    Value="/Assets/FolderOpen.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
                         <TextBlock Text="{Binding Name}"
-                                   FontWeight="Bold" />
-                    </ContentControl>
-
+                                   Grid.Column="1"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"
+                                   Height="16"
+                                   Padding="5 0 0 0" />
+                    </ItemsControl>
                 </DataTemplate>
+                
                 <DataTemplate DataType="{x:Type models:File}">
-                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text="{Binding Name}"
+                               VerticalAlignment="Center"
+                               Height="16" />
                 </DataTemplate>
             </ListBox.Resources>
         </ListBox>

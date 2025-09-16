@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\FolderClosed.png" />
+    <None Remove="Assets\FolderOpen.png" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>SaveManagerTests</_Parameter1>
 	</AssemblyAttribute>
@@ -16,6 +21,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\FolderClosed.png" />
+    <Resource Include="Assets\FolderOpen.png" />
   </ItemGroup>
 
 </Project>
