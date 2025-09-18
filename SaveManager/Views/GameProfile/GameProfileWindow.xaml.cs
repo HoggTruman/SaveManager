@@ -225,7 +225,7 @@ public partial class GameProfileWindow : Window
 
         YesNoDialog confirmationDialog = new("Delete Profile", "Are you sure you want to delete this profile?\nThis will delete the associated folder and all its contents.");
 
-        if (confirmationDialog.ShowDialog() == true)
+        if (confirmationDialog.ShowDialog(this) == true)
         {
             try
             {
