@@ -48,5 +48,53 @@ public partial class SaveWindow : Window
         {
             SaveViewModel.OpenCloseSelectedEntry();
         }        
-    }    
+    }
+
+
+    private void AddFolderCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+    {
+        e.CanExecute = false;
+    }
+
+
+    private void AddFolderCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    private void DeleteCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+    {
+        e.CanExecute = false;
+    }
+
+
+    private void DeleteCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    private void RenameCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+    {
+        e.CanExecute = false;
+    }
+
+
+    private void RenameCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    private void RefreshCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+    {
+        e.CanExecute = false;
+    }
+
+
+    private void RefreshCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
 }

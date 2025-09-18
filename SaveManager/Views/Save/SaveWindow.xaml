@@ -92,15 +92,30 @@
                  Margin="10 5"
                  Width="Auto"
                  Grid.Row="1">
+            <ListBox.CommandBindings>
+                <CommandBinding Command="local:SaveListCommands.AddFolder"
+                                CanExecute="AddFolderCommand_CanExecute"
+                                Executed="AddFolderCommand_Executed" />
+                <CommandBinding Command="local:SaveListCommands.Delete"
+                                CanExecute="DeleteCommand_CanExecute"
+                                Executed="DeleteCommand_Executed" />
+                <CommandBinding Command="local:SaveListCommands.Rename"
+                                CanExecute="RenameCommand_CanExecute"
+                                Executed="RenameCommand_Executed" />
+                <CommandBinding Command="local:SaveListCommands.Refresh"
+                                CanExecute="RefreshCommand_CanExecute"
+                                Executed="RefreshCommand_Executed" />
+            </ListBox.CommandBindings>
             <ListBox.Resources>
                 <local:SaveListItemPaddingConverter x:Key="paddingConverter" />
+
                 <DataTemplate DataType="{x:Type models:Folder}">
                     <ItemsControl MouseDoubleClick="SaveListItem_MouseDoubleClick"
                                   Height="16"
                                   Padding="{Binding Converter={StaticResource paddingConverter}}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <Grid >
+                                <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="16" />
                                         <ColumnDefinition Width="*" />
@@ -135,14 +150,44 @@
                                    Padding="5 0 0 0" />
                     </ItemsControl>
                 </DataTemplate>
-                
+
                 <DataTemplate DataType="{x:Type models:File}">
                     <TextBlock Text="{Binding Name}"
                                VerticalAlignment="Center"
                                Height="16"
-                               Padding="{Binding Converter={StaticResource paddingConverter}}"/>
+                               Padding="{Binding Converter={StaticResource paddingConverter}}" />
                 </DataTemplate>
             </ListBox.Resources>
+
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add Folder"
+                              Command="local:SaveListCommands.AddFolder">
+                        <MenuItem.Icon>
+                            <Image />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Delete"
+                              Command="local:SaveListCommands.Delete">
+                        <MenuItem.Icon>
+                            <Image />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Rename"
+                              Command="local:SaveListCommands.Rename">
+                        <MenuItem.Icon>
+                            <Image />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Refresh"
+                              Command="local:SaveListCommands.Refresh">
+                        <MenuItem.Icon>
+                            <Image />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+
         </ListBox>
 
 
