@@ -46,7 +46,7 @@
                       ItemsSource="{Binding Games}"
                       SelectedItem="{Binding ActiveGame}"
                       DisplayMemberPath="Name"
-                      HorizontalAlignment="center"
+                      HorizontalAlignment="Center"
                       Grid.Row="1"
                       Grid.Column="0"
                       Width="150"

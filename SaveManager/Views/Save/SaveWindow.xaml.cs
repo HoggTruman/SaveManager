@@ -26,8 +26,9 @@ public partial class SaveWindow : Window
     {
         GameProfileWindow gameProfileWindow = new(ViewModelFactory.CreateGameProfileViewModel(SaveViewModel.Games, SaveViewModel.ActiveGame));
         gameProfileWindow.ShowDialog(this);
-        SaveViewModel.Games = gameProfileWindow.GameProfileViewModel.Games;
+        SaveViewModel.Games = [..gameProfileWindow.GameProfileViewModel.Games];
         SaveViewModel.ActiveGame = gameProfileWindow.GameProfileViewModel.ActiveGame;
+        SaveViewModel.SelectedEntry = null;
     }
 
 
