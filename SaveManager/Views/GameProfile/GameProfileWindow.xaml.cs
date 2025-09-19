@@ -169,7 +169,7 @@ public partial class GameProfileWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                GameProfileViewModel.HandleFilesystemItemNotFound();
+                HandleFilesystemItemNotFound();
                 return;
             }
             catch (FilesystemException)
@@ -204,7 +204,7 @@ public partial class GameProfileWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                GameProfileViewModel.HandleFilesystemItemNotFound();
+                HandleFilesystemItemNotFound();
                 return;
             }
             catch (FilesystemException)
@@ -233,8 +233,7 @@ public partial class GameProfileWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                GameProfileViewModel.HandleFilesystemItemNotFound();
-                return;
+                HandleFilesystemItemNotFound();
             }
             catch (FilesystemException)
             {
@@ -270,7 +269,7 @@ public partial class GameProfileWindow : Window
     }
 
 
-    private void HandleFilesystemItemNotFoundException(FilesystemException exception)
+    private void HandleFilesystemItemNotFound()
     {
         if (GameProfileViewModel.ActiveGame == null)
             return;
@@ -281,18 +280,17 @@ public partial class GameProfileWindow : Window
 
             if (GameProfileViewModel.ActiveGame.ProfilesDirectory == null)
             {
-                new OkDialog("Profiles directory reset", 
-                    "The current game's profiles directory no longer exists and has been reset.\nPlease set a new one.").ShowDialog(this);
+                new OkDialog("Profiles directory reset", "The current game's profiles directory no longer exists.\nPlease set a new one.").ShowDialog(this);
             }
             else
             {
                 new OkDialog("Profiles reloaded", "The selected profile could not be found.\nThe current game's profiles have been reloaded.").ShowDialog(this);
             }
         }
-        catch (FilesystemException ex)
+        catch (FilesystemException)
         {
             new OkDialog("An error occurred", "An error occurred.\nAttempting to reload profiles.").ShowDialog(this);
-            HandleFilesystemItemNotFoundException(ex);
+            HandleFilesystemItemNotFound();
         }           
     }
 }
