@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SaveManager.Views.Save"
         xmlns:models="clr-namespace:SaveManager.Models"
+        xmlns:viewmodels="clr-namespace:SaveManager.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:SaveViewModel}"
         mc:Ignorable="d"
         Title="Save Manager"
         Height="450"
