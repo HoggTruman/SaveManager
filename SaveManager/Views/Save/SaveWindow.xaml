@@ -94,20 +94,6 @@
                  Margin="10 5"
                  Width="Auto"
                  Grid.Row="1">
-            <ListBox.CommandBindings>
-                <CommandBinding Command="local:SaveListCommands.AddFolder"
-                                CanExecute="AddFolderCommand_CanExecute"
-                                Executed="AddFolderCommand_Executed" />
-                <CommandBinding Command="local:SaveListCommands.Delete"
-                                CanExecute="DeleteCommand_CanExecute"
-                                Executed="DeleteCommand_Executed" />
-                <CommandBinding Command="local:SaveListCommands.Rename"
-                                CanExecute="RenameCommand_CanExecute"
-                                Executed="RenameCommand_Executed" />
-                <CommandBinding Command="local:SaveListCommands.Refresh"
-                                CanExecute="RefreshCommand_CanExecute"
-                                Executed="RefreshCommand_Executed" />
-            </ListBox.CommandBindings>
             <ListBox.Resources>
                 <local:SaveListItemPaddingConverter x:Key="paddingConverter" />
 
@@ -162,34 +148,43 @@
             </ListBox.Resources>
 
             <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Add Folder"
-                              Command="local:SaveListCommands.AddFolder">
+                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                    <MenuItem x:Name="AddFolderMenuItem"
+                              Header="Add Folder"
+                              Click="AddFolderMenuItem_Click"
+                              IsEnabled="{Binding CanAddFolder}">
                         <MenuItem.Icon>
                             <Image />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Delete"
-                              Command="local:SaveListCommands.Delete">
+                    <MenuItem x:Name="DeleteMenuItem"
+                              Header="Delete"
+                              InputGestureText="Del"
+                              Click="DeleteMenuItem_Click"
+                              IsEnabled="{Binding CanDelete}">
                         <MenuItem.Icon>
                             <Image />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Rename"
-                              Command="local:SaveListCommands.Rename">
+                    <MenuItem x:Name="RenameMenuItem"
+                              Header="Rename"
+                              InputGestureText="F12"
+                              Click="RenameMenuItem_Click"
+                              IsEnabled="{Binding CanRename}">
                         <MenuItem.Icon>
                             <Image />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Refresh"
-                              Command="local:SaveListCommands.Refresh">
+                    <MenuItem x:Name="RefreshMenuItem"
+                              Header="Refresh"
+                              Click="RefreshMenuItem_Click"
+                              IsEnabled="{Binding CanRefresh}">
                         <MenuItem.Icon>
                             <Image />
                         </MenuItem.Icon>
                     </MenuItem>
                 </ContextMenu>
             </ListBox.ContextMenu>
-
         </ListBox>
 
 
