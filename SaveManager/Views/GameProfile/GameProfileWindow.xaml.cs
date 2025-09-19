@@ -148,7 +148,7 @@ public partial class GameProfileWindow : Window
 
     private void NewProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        if (GameProfileViewModel.ActiveGame == null)
+        if (GameProfileViewModel.ActiveGame == null || GameProfileViewModel.ActiveGame.ProfilesDirectory == null)
         {
             return;
         }
