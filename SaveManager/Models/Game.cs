@@ -111,13 +111,25 @@ public class Game : NotifyPropertyChanged
 
     /// <summary>
     /// Reloads the game's profiles from the filesystem.<br/>
-    /// If the profiles directory no longer exists, throws a <see cref="FilesystemItemNotFoundException"/>.
+    /// If the profiles directory no longer exists, sets it to null and throws a <see cref="FilesystemItemNotFoundException"/>.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void RefreshProfiles()
     {
-        ProfilesDirectory = _profilesFolder?.Location;
+        if (_profilesFolder == null || ProfilesDirectory == null)
+        {
+            throw new InvalidOperationException("The Profiles Directory must be set to refresh profiles.");
+        }
+
+        if (!_profilesFolder.Exists)
+        {
+            ProfilesDirectory = null;
+            throw new FilesystemItemNotFoundException("The profiles directory no longer exists.");
+        }
+
+        _profilesFolder.LoadChildren();
+        Profiles = [.._profilesFolder.Children.Where(x => x is Folder).Select(x => new Profile((Folder)x, this))]; 
     }
 
 

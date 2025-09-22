@@ -72,7 +72,9 @@ public partial class SaveWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                HandleFilesystemItemNotFound();
+                new OkDialog("An error occurred", "An error occurred while creating a new folder.\nReloading profiles from the filesystem...").ShowDialog(this);
+                RefreshProfiles();
+                return;
             }
             catch (FilesystemException)
             {
@@ -99,29 +101,23 @@ public partial class SaveWindow : Window
     }
 
 
-    private void HandleFilesystemItemNotFound()
+    private void RefreshProfiles()
     {
         if (SaveViewModel.ActiveGame == null)
             return;
 
         try
         {
-            SaveViewModel.HandleFilesystemItemNotFound();
-
-            if (SaveViewModel.ActiveGame.ProfilesDirectory == null)
-            {
-                new OkDialog("Profiles directory reset", 
-                    "The current game's profiles directory no longer exists and has been reset.\nPlease set a new one.").ShowDialog(this);
-            }
-            else
-            {
-                new OkDialog("Profiles reloaded", "The selected profile could not be found.\nThe current game's profiles have been reloaded.").ShowDialog(this);
-            }
+            SaveViewModel.RefreshProfiles();
+            new OkDialog("Profiles reloaded", "The current game's profiles have been reloaded.").ShowDialog(this);
         }
         catch (FilesystemException)
         {
-            new OkDialog("An error occurred", "An error occurred.\nAttempting to reload profiles.").ShowDialog(this);
-            HandleFilesystemItemNotFound();
+            new OkDialog("An error occurred", "Failed to reload profiles.").ShowDialog(this);
+        }
+        catch (FilesystemItemNotFoundException)
+        {
+            new OkDialog("Profiles directory reset", "The current game's profiles directory no longer exists.\nPlease set a new one.").ShowDialog(this);
         }
     }
 }

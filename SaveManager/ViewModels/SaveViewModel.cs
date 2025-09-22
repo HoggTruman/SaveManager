@@ -87,24 +87,17 @@ public class SaveViewModel : NotifyPropertyChanged
 
 
     /// <summary>
-    /// Refreshes profiles or resets the profiles directory to handle a file or folder no longer existing in the filesystem.
+    /// Reloads the active game's profiles from the filesystem.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    public void HandleFilesystemItemNotFound()
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    public void RefreshProfiles()
     {
         if (ActiveGame == null)
             return;
 
-        try
-        {
-            ActiveGame.RefreshProfiles();
-        }
-        catch (FilesystemItemNotFoundException)
-        {
-            ActiveGame.ProfilesDirectory = null;
-        }
-
         SelectedEntry = null;
+        ActiveGame.RefreshProfiles();        
     }
 
 

@@ -139,6 +139,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <param name="name"></param>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void CreateProfile(string name)
     {
         if (ActiveGame == null)
@@ -156,6 +157,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <param name="newName"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void RenameProfile(string newName)
     {
         if (SelectedProfile == null)
@@ -171,6 +173,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// Deletes the selected profile.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void DeleteProfile()
     {
         if (SelectedProfile == null)
@@ -183,24 +186,17 @@ public class GameProfileViewModel : NotifyPropertyChanged
 
 
     /// <summary>
-    /// Refreshes profiles or resets the profiles directory to handle a file or folder no longer existing in the filesystem.
+    /// Reloads the active game's profiles from the filesystem.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    public void HandleFilesystemItemNotFound()
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    public void RefreshProfiles()
     {
         if (ActiveGame == null)
             return;
 
-        try
-        {
-            ActiveGame.RefreshProfiles();
-        }
-        catch (FilesystemItemNotFoundException)
-        {
-            ActiveGame.ProfilesDirectory = null;
-        }
-
         SelectedProfile = null;
+        ActiveGame.RefreshProfiles();        
     }
 
 
@@ -212,16 +208,5 @@ public class GameProfileViewModel : NotifyPropertyChanged
     public void SaveGameChanges()
     {
         _appdataService.ReplaceGames(Games);
-    }
-
-
-    /// <summary>
-    /// Reloads the active game's profiles from the filesystem.
-    /// </summary>
-    /// <exception cref="FilesystemException"></exception>
-    public void RefreshGame()
-    {
-        ActiveGame?.RefreshProfiles();
-        SelectedProfile = null;
     }
 }
