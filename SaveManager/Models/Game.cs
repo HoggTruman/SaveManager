@@ -119,7 +119,8 @@ public class Game : NotifyPropertyChanged
     {
         if (_profilesFolder == null || ProfilesDirectory == null)
         {
-            throw new InvalidOperationException("The Profiles Directory must be set to refresh profiles.");
+            Profiles = [];
+            return;
         }
 
         if (!_profilesFolder.Exists)
@@ -128,8 +129,18 @@ public class Game : NotifyPropertyChanged
             throw new FilesystemItemNotFoundException("The profiles directory no longer exists.");
         }
 
+        Profile? oldActiveProfile = ActiveProfile;
         _profilesFolder.LoadChildren();
-        Profiles = [.._profilesFolder.Children.Where(x => x is Folder).Select(x => new Profile((Folder)x, this))]; 
+        Profiles = [.._profilesFolder.Children.Where(x => x is Folder).Select(x => new Profile((Folder)x, this))];
+
+        if (oldActiveProfile != null && Profiles.Any(x => x.Name == oldActiveProfile.Name))
+        {
+            ActiveProfile = Profiles.FirstOrDefault(x => x.Name == oldActiveProfile.Name);
+        }
+        else
+        {
+            ActiveProfile = Profiles.FirstOrDefault();
+        }
     }
 
 

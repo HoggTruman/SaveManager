@@ -38,7 +38,7 @@ public class SaveViewModel : NotifyPropertyChanged
     public bool CanAddFolder => ActiveGame != null && ActiveGame.ActiveProfile != null;
     public bool CanDelete => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
     public bool CanRename => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
-    public bool CanRefresh => false;
+    public bool CanRefresh => ActiveGame != null;
 
 
     public SaveViewModel(AppdataService appdataService, IEnumerable<Game> games)
@@ -131,7 +131,7 @@ public class SaveViewModel : NotifyPropertyChanged
             return;
 
         SelectedEntry = null;
-        ActiveGame.RefreshProfiles();        
+        ActiveGame.RefreshProfiles();
     }
 
 

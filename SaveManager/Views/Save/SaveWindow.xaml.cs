@@ -116,7 +116,7 @@ public partial class SaveWindow : Window
 
     private void RefreshMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        RefreshProfiles();
     }
 
 
@@ -185,7 +185,7 @@ public partial class SaveWindow : Window
 
     private void RefreshProfiles()
     {
-        if (SaveViewModel.ActiveGame == null)
+        if (!SaveViewModel.CanRefresh)
             return;
 
         try
