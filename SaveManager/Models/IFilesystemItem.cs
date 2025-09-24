@@ -24,6 +24,14 @@ public interface IFilesystemItem
     /// </summary>
     public Folder? Parent { get; set; }
 
+    /// <summary>
+    /// Renames the underlying file / directory.
+    /// </summary>
+    /// <param name="newName"></param>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    public void Rename(string newName);
 
     /// <summary>
     /// Deletes the underlying file / directory.

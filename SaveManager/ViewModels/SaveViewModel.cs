@@ -37,7 +37,7 @@ public class SaveViewModel : NotifyPropertyChanged
 
     public bool CanAddFolder => ActiveGame != null && ActiveGame.ActiveProfile != null;
     public bool CanDelete => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
-    public bool CanRename => false;
+    public bool CanRename => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
     public bool CanRefresh => false;
 
 
@@ -90,7 +90,8 @@ public class SaveViewModel : NotifyPropertyChanged
     /// <summary>
     /// Deletes the selected entry.
     /// </summary>
-    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void DeleteSelectedEntry()
     {
         if (ActiveGame == null || ActiveGame.ActiveProfile == null || SelectedEntry == null)
@@ -99,6 +100,23 @@ public class SaveViewModel : NotifyPropertyChanged
         SelectedEntry.Delete();
         ActiveGame.ActiveProfile.UpdateSaveListEntries();
         SelectedEntry = null;
+    }
+
+
+    /// <summary>
+    /// Renames the selected entry.
+    /// </summary>
+    /// <param name="newName"></param>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    public void RenameSelectedEntry(string newName)
+    {
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null || SelectedEntry == null)
+            throw new InvalidOperationException("The ActiveGame, ActiveProfile and SelectedEntry can not be null");
+
+        SelectedEntry.Rename(newName);
+        ActiveGame.ActiveProfile.UpdateSaveListEntries();
     }
 
 

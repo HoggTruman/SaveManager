@@ -49,6 +49,16 @@ public partial class SaveWindow : Window
     }
 
 
+    private void SaveListBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+    {
+        // used instead of binding to prevent flickering issues on context menu as much as possible
+        AddFolderMenuItem.IsEnabled = SaveViewModel.CanAddFolder;
+        DeleteMenuItem.IsEnabled = SaveViewModel.CanDelete;
+        RenameMenuItem.IsEnabled = SaveViewModel.CanRename;
+        RefreshMenuItem.IsEnabled = SaveViewModel.CanRefresh;
+    }
+
+
     private void SaveListItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (e.ChangedButton == MouseButton.Left)
@@ -79,7 +89,7 @@ public partial class SaveWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                new OkDialog("An error occurred", "An error occurred while creating a new folder.\nReloading profiles from the filesystem...").ShowDialog(this);
+                new OkDialog("An error occurred", "Reloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
                 return;
             }
@@ -100,7 +110,7 @@ public partial class SaveWindow : Window
 
     private void RenameMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        RenameSelectedEntry();
     }
 
 
@@ -110,15 +120,12 @@ public partial class SaveWindow : Window
     }
 
 
-
-
     private void DeleteSelectedEntry()
     {
         if (!SaveViewModel.CanDelete)
             return;
 
-        bool isFile = SaveViewModel.SelectedEntry is File;
-        string message = isFile? $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}'?":
+        string message = SaveViewModel.SelectedEntry is File? $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}'?":
             $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}' and all its contents?";
 
         YesNoDialog confirmDeleteDialog = new($"Delete '{SaveViewModel.SelectedEntry!.Name}'", message);
@@ -131,15 +138,48 @@ public partial class SaveWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                new OkDialog($"{(isFile? "File": "Folder")} does not exist", 
-                    $"'{SaveViewModel.SelectedEntry.Name}' no longer exists.\nReloading profiles from the filesystem...").ShowDialog(this);
+                new OkDialog($"Error: '{SaveViewModel.SelectedEntry.Name}' does not exist", $"Reloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
             }
             catch (FilesystemException)
             {
-                new OkDialog("An error occurred", $"An error occurred while deleting the {(isFile? "file": "folder")}.").ShowDialog(this);
+                new OkDialog("An error occurred", $"An error occurred while deleting '{SaveViewModel.SelectedEntry.Name}'").ShowDialog(this);
             }
         }
+    }
+
+
+    public void RenameSelectedEntry()
+    {
+        if (!SaveViewModel.CanRename)
+            return;
+
+        InputDialog renameDialog = new($"Rename '{SaveViewModel.SelectedEntry!.Name}'", "Enter the new name:", SaveViewModel.SelectedEntry.Name);
+
+        while (renameDialog.ShowDialog(this) == true)
+        {
+            try
+            {
+                SaveViewModel.RenameSelectedEntry(renameDialog.Input);
+                return;
+            }
+            catch (ValidationException ex)
+            {
+                new OkDialog("Invalid name", ex.Message).ShowDialog(this);
+                renameDialog = new(renameDialog.Title, renameDialog.Prompt, renameDialog.Input);
+            }
+            catch (FilesystemItemNotFoundException)
+            {
+                new OkDialog($"Error: '{SaveViewModel.SelectedEntry.Name}' does not exist", $"Reloading profiles from the filesystem...").ShowDialog(this);
+                RefreshProfiles();
+                return;
+            }
+            catch (FilesystemException)
+            {
+                new OkDialog("An error occurred", $"An error occurred while renaming '{SaveViewModel.SelectedEntry.Name}'").ShowDialog(this);
+                return;
+            }
+        }   
     }
 
 
@@ -151,7 +191,6 @@ public partial class SaveWindow : Window
         try
         {
             SaveViewModel.RefreshProfiles();
-            new OkDialog("Profiles reloaded", "The current game's profiles have been reloaded.").ShowDialog(this);
         }
         catch (FilesystemException)
         {
@@ -161,15 +200,5 @@ public partial class SaveWindow : Window
         {
             new OkDialog("Profiles directory reset", "The current game's profiles directory no longer exists.\nPlease set a new one.").ShowDialog(this);
         }
-    }
-
-
-    private void SaveListBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
-    {
-        // used instead of binding to prevent flickering issues on context menu as much as possible
-        AddFolderMenuItem.IsEnabled = SaveViewModel.CanAddFolder;
-        DeleteMenuItem.IsEnabled = SaveViewModel.CanDelete;
-        RenameMenuItem.IsEnabled = SaveViewModel.CanRename;
-        RefreshMenuItem.IsEnabled = SaveViewModel.CanRefresh;
     }
 }

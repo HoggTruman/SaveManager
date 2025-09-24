@@ -27,6 +27,43 @@ public class File : IFilesystemItem
         Parent = parent;
     }
 
+
+
+
+    /// <summary>
+    /// Renames the file in the filesystem.
+    /// </summary>
+    /// <param name="newName"></param>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="ValidationException"></exception>
+    public void Rename(string newName)
+    {
+        if (Parent == null)
+            throw new InvalidOperationException("A File's Parent must not be null.");
+
+        ValidateFileName(newName, Parent.Children);
+        
+        if (!Exists)
+            throw new FilesystemItemNotFoundException("The file you are trying to rename does not exist.");
+
+        try
+        {
+            string newLocation = Path.Join(Parent.Location, newName);
+            _fileInfo.MoveTo(newLocation);
+            Parent.SortChildren();
+        }
+        catch(Exception ex)
+        {
+            if (ex is IOException or ArgumentException or SecurityException or UnauthorizedAccessException or FileNotFoundException or
+                DirectoryNotFoundException or PathTooLongException or NotSupportedException)
+                throw new FilesystemException(ex.Message, ex);
+                
+            throw;
+        }
+    }
+
+
     /// <summary>
     /// Deletes the file in the filesystem and updates its parent.
     /// </summary>
@@ -74,5 +111,23 @@ public class File : IFilesystemItem
 
             throw;
         }
+    }
+
+
+    /// <summary>
+    /// Validates file name. Throws a <see cref="ValidationException"/> if not valid.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <exception cref="ValidationException"></exception>
+    internal static void ValidateFileName(string name, IEnumerable<IFilesystemItem> siblings)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ValidationException("File name can not be empty or whitespace.");
+
+        if (Path.GetInvalidFileNameChars().Any(name.Contains))
+            throw new ValidationException($"File name can not contain any of the following: {new(Path.GetInvalidFileNameChars())}");
+
+        if (siblings.Any(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)))
+            throw new ValidationException("A file already exists with this name.");
     }
 }
