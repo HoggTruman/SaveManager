@@ -15,9 +15,22 @@ public interface IFilesystemItem
     public string Name { get; }
 
     /// <summary>
+    /// Gets a value indicating if file / directory exists in the filesystem.
+    /// </summary>
+    public bool Exists { get; }
+
+    /// <summary>
     /// The parent folder. It is only null for a folder representing a game's profiles directory.
     /// </summary>
     public Folder? Parent { get; set; }
+
+
+    /// <summary>
+    /// Deletes the underlying file / directory.
+    /// </summary>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    public void Delete();
 
 
     /// <summary>

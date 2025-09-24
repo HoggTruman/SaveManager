@@ -36,7 +36,7 @@ public class SaveViewModel : NotifyPropertyChanged
 
 
     public bool CanAddFolder => ActiveGame != null && ActiveGame.ActiveProfile != null;
-    public bool CanDelete => false;
+    public bool CanDelete => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
     public bool CanRename => false;
     public bool CanRefresh => false;
 
@@ -47,6 +47,7 @@ public class SaveViewModel : NotifyPropertyChanged
         Games = [..games];
         ActiveGame = games.FirstOrDefault();
     }
+
 
 
 
@@ -83,6 +84,21 @@ public class SaveViewModel : NotifyPropertyChanged
         parentFolder.IsOpen = true;
         ActiveGame.ActiveProfile.UpdateSaveListEntries();
         SelectedEntry = newFolder;
+    }
+
+
+    /// <summary>
+    /// Deletes the selected entry.
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
+    public void DeleteSelectedEntry()
+    {
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null || SelectedEntry == null)
+            throw new InvalidOperationException("The ActiveGame, ActiveProfile and SelectedEntry can not be null");
+
+        SelectedEntry.Delete();
+        ActiveGame.ActiveProfile.UpdateSaveListEntries();
+        SelectedEntry = null;
     }
 
 

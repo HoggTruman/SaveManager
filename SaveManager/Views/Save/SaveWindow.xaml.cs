@@ -1,6 +1,7 @@
 ﻿using SaveManager.Components;
 using SaveManager.Exceptions;
 using SaveManager.Extensions;
+using SaveManager.Models;
 using SaveManager.ViewModels;
 using SaveManager.Views.GameProfile;
 using System.Windows;
@@ -23,6 +24,9 @@ public partial class SaveWindow : Window
         SaveViewModel = saveViewModel;
         DataContext = SaveViewModel;        
     }
+
+
+
 
     private void GameProfileEditButton_Click(object sender, RoutedEventArgs e)
     {
@@ -90,17 +94,52 @@ public partial class SaveWindow : Window
 
     private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        DeleteSelectedEntry();
     }
+
 
     private void RenameMenuItem_Click(object sender, RoutedEventArgs e)
     {
         throw new NotImplementedException();
     }
 
+
     private void RefreshMenuItem_Click(object sender, RoutedEventArgs e)
     {
         throw new NotImplementedException();
+    }
+
+
+
+
+    private void DeleteSelectedEntry()
+    {
+        if (!SaveViewModel.CanDelete)
+            return;
+
+        bool isFile = SaveViewModel.SelectedEntry is File;
+        string message = isFile? $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}'?":
+            $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}' and all its contents?";
+
+        YesNoDialog confirmDeleteDialog = new($"Delete '{SaveViewModel.SelectedEntry!.Name}'", message);
+
+        if (confirmDeleteDialog.ShowDialog(this) == true)
+        {
+            try
+            {
+                SaveViewModel.DeleteSelectedEntry();
+            }
+            catch (FilesystemItemNotFoundException)
+            {
+                new OkDialog($"{(isFile? "File": "Folder")} does not exist", 
+                    $"'{SaveViewModel.SelectedEntry.Name}' no longer exists.\nReloading profiles from the filesystem...").ShowDialog(this);
+                RefreshProfiles();
+            }
+            catch (FilesystemException)
+            {
+                new OkDialog("An error occurred", $"An error occurred while deleting the {(isFile? "file": "folder")}.").ShowDialog(this);
+            }
+        }
     }
 
 
@@ -122,5 +161,15 @@ public partial class SaveWindow : Window
         {
             new OkDialog("Profiles directory reset", "The current game's profiles directory no longer exists.\nPlease set a new one.").ShowDialog(this);
         }
+    }
+
+
+    private void SaveListBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+    {
+        // used instead of binding to prevent flickering issues on context menu as much as possible
+        AddFolderMenuItem.IsEnabled = SaveViewModel.CanAddFolder;
+        DeleteMenuItem.IsEnabled = SaveViewModel.CanDelete;
+        RenameMenuItem.IsEnabled = SaveViewModel.CanRename;
+        RefreshMenuItem.IsEnabled = SaveViewModel.CanRefresh;
     }
 }

@@ -14,6 +14,20 @@
         MinHeight="450"
         MinWidth="570"
         WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <!--<Style TargetType="{x:Type MenuItem}">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled"
+                         Value="False">
+                    <Setter Property="Background"
+                            Value="Red" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>-->
+
+        <PopupAnimation x:Key="{x:Static SystemParameters.MenuPopupAnimationKey}">None</PopupAnimation>
+
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60" />
@@ -90,10 +104,11 @@
                  ItemsSource="{Binding ActiveGame.ActiveProfile.SaveListEntries}"
                  SelectedItem="{Binding SelectedEntry}"
                  MouseDown="SaveListBox_MouseDown"
+                 ContextMenuOpening="SaveListBox_ContextMenuOpening"
                  HorizontalContentAlignment="Stretch"
                  Margin="10 5"
                  Width="Auto"
-                 Grid.Row="1">
+                 Grid.Row="1">            
             <ListBox.Resources>
                 <local:SaveListItemPaddingConverter x:Key="paddingConverter" />
 
@@ -148,11 +163,10 @@
             </ListBox.Resources>
 
             <ListBox.ContextMenu>
-                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                <ContextMenu x:Name="SaveListContextMenu">
                     <MenuItem x:Name="AddFolderMenuItem"
                               Header="Add Folder"
-                              Click="AddFolderMenuItem_Click"
-                              IsEnabled="{Binding CanAddFolder}">
+                              Click="AddFolderMenuItem_Click">
                         <MenuItem.Icon>
                             <Image />
                         </MenuItem.Icon>
@@ -160,8 +174,7 @@
                     <MenuItem x:Name="DeleteMenuItem"
                               Header="Delete"
                               InputGestureText="Del"
-                              Click="DeleteMenuItem_Click"
-                              IsEnabled="{Binding CanDelete}">
+                              Click="DeleteMenuItem_Click">
                         <MenuItem.Icon>
                             <Image />
                         </MenuItem.Icon>
@@ -169,16 +182,14 @@
                     <MenuItem x:Name="RenameMenuItem"
                               Header="Rename"
                               InputGestureText="F12"
-                              Click="RenameMenuItem_Click"
-                              IsEnabled="{Binding CanRename}">
+                              Click="RenameMenuItem_Click">
                         <MenuItem.Icon>
                             <Image />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem x:Name="RefreshMenuItem"
                               Header="Refresh"
-                              Click="RefreshMenuItem_Click"
-                              IsEnabled="{Binding CanRefresh}">
+                              Click="RefreshMenuItem_Click">
                         <MenuItem.Icon>
                             <Image />
                         </MenuItem.Icon>
