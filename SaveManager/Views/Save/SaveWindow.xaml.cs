@@ -56,6 +56,9 @@ public partial class SaveWindow : Window
 
     private void AddFolderMenuItem_Click(object sender, RoutedEventArgs e)
     {
+        if (!SaveViewModel.CanAddFolder)
+            return;
+
         InputDialog addFolderDialog = new("Add Folder", "Enter the name of the new folder:");
 
         while (addFolderDialog.ShowDialog(this) == true)
