@@ -109,7 +109,7 @@
                  HorizontalContentAlignment="Stretch"
                  Margin="10 5"
                  Width="Auto"
-                 Grid.Row="1">            
+                 Grid.Row="1">
             <ListBox.Resources>
                 <local:SaveListItemPaddingConverter x:Key="paddingConverter" />
 
@@ -169,7 +169,8 @@
                               Header="Add Folder"
                               Click="AddFolderMenuItem_Click">
                         <MenuItem.Icon>
-                            <Image />
+                            <Image Source="/Assets/AddFolderIcon.png"
+                                   Margin="-1,-1,-1,-1" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem x:Name="DeleteMenuItem"
@@ -177,7 +178,8 @@
                               InputGestureText="Del"
                               Click="DeleteMenuItem_Click">
                         <MenuItem.Icon>
-                            <Image />
+                            <Image Source="/Assets/DeleteIcon.png"
+                                   Margin="-1,-1,-1,-1" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem x:Name="RenameMenuItem"
@@ -185,14 +187,16 @@
                               InputGestureText="F2"
                               Click="RenameMenuItem_Click">
                         <MenuItem.Icon>
-                            <Image />
+                            <Image Source="/Assets/RenameIcon.png"
+                                   Margin="0,-1,-2,-1" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem x:Name="RefreshMenuItem"
                               Header="Refresh"
                               Click="RefreshMenuItem_Click">
                         <MenuItem.Icon>
-                            <Image />
+                            <Image Source="/Assets/RefreshIcon.png"
+                                   Margin="1,-1,-2,-1" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </ContextMenu>
