@@ -16,6 +16,9 @@ namespace SaveManager.Views.Save;
 /// </summary>
 public partial class SaveWindow : Window
 {
+    private const Key RenameKey = Key.F2;
+    private const Key DeleteKey = Key.Delete;
+
     public SaveViewModel SaveViewModel { get; }
 
     public SaveWindow(SaveViewModel saveViewModel)
@@ -56,6 +59,15 @@ public partial class SaveWindow : Window
         DeleteMenuItem.IsEnabled = SaveViewModel.CanDelete;
         RenameMenuItem.IsEnabled = SaveViewModel.CanRename;
         RefreshMenuItem.IsEnabled = SaveViewModel.CanRefresh;
+    }
+
+
+    private void SaveListBox_KeyUp(object sender, KeyEventArgs e)
+    {
+        if (e.Key == RenameKey)
+            PromptRenameSelectedEntry();
+        else if (e.Key == DeleteKey)
+            PromptDeleteSelectedEntry();
     }
 
 
@@ -104,13 +116,13 @@ public partial class SaveWindow : Window
 
     private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        DeleteSelectedEntry();
+        PromptDeleteSelectedEntry();
     }
 
 
     private void RenameMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        RenameSelectedEntry();
+        PromptRenameSelectedEntry();
     }
 
 
@@ -120,7 +132,7 @@ public partial class SaveWindow : Window
     }
 
 
-    private void DeleteSelectedEntry()
+    private void PromptDeleteSelectedEntry()
     {
         if (!SaveViewModel.CanDelete)
             return;
@@ -149,7 +161,7 @@ public partial class SaveWindow : Window
     }
 
 
-    public void RenameSelectedEntry()
+    public void PromptRenameSelectedEntry()
     {
         if (!SaveViewModel.CanRename)
             return;

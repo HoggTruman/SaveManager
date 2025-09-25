@@ -105,6 +105,7 @@
                  SelectedItem="{Binding SelectedEntry}"
                  MouseDown="SaveListBox_MouseDown"
                  ContextMenuOpening="SaveListBox_ContextMenuOpening"
+                 KeyUp="SaveListBox_KeyUp"
                  HorizontalContentAlignment="Stretch"
                  Margin="10 5"
                  Width="Auto"
@@ -181,7 +182,7 @@
                     </MenuItem>
                     <MenuItem x:Name="RenameMenuItem"
                               Header="Rename"
-                              InputGestureText="F12"
+                              InputGestureText="F2"
                               Click="RenameMenuItem_Click">
                         <MenuItem.Icon>
                             <Image />
