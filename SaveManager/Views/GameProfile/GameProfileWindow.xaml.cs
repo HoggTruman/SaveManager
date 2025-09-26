@@ -129,7 +129,7 @@ public partial class GameProfileWindow : Window
             }
             catch (ValidationException ex)
             {
-                new OkDialog("Invalid Directory", ex.Message).ShowDialog(this);
+                new OkDialog("Invalid directory", ex.Message).ShowDialog(this);
             }
             catch (Exception ex)
             {
