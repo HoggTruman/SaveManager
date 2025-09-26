@@ -8,7 +8,7 @@ namespace SaveManager.Models;
 public class Game : NotifyPropertyChanged
 {
     private string _name = "";
-    private string? _savefileLocation;
+    private File? _savefile;
     private Folder? _profilesFolder;    
     private ObservableCollection<Profile> _profiles = [];
     private Profile? _activeProfile;
@@ -31,12 +31,30 @@ public class Game : NotifyPropertyChanged
 
 
     /// <summary>
+    /// The <see cref="File"/> representing the game's savefile if one has been set. Otherwise, null.
+    /// </summary>
+    public File? Savefile => _savefile;
+
+
+    /// <summary>
     /// The full path of the savefile.
     /// </summary>
+    /// <exception cref="FilesystemException"></exception>
     public string? SavefileLocation
     { 
-        get => _savefileLocation; 
-        set => SetProperty(ref _savefileLocation, value); 
+        get => _savefile?.Location; 
+        set
+        {
+            if (value == null)
+            {
+                SetProperty(ref _savefile, null);
+            }
+            else
+            {
+                File savefile = new(value, null);
+                SetProperty(ref _savefile, savefile); 
+            }            
+        }
     }
 
 

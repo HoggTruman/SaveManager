@@ -108,6 +108,31 @@ public class GameProfileViewModel : NotifyPropertyChanged
 
 
     /// <summary>
+    /// Sets the savefile location of the active game.
+    /// </summary>
+    /// <param name="location"></param>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    public void SetSavefileLocation(string location)
+    {
+        if (ActiveGame == null)
+        {
+            return;
+        }
+
+        IEnumerable<string> profilesDirectories = Games.Where(x => x.ProfilesDirectory != null).Select(x => x.ProfilesDirectory!);
+
+        if (Games.Any(x => x.SavefileLocation != null && x.SavefileLocation.Equals(location, StringComparison.CurrentCultureIgnoreCase)))
+            throw new ValidationException("Another game uses this savefile.");
+
+        if (profilesDirectories.Any(x => PathHelpers.IsDescendant(location, x)))
+            throw new ValidationException("This file is a descendant of a game's profiles directory.");
+
+        ActiveGame.SavefileLocation = location;
+    }
+
+
+    /// <summary>
     /// Sets the profiles directory of the active game.
     /// </summary>
     /// <param name="location"></param>

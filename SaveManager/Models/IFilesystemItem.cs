@@ -20,7 +20,7 @@ public interface IFilesystemItem
     public bool Exists { get; }
 
     /// <summary>
-    /// The parent folder. It is only null for a folder representing a game's profiles directory.
+    /// The parent folder. It is only null for a folder representing a game's profiles directory or a file representing a game's savefile.
     /// </summary>
     public Folder? Parent { get; set; }
 

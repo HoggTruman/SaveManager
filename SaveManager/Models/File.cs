@@ -13,18 +13,41 @@ public class File : IFilesystemItem
     public bool Exists => _fileInfo.Exists;
 
     /// <summary>
-    /// The parent folder. It is only null for a folder representing a game's profiles directory.
+    /// The parent folder. It is only null for a file representing a game's savefile.
     /// </summary>
     public Folder? Parent { get; set; }
 
 
 
-    public File(string location, Folder? parent) : this(new FileInfo(location), parent) { }
 
+    /// <summary>
+    /// Instantiates a new File.
+    /// </summary>
+    /// <param name="fileInfo"></param>
+    /// <param name="parent"></param>
     public File(FileInfo fileInfo, Folder? parent)
     {
         _fileInfo = fileInfo;
         Parent = parent;
+    }
+
+
+    /// <inheritdoc cref="File(FileInfo, Folder?)"/>
+    /// <exception cref="FilesystemException"></exception>
+    public File(string location, Folder? parent)
+    {
+        try
+    {
+            _fileInfo = new FileInfo(location);
+        Parent = parent;
+    }
+        catch(Exception ex)
+        {
+            if (ex is SecurityException or ArgumentException or UnauthorizedAccessException or PathTooLongException or NotSupportedException)
+                throw new FilesystemException(ex.Message, ex);
+
+            throw;
+        }
     }
 
 
@@ -40,7 +63,7 @@ public class File : IFilesystemItem
     public void Rename(string newName)
     {
         if (Parent == null)
-            throw new InvalidOperationException("A File's Parent must not be null.");
+            throw new InvalidOperationException("A game's savefile should not be renamed.");
 
         ValidateFileName(newName, Parent.Children);
         
@@ -72,7 +95,7 @@ public class File : IFilesystemItem
     public void Delete()
     {
         if (Parent == null)
-            throw new InvalidOperationException("A File's Parent must not be null.");
+            throw new InvalidOperationException("A game's savefile should not be deleted.");
 
         if (!Exists)
             throw new FilesystemItemNotFoundException("The file you are trying to delete does not exist.");

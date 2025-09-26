@@ -101,7 +101,18 @@ public partial class GameProfileWindow : Window
 
         if (openFileDialog.ShowDialog(this) == CommonFileDialogResult.Ok)
         {
-            GameProfileViewModel.ActiveGame.SavefileLocation = openFileDialog.FileName;       
+            try
+            {
+                GameProfileViewModel.SetSavefileLocation(openFileDialog.FileName);
+            }
+            catch (ValidationException ex)
+            {
+                new OkDialog("Invalid file", ex.Message).ShowDialog(this);
+            }
+            catch (FilesystemException)
+            {
+                new OkDialog("An error occurred", "An error occurred while setting the savefile location.").ShowDialog(this);
+            }
         }
     }   
 

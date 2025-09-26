@@ -19,4 +19,18 @@ public static class PathHelpers
         Uri secondUri = new(second.EndsWith(Path.DirectorySeparatorChar) ? second : second + Path.DirectorySeparatorChar);
         return firstUri.IsBaseOf(secondUri) || secondUri.IsBaseOf(firstUri);
     }
+
+
+    /// <summary>
+    /// Returns true if the file is a descendant of the directory, otherwise false.
+    /// </summary>
+    /// <param name="file"></param>
+    /// <param name="directory"></param>
+    /// <returns></returns>
+    public static bool IsDescendant(string file, string directory)
+    {
+        Uri fileUri = new(file);
+        Uri directoryUri = new (directory.EndsWith(Path.DirectorySeparatorChar) ? directory : directory + Path.DirectorySeparatorChar);
+        return directoryUri.IsBaseOf(fileUri);
+    }
 }
