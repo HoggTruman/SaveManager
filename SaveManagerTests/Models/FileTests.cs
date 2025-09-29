@@ -1,4 +1,5 @@
-﻿using SaveManager.Models;
+﻿using Moq;
+using SaveManager.Models;
 using SaveManagerTests.TestHelpers;
 using System.Reflection;
 
@@ -82,5 +83,82 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         Assert.DoesNotContain(testFile, folder.Children);
         Assert.Equal(oldChildCount - 1, folder.Children.Count);
+    }
+
+
+
+
+    [Fact]
+    public void GenerateFilename_WithNoSiblings_GivesSameName()
+    {
+        IEnumerable<IFilesystemItem> siblings = [];
+        string name = "file.file";
+        string result = SaveManager.Models.File.GenerateFileName(name, siblings);
+        Assert.Equal(name, result);
+    }
+
+
+    [Fact]
+    public void GenerateFilename_WithNoSiblingsSharingName_GivesSameName()
+    {
+        List<IFilesystemItem> siblings =
+        [
+            Mock.Of<IFilesystemItem>(x => x.Name == "sibling"),
+            Mock.Of<IFilesystemItem>(x => x.Name == "sibling.file"),
+        ];
+
+        string name = "file.file";
+        string result = SaveManager.Models.File.GenerateFileName(name, siblings);
+        Assert.Equal(name, result);
+    }
+
+
+    [Fact]
+    public void GenerateFilename_WithSiblingSharingName_GivesSuffixedName()
+    {
+        string name = "file.file";
+        List<IFilesystemItem> siblings =
+        [
+            Mock.Of<IFilesystemItem>(x => x.Name == name),
+        ];
+
+        string expected = name + "_1";
+        string result = SaveManager.Models.File.GenerateFileName(name, siblings);
+        Assert.Equal(expected, result);
+    }
+
+
+    [Fact]
+    public void GenerateFilename_WithSiblingSharingNameAndSuffixedName_GivesHigherSuffixedName()
+    {
+        string name = "file.file";
+        List<IFilesystemItem> siblings =
+        [
+            Mock.Of<IFilesystemItem>(x => x.Name == name),
+            Mock.Of<IFilesystemItem>(x => x.Name == name + "_1"),
+            Mock.Of<IFilesystemItem>(x => x.Name == name + "_2"),
+        ];
+
+        string expected = name + "_3";
+        string result = SaveManager.Models.File.GenerateFileName(name, siblings);
+        Assert.Equal(expected, result);
+    }
+
+
+    [Fact]
+    public void GenerateFilename_WithSiblingSharingNameAndSuffixedNameWithGap_GivesGapSuffixedName()
+    {
+        string name = "file.file";
+        List<IFilesystemItem> siblings =
+        [
+            Mock.Of<IFilesystemItem>(x => x.Name == name),
+            Mock.Of<IFilesystemItem>(x => x.Name == name + "_1"),
+            Mock.Of<IFilesystemItem>(x => x.Name == name + "_2"),
+            Mock.Of<IFilesystemItem>(x => x.Name == name + "_4"),
+        ];
+
+        string expected = name + "_3";
+        string result = SaveManager.Models.File.GenerateFileName(name, siblings);
+        Assert.Equal(expected, result);
     }
 }
