@@ -222,6 +222,7 @@
             </Grid.ColumnDefinitions>
 
             <Button x:Name="BackupSaveButton"
+                    Click="BackupSaveButton_Click"
                     Content="Backup Save"
                     Width="Auto"
                     Height="30"

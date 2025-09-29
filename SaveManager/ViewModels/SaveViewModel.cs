@@ -136,6 +136,35 @@ public class SaveViewModel : NotifyPropertyChanged
 
 
     /// <summary>
+    /// Creates a copy of the active game's savefile in a folder based on the current selection.
+    /// </summary>
+    /// <exception cref="SavefileNotFoundException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    public void BackupSavefile()
+    {
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null)
+        {
+            return;
+        }
+
+        try
+        {
+            Folder parent = GetParentFromSelection();        
+            File copiedSavefile = ActiveGame.Savefile.CopyTo(parent);
+            parent.IsOpen = true;
+            ActiveGame.ActiveProfile.UpdateSaveListEntries();
+            SelectedEntry = copiedSavefile;
+        }
+        catch (SavefileNotFoundException)
+        {
+            ActiveGame.SavefileLocation = null;
+            throw;
+        }
+    }
+
+
+    /// <summary>
     /// Retrieves the parent <see cref="Folder"/> based on the selected save list entry.
     /// </summary>
     /// <returns>The parent <see cref="Folder"/> of the selection.</returns>

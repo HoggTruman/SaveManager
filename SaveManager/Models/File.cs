@@ -37,10 +37,10 @@ public class File : IFilesystemItem
     public File(string location, Folder? parent)
     {
         try
-    {
+        {
             _fileInfo = new FileInfo(location);
-        Parent = parent;
-    }
+            Parent = parent;
+        }
         catch(Exception ex)
         {
             if (ex is SecurityException or ArgumentException or UnauthorizedAccessException or PathTooLongException or NotSupportedException)
@@ -49,8 +49,45 @@ public class File : IFilesystemItem
             throw;
         }
     }
+    
 
 
+
+    /// <summary>
+    /// Creates a copy of the file in the provided folder. Returns the copy.
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <returns>The copy of the original file.</returns>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="SavefileNotFoundException"></exception>
+    public File CopyTo(Folder copyParent)
+    {
+        if (!Exists)
+            throw new SavefileNotFoundException("The file you are trying to copy does not exist.");
+
+        if (!copyParent.Exists)
+            throw new FilesystemItemNotFoundException("The parent directory does not exist.");
+
+        try
+        {
+            string copyLocation = Path.Join(copyParent.Location, GenerateFileName(Name, copyParent.Children));
+            FileInfo copiedFileInfo = new(copyLocation);
+            System.IO.File.Copy(Location, copyLocation);            
+            File copiedFile = new(copiedFileInfo, copyParent);
+            copyParent.Children.Add(copiedFile);
+            copyParent.SortChildren();
+            return copiedFile;
+        }
+        catch(Exception ex)
+        {
+            if (ex is SecurityException or ArgumentException or UnauthorizedAccessException or PathTooLongException or NotSupportedException or
+                DirectoryNotFoundException or FileNotFoundException or IOException)
+                throw new FilesystemException(ex.Message, ex);
+
+            throw;
+        }
+    }
 
 
     /// <summary>
@@ -152,5 +189,24 @@ public class File : IFilesystemItem
 
         if (siblings.Any(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)))
             throw new ValidationException("A file already exists with this name.");
+    }
+
+
+    /// <summary>
+    /// Generates a name for a file, appending a suffix when the name is taken by a sibling.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="siblings"></param>
+    /// <returns>A unique filename among its siblings.</returns>
+    internal static string GenerateFileName(string name, IEnumerable<IFilesystemItem> siblings)
+    {
+        long suffix = 1;
+        string generatedName = name;
+        while (siblings.Any(x => x.Name.Equals(generatedName, StringComparison.CurrentCultureIgnoreCase)))
+        {
+            generatedName = $"{name}_{suffix++}";
+        }
+
+        return generatedName;
     }
 }
