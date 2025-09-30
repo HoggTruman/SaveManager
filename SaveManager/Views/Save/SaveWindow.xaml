@@ -230,6 +230,7 @@
                     Margin="10" />
 
             <Button x:Name="LoadSaveButton"
+                    Click="LoadSaveButton_Click"
                     Content="Load Save"
                     Width="Auto"
                     Height="30"

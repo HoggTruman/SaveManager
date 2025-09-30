@@ -165,6 +165,31 @@ public class SaveViewModel : NotifyPropertyChanged
 
 
     /// <summary>
+    /// Overwrites the game's savefile with the selected entry if it is a file.
+    /// </summary>
+    /// <exception cref="SavefileNotFoundException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    public void LoadSelectedEntry()
+    {
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null || SelectedEntry is not File)
+        {
+            return;
+        }
+
+        try
+        {
+            ActiveGame.Savefile.OverwriteContents((File)SelectedEntry);
+        }
+        catch (SavefileNotFoundException)
+        {
+            ActiveGame.SavefileLocation = null;
+            throw;
+        }
+    }
+
+
+    /// <summary>
     /// Retrieves the parent <see cref="Folder"/> based on the selected save list entry.
     /// </summary>
     /// <returns>The parent <see cref="Folder"/> of the selection.</returns>

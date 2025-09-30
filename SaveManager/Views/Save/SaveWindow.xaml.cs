@@ -111,6 +111,40 @@ public partial class SaveWindow : Window
             new OkDialog("An error occurred", "An error occurred while backing up the savefile.").ShowDialog(this);
         }
     }
+
+
+    private void LoadSaveButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (SaveViewModel.ActiveGame == null || SaveViewModel.ActiveGame.ActiveProfile == null || SaveViewModel.SelectedEntry is not File)
+        {
+            return;
+        }
+
+        if (SaveViewModel.ActiveGame.SavefileLocation == null)
+        {
+            new OkDialog("Savefile location not set", "The game's savefile location must be set to perform this action.").ShowDialog(this);
+            return;
+        }
+
+        try
+        {
+            SaveViewModel.LoadSelectedEntry();
+            new OkDialog("Save Loaded", "Save successfully loaded.").ShowDialog(this);
+        }
+        catch (SavefileNotFoundException)
+        {
+            new OkDialog("Savefile does not exist", "The game's savefile location does not exist. Please set a new one.").ShowDialog(this);
+        }
+        catch (FilesystemItemNotFoundException)
+        {
+            new OkDialog("An error occurred", "The savefile you are trying to load does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+            RefreshProfiles();
+        }
+        catch (FilesystemException)
+        {
+            new OkDialog("An error occurred", "An error occurred while loading the savefile.").ShowDialog(this);
+        }
+    }
         
 
     private void AddFolderMenuItem_Click(object sender, RoutedEventArgs e)
@@ -247,9 +281,6 @@ public partial class SaveWindow : Window
             new OkDialog("Profiles directory reset", "The current game's profiles directory no longer exists.\nPlease set a new one.").ShowDialog(this);
         }
     }
-
-
-    
 
     
 }

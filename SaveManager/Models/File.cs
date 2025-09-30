@@ -132,6 +132,36 @@ public class File : IFilesystemItem
 
 
     /// <summary>
+    /// Overwrites the contents of the file with those from the file provided.
+    /// </summary>
+    /// <param name="file">The file to copy the contents of.</param>
+    /// <exception cref="SavefileNotFoundException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    public void OverwriteContents(File fileToCopy)
+    {
+        if (!Exists)
+            throw new SavefileNotFoundException("The file you are trying to overwrite does not exist.");
+
+        if (!fileToCopy.Exists)
+            throw new FilesystemItemNotFoundException("The file you provided to copy the contents of does not exist.");
+
+        try
+        {
+            System.IO.File.Copy(fileToCopy.Location, Location, true);      
+        }
+        catch (Exception ex)
+        {
+            if (ex is UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException or 
+                FileNotFoundException or IOException or NotSupportedException)
+                throw new FilesystemException(ex.Message, ex);
+
+            throw;
+        }
+    }
+
+
+    /// <summary>
     /// Updates the File's location for the internal filesystem representation.
     /// Does not actually affect any files or directories.
     /// </summary>
