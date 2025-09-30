@@ -5,9 +5,23 @@
 /// </summary>
 public class FilesystemItemNotFoundException : Exception
 {
-    public FilesystemItemNotFoundException() { }
+    /// <summary>
+    /// The absolute path of the item which triggered the exception.
+    /// </summary>
+    public string Location { get; }
 
-    public FilesystemItemNotFoundException(string? message) : base(message) { }
+    public FilesystemItemNotFoundException(string location)
+    { 
+        Location = location; 
+    }
 
-    public FilesystemItemNotFoundException(string? message, Exception? innerException) : base (message, innerException) { }  
+    public FilesystemItemNotFoundException(string location, string? message) : base(message)
+    { 
+        Location = location; 
+    }
+
+    public FilesystemItemNotFoundException(string location, string? message, Exception? innerException) : base (message, innerException)
+    { 
+        Location = location; 
+    } 
 }

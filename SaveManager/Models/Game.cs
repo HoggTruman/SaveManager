@@ -84,7 +84,7 @@ public class Game : NotifyPropertyChanged
             {
                 if (!Directory.Exists(value))
                 {
-                    throw new FilesystemItemNotFoundException("The directory provided does not exist.");
+                    throw new FilesystemItemNotFoundException(value, "The directory provided does not exist.");
                 }                    
 
                 Folder newProfilesFolder = new(value, null);
@@ -143,8 +143,9 @@ public class Game : NotifyPropertyChanged
 
         if (!_profilesFolder.Exists)
         {
+            FilesystemItemNotFoundException ex = new(ProfilesDirectory, "The profiles directory no longer exists.");
             ProfilesDirectory = null;
-            throw new FilesystemItemNotFoundException("The profiles directory no longer exists.");
+            throw ex;
         }
 
         Profile? oldActiveProfile = ActiveProfile;

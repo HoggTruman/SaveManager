@@ -38,14 +38,13 @@ public class File : IFilesystemItem
     /// <returns>The copy of the original file.</returns>
     /// <exception cref="FilesystemItemNotFoundException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="SavefileNotFoundException"></exception>
     public File CopyTo(Folder copyParent)
     {
         if (!Exists)
-            throw new SavefileNotFoundException("The file you are trying to copy does not exist.");
+            throw new FilesystemItemNotFoundException(Location, "The file you are trying to copy does not exist.");
 
         if (!copyParent.Exists)
-            throw new FilesystemItemNotFoundException("The parent directory does not exist.");
+            throw new FilesystemItemNotFoundException(copyParent.Location, "The parent directory does not exist.");
 
         try
         {
@@ -77,12 +76,12 @@ public class File : IFilesystemItem
     public void Rename(string newName)
     {
         if (Parent == null)
-            throw new InvalidOperationException("A game's savefile should not be renamed.");
+            throw new InvalidOperationException("A file without a parent should not be renamed.");
 
         ValidateFileName(newName, Parent.Children);
         
         if (!Exists)
-            throw new FilesystemItemNotFoundException("The file you are trying to rename does not exist.");
+            throw new FilesystemItemNotFoundException(Location, "The file you are trying to rename does not exist.");
 
         try
         {
@@ -110,10 +109,10 @@ public class File : IFilesystemItem
     public void Delete()
     {
         if (Parent == null)
-            throw new InvalidOperationException("A game's savefile should not be deleted.");
+            throw new InvalidOperationException("A file without a parent should not be deleted.");
 
         if (!Exists)
-            throw new FilesystemItemNotFoundException("The file you are trying to delete does not exist.");
+            throw new FilesystemItemNotFoundException(Location, "The file you are trying to delete does not exist.");
 
         try
         {
@@ -135,16 +134,15 @@ public class File : IFilesystemItem
     /// Overwrites the contents of the file with those from the file provided.
     /// </summary>
     /// <param name="file">The file to copy the contents of.</param>
-    /// <exception cref="SavefileNotFoundException"></exception>
     /// <exception cref="FilesystemItemNotFoundException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public void OverwriteContents(File fileToCopy)
     {
         if (!Exists)
-            throw new SavefileNotFoundException("The file you are trying to overwrite does not exist.");
+            throw new FilesystemItemNotFoundException(Location, "The file you are trying to overwrite does not exist.");
 
         if (!fileToCopy.Exists)
-            throw new FilesystemItemNotFoundException("The file you provided to copy the contents of does not exist.");
+            throw new FilesystemItemNotFoundException(fileToCopy.Location, "The file you provided to copy the contents of does not exist.");
 
         try
         {

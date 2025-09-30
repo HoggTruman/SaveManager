@@ -156,16 +156,21 @@ public class SaveViewModel : NotifyPropertyChanged
             ActiveGame.ActiveProfile.UpdateSaveListEntries();
             SelectedEntry = copiedSavefile;
         }
-        catch (SavefileNotFoundException)
+        catch (FilesystemItemNotFoundException ex)
         {
-            ActiveGame.SavefileLocation = null;
+            if (ex.Location == ActiveGame.SavefileLocation)
+            {
+                ActiveGame.SavefileLocation = null;
+                throw new SavefileNotFoundException("The active game's save file does not exist.");
+            }
+            
             throw;
         }
     }
 
 
     /// <summary>
-    /// Overwrites the game's savefile with the selected entry if it is a file.
+    /// Overwrites the active game's savefile with the selected entry if it is a file.
     /// </summary>
     /// <exception cref="SavefileNotFoundException"></exception>
     /// <exception cref="FilesystemException"></exception>
@@ -181,9 +186,44 @@ public class SaveViewModel : NotifyPropertyChanged
         {
             ActiveGame.Savefile.OverwriteContents((File)SelectedEntry);
         }
-        catch (SavefileNotFoundException)
+        catch (FilesystemItemNotFoundException ex)
         {
-            ActiveGame.SavefileLocation = null;
+            if (ex.Location == ActiveGame.SavefileLocation)
+            {
+                ActiveGame.SavefileLocation = null;
+                throw new SavefileNotFoundException("The active game's save file does not exist.");
+            }                
+
+            throw;
+        }
+    }
+
+
+    /// <summary>
+    /// Overwrites the selected entry if it is a file, with the active game's savefile.
+    /// </summary>
+    /// <exception cref="SavefileNotFoundException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    public void ReplaceSelectedEntry()
+    {
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null || SelectedEntry is not File)
+        {
+            return;
+        }
+
+        try
+        {
+            ((File)SelectedEntry).OverwriteContents(ActiveGame.Savefile);
+        }
+        catch (FilesystemItemNotFoundException ex)
+        {
+            if (ex.Location == ActiveGame.SavefileLocation)
+            {
+                ActiveGame.SavefileLocation = null;
+                throw new SavefileNotFoundException("The active game's save file does not exist.");
+            }                
+
             throw;
         }
     }

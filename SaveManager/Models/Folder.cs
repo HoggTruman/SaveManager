@@ -51,7 +51,7 @@ public class Folder : IFilesystemItem
         ValidateFolderName(name, parent.Children);
 
         if (!parent.Exists)
-            throw new FilesystemItemNotFoundException("The parent folder does not exist.");
+            throw new FilesystemItemNotFoundException(parent.Location, "The parent folder does not exist.");
 
         try
         {
@@ -87,7 +87,7 @@ public class Folder : IFilesystemItem
         ValidateFolderName(newName, Parent.Children);
         
         if (!Exists)
-            throw new FilesystemItemNotFoundException("The folder you are trying to rename does not exist.");
+            throw new FilesystemItemNotFoundException(Location, "The folder you are trying to rename does not exist.");
 
         try
         {
@@ -117,7 +117,7 @@ public class Folder : IFilesystemItem
             throw new InvalidOperationException("A Folder representing a game's profiles directory should not be deleted.");
 
         if (!Exists)
-            throw new FilesystemItemNotFoundException("The folder you are trying to delete does not exist.");
+            throw new FilesystemItemNotFoundException(Location, "The folder you are trying to delete does not exist.");
 
         try
         {
