@@ -147,12 +147,16 @@ public class GameProfileViewModel : NotifyPropertyChanged
         }
 
         IEnumerable<string> otherProfilesDirectories = Games.Where(x => x != ActiveGame && x.ProfilesDirectory != null).Select(x => x.ProfilesDirectory!);
+        IEnumerable<string> savefileLocations = Games.Select(x => x.SavefileLocation).Where(x => x != null)!;
 
         if (otherProfilesDirectories.Contains(location))
             throw new ValidationException("Another game uses this folder as a profiles directory.");
 
         if (otherProfilesDirectories.Any(x => PathHelpers.IsEitherDirectoryDescendant(location, x)))
-            throw new ValidationException("This folder is the parent / child of another game's profiles directory");
+            throw new ValidationException("This folder is the parent / child of another game's profiles directory.");
+
+        if (savefileLocations.Any(x => PathHelpers.IsDescendant(x, location)))
+            throw new ValidationException("This folder contains a game's savefile.");
 
         ActiveGame.ProfilesDirectory = location;        
     }
