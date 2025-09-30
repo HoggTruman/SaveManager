@@ -131,12 +131,11 @@ public partial class GameProfileWindow : Window
             InitialDirectory = GameProfileViewModel.ActiveGame?.ProfilesDirectory
         };
 
-        while (openFolderDialog.ShowDialog(this) == CommonFileDialogResult.Ok)
+        if (openFolderDialog.ShowDialog(this) == CommonFileDialogResult.Ok)
         {
             try
             {
                 GameProfileViewModel.SetProfilesDirectory(openFolderDialog.FileName);
-                return;
             }
             catch (ValidationException ex)
             {
@@ -145,12 +144,9 @@ public partial class GameProfileWindow : Window
             catch (Exception ex)
             {
                 if (ex is FilesystemException or FilesystemItemNotFoundException)
-                {
                     new OkDialog("An error occurred", "An error occurred while setting the profiles directory.").ShowDialog(this);
-                    return;
-                }
-
-                throw;
+                else
+                    throw;
             }
         }
     }
