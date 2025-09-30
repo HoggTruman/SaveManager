@@ -1,16 +1,13 @@
 ﻿using SaveManager.Exceptions;
 using System.IO;
-using System.Security;
 
 namespace SaveManager.Models;
 
 public class File : IFilesystemItem
 {
-    private FileInfo _fileInfo;
-
-    public string Location => _fileInfo.FullName;
-    public string Name => _fileInfo.Name;
-    public bool Exists => _fileInfo.Exists;
+    public string Location { get; private set; }
+    public string Name => Path.GetFileName(Location);
+    public bool Exists => System.IO.File.Exists(Location);
 
     /// <summary>
     /// The parent folder. It is only null for a file representing a game's savefile.
@@ -19,35 +16,16 @@ public class File : IFilesystemItem
 
 
 
-
+    
     /// <summary>
     /// Instantiates a new File.
     /// </summary>
-    /// <param name="fileInfo"></param>
-    /// <param name="parent"></param>
-    public File(FileInfo fileInfo, Folder? parent)
-    {
-        _fileInfo = fileInfo;
-        Parent = parent;
-    }
-
-
-    /// <inheritdoc cref="File(FileInfo, Folder?)"/>
-    /// <exception cref="FilesystemException"></exception>
+    /// <param name="location">The absolute path of the file.</param>
+    /// <param name="parent">The parent <See cref="Folder"/>.</param>
     public File(string location, Folder? parent)
     {
-        try
-        {
-            _fileInfo = new FileInfo(location);
-            Parent = parent;
-        }
-        catch(Exception ex)
-        {
-            if (ex is SecurityException or ArgumentException or UnauthorizedAccessException or PathTooLongException or NotSupportedException)
-                throw new FilesystemException(ex.Message, ex);
-
-            throw;
-        }
+        Location = location;
+        Parent = parent;
     }
     
 
@@ -72,17 +50,16 @@ public class File : IFilesystemItem
         try
         {
             string copyLocation = Path.Join(copyParent.Location, GenerateFileName(Name, copyParent.Children));
-            FileInfo copiedFileInfo = new(copyLocation);
             System.IO.File.Copy(Location, copyLocation);            
-            File copiedFile = new(copiedFileInfo, copyParent);
+            File copiedFile = new(copyLocation, copyParent);
             copyParent.Children.Add(copiedFile);
             copyParent.SortChildren();
             return copiedFile;
         }
         catch(Exception ex)
         {
-            if (ex is SecurityException or ArgumentException or UnauthorizedAccessException or PathTooLongException or NotSupportedException or
-                DirectoryNotFoundException or FileNotFoundException or IOException)
+            if (ex is UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException or 
+                FileNotFoundException or IOException or NotSupportedException)
                 throw new FilesystemException(ex.Message, ex);
 
             throw;
@@ -110,13 +87,14 @@ public class File : IFilesystemItem
         try
         {
             string newLocation = Path.Join(Parent.Location, newName);
-            _fileInfo.MoveTo(newLocation);
+            System.IO.File.Move(Location, newLocation);
+            UpdateLocation(newLocation);
             Parent.SortChildren();
         }
         catch(Exception ex)
         {
-            if (ex is IOException or ArgumentException or SecurityException or UnauthorizedAccessException or FileNotFoundException or
-                DirectoryNotFoundException or PathTooLongException or NotSupportedException)
+            if (ex is IOException or FileNotFoundException or ArgumentException or UnauthorizedAccessException or 
+                PathTooLongException or DirectoryNotFoundException or NotSupportedException)
                 throw new FilesystemException(ex.Message, ex);
                 
             throw;
@@ -139,12 +117,13 @@ public class File : IFilesystemItem
 
         try
         {
-            _fileInfo.Delete();
+            System.IO.File.Delete(Location);
             Parent.Children = [..Parent.Children.Where(x => x != this)];
         }
         catch (Exception ex)
         {
-            if (ex is UnauthorizedAccessException or IOException or SecurityException)
+            if (ex is ArgumentException or DirectoryNotFoundException or IOException or NotSupportedException or PathTooLongException 
+                or UnauthorizedAccessException)
                 throw new FilesystemException(ex.Message, ex);
 
             throw;
@@ -160,17 +139,7 @@ public class File : IFilesystemItem
     /// <exception cref="FilesystemException"></exception>
     public void UpdateLocation(string newLocation)
     {
-        try
-        {
-            _fileInfo = new(newLocation);
-        }
-        catch (Exception ex)
-        {
-            if (ex is PathTooLongException or ArgumentException or NotSupportedException or SecurityException or UnauthorizedAccessException)
-                throw new FilesystemException(ex.Message, ex);
-
-            throw;
-        }
+        Location = newLocation;
     }
 
 

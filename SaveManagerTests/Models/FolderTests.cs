@@ -38,7 +38,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void FolderLoadsChildrenOnConstruction_WithString()
+    public void FolderLoadsChildrenOnConstruction()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -46,20 +46,6 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Assert.True(TestFolder.IsEquivalentTo(folder));
-    }
-
-
-    [Fact]
-    public void FolderLoadsChildrenOnConstruction_WithDirectoryInfo()
-    {
-        // setup
-        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
-        Setup(testCaseDirectory);
-
-        // test
-        DirectoryInfo directoryInfo = new(Path.Join(testCaseDirectory, TestFolder.Name));
-        Folder folder = new(directoryInfo, null);
         Assert.True(TestFolder.IsEquivalentTo(folder));
     }
 

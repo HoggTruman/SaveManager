@@ -6,11 +6,9 @@ namespace SaveManager.Models;
 
 public class Folder : IFilesystemItem
 {
-    private DirectoryInfo _directoryInfo;
-
-    public string Location => _directoryInfo.FullName;
-    public string Name => _directoryInfo.Name;
-    public bool Exists => _directoryInfo.Exists;
+    public string Location { get; private set; }
+    public string Name => Path.GetFileName(Location);
+    public bool Exists => Directory.Exists(Location);
     public ObservableCollection<IFilesystemItem> Children { get; set; } = [];
 
     /// <summary>
@@ -24,34 +22,14 @@ public class Folder : IFilesystemItem
 
 
     /// <summary>
-    /// Instantiates new Folder and automatically loads children from the filesystem.
+    /// Instantiates a new Folder and automatically loads children from the filesystem.
     /// </summary>
-    /// <param name="directoryInfo"></param>
-    /// <param name="parent"></param>
-    /// <exception cref="FilesystemException"></exception>
-    public Folder(DirectoryInfo directoryInfo, Folder? parent)
-    {
-        _directoryInfo = directoryInfo;
-        Parent = parent;
-        LoadChildren();
-    }
-
-    /// <inheritdoc cref="Folder(DirectoryInfo, Folder?)"/>
+    /// <param name="location">The absolute path of the folder.</param>
+    /// <param name="parent">The parent <see cref="Folder"/>.</param>
     /// <exception cref="FilesystemException"></exception>
     public Folder(string location, Folder? parent)
     {
-        try
-        {
-            _directoryInfo = new(location);
-        }
-        catch (Exception ex)
-        {
-            if (ex is ArgumentException or PathTooLongException or System.Security.SecurityException)
-                throw new FilesystemException(ex.Message, ex);
-
-            throw;
-        }
-        
+        Location = location;        
         Parent = parent;
         LoadChildren();
     }
@@ -78,8 +56,8 @@ public class Folder : IFilesystemItem
         try
         {
             string location = Path.Join(parent.Location, name);
-            DirectoryInfo directoryInfo = Directory.CreateDirectory(location);
-            Folder newFolder = new(directoryInfo, parent);
+            Directory.CreateDirectory(location);
+            Folder newFolder = new(location, parent);
             parent.Children.Add(newFolder);
             parent.SortChildren();
             return newFolder;
@@ -114,23 +92,17 @@ public class Folder : IFilesystemItem
         try
         {
             string newLocation = Path.Join(Parent.Location, newName);
-            _directoryInfo.MoveTo(newLocation);
-
-            foreach (IFilesystemItem child in Children)
-            {
-                string newChildLocation = Path.Join(newLocation, child.Name);
-                child.UpdateLocation(newChildLocation);
-            }
+            Directory.Move(Location, newLocation);
+            UpdateLocation(newLocation);
+            Parent.SortChildren();
         }
         catch(Exception ex)
         {
-            if (ex is ArgumentException or IOException or System.Security.SecurityException or DirectoryNotFoundException)
+            if (ex is IOException or UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException)
                 throw new FilesystemException(ex.Message, ex);
                 
             throw;
-        }       
-
-        Parent.SortChildren();
+        }
     }
 
 
@@ -149,12 +121,12 @@ public class Folder : IFilesystemItem
 
         try
         {
-            _directoryInfo.Delete(true);
+            Directory.Delete(Location, true);
             Parent.Children = [..Parent.Children.Where(x => x != this)];
         }
         catch (Exception ex)
         {
-            if (ex is UnauthorizedAccessException or DirectoryNotFoundException or IOException or System.Security.SecurityException)
+            if (ex is IOException or UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException)
                 throw new FilesystemException(ex.Message, ex);
 
             throw;
@@ -163,23 +135,12 @@ public class Folder : IFilesystemItem
 
 
     /// <summary>
-    /// Updates the Folder's location for the internal filesystem representation.
+    /// Updates the location of the Folder and its children in the internal representation.
     /// Does not actually affect any files or directories in the filesytem.
     /// </summary>
-    /// <exception cref="FilesystemException"></exception>
     public void UpdateLocation(string newLocation)
     {
-        try
-        {
-            _directoryInfo = new(newLocation);
-        }
-        catch (Exception ex)
-        {
-            if (ex is System.Security.SecurityException or ArgumentException or PathTooLongException)
-                throw new FilesystemException(ex.Message, ex);
-
-            throw;
-        }
+        Location = newLocation;
         
         foreach (IFilesystemItem child in Children)
         {
@@ -198,22 +159,21 @@ public class Folder : IFilesystemItem
         try
         {
             Children = [];
-            foreach (DirectoryInfo childDirectoryInfo in _directoryInfo.GetDirectories())
+            foreach (string childDirectoryLocation in Directory.GetDirectories(Location))
             {
-                Folder childFolder = new(childDirectoryInfo, this);
-                Children.Add(childFolder);
+                Children.Add(new Folder(childDirectoryLocation, this));
             }
 
-            foreach (FileInfo childFileInfo in _directoryInfo.GetFiles())
+            foreach (string childFileLocation in Directory.GetFiles(Location))
             {
-                Children.Add(new File(childFileInfo, this));
+                Children.Add(new File(childFileLocation, this));
             }
 
             SortChildren();
         }
         catch (Exception ex)
         {
-            if (ex is DirectoryNotFoundException or System.Security.SecurityException or UnauthorizedAccessException)
+            if (ex is UnauthorizedAccessException or ArgumentException or PathTooLongException or IOException or DirectoryNotFoundException)
                 throw new FilesystemException(ex.Message, ex);
 
             throw;

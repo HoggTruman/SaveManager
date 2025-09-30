@@ -46,6 +46,5 @@ public interface IFilesystemItem
     /// Does not actually affect any files or directories.
     /// </summary>
     /// <param name="newLocation"></param>
-    /// <exception cref="FilesystemException"></exception>
     public void UpdateLocation(string newLocation);
 }
