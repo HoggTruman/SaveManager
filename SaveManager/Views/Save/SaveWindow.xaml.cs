@@ -183,7 +183,8 @@ public partial class SaveWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                new OkDialog($"Error: '{SaveViewModel.SelectedEntry.Name}' does not exist", $"Reloading profiles from the filesystem...").ShowDialog(this);
+                new OkDialog($"An error occurred", 
+                    $"'{SaveViewModel.SelectedEntry.Name}' does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
             }
             catch (FilesystemException)
@@ -215,7 +216,7 @@ public partial class SaveWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                new OkDialog($"Error: '{SaveViewModel.SelectedEntry.Name}' does not exist", $"Reloading profiles from the filesystem...").ShowDialog(this);
+                new OkDialog($"An error occurred", $"'{SaveViewModel.SelectedEntry.Name}' does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
                 return;
             }
