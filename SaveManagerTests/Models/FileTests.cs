@@ -49,6 +49,48 @@ public class FileTests : IClassFixture<FilesystemFixture>
     }
 
 
+
+
+    [Fact]
+    public void CopyTo_FolderWithoutMatchingFilename_CopiesFile()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        SaveManager.Models.File fileToCopy = (SaveManager.Models.File)folder.Children.First(x => x is SaveManager.Models.File);
+        Folder targetFolder = (Folder)folder.Children.First(x => x is Folder);
+        int beforeChildrenCount = targetFolder.Children.Count;
+
+        SaveManager.Models.File copyResult = fileToCopy.CopyTo(targetFolder);
+        Assert.Equal(beforeChildrenCount + 1, targetFolder.Children.Count);
+        Assert.Contains(targetFolder.Children, x => x.Name == fileToCopy.Name);
+        Assert.Equal(targetFolder, copyResult.Parent);
+    }
+
+
+    [Fact]
+    public void CopyTo_FolderWithMatchingFilename_CopiesFile()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        SaveManager.Models.File fileToCopy = (SaveManager.Models.File)folder.Children.First(x => x is SaveManager.Models.File);
+        int beforeChildrenCount = folder.Children.Count;
+
+        SaveManager.Models.File copyResult = fileToCopy.CopyTo(folder);
+        Assert.Equal(beforeChildrenCount + 1, folder.Children.Count);
+        Assert.Equal(folder, copyResult.Parent);
+    }
+
+
+
+
     [Fact]
     public void Rename_RenamesFile()
     {
