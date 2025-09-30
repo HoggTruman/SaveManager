@@ -39,5 +39,61 @@ public class PathHelpersTests
     {
         string path = Path.Join("C:", "Folder");
         Assert.False(PathHelpers.AreParentChildDirectories(path, path));
-    }    
+    }
+
+
+
+
+    [Fact]
+    public void IsDescendant_WhenDescendant1_ReturnsTrue()
+    {
+        string directory = Path.Join("C:", "folder");
+        string file = Path.Join(directory, "file.txt");
+        Assert.True(PathHelpers.IsDescendant(file, directory));
+    }
+
+
+    [Fact]
+    public void IsDescendant_WhenDescendant2_ReturnsTrue()
+    {
+        string directory = Path.Join("C:", "folder");
+        string file = Path.Join(directory, "innerFolder", "file.txt");
+        Assert.True(PathHelpers.IsDescendant(file, directory));
+    }
+
+
+    [Fact]
+    public void IsDescendant_WhenDescendantAndEndingSeparator_ReturnsTrue()
+    {
+        string directory = Path.Join("C:", "folder") + Path.DirectorySeparatorChar;
+        string file = Path.Join(directory, "file.txt");
+        Assert.True(PathHelpers.IsDescendant(file, directory));
+    }
+
+
+    [Fact]
+    public void IsDescendant_WhenNotDescendant1_ReturnsFalse()
+    {
+        string directory = Path.Join("C:", "folder");
+        string file = Path.Join("C:", "differentFolder", "file.txt");
+        Assert.False(PathHelpers.IsDescendant(file, directory));
+    }
+
+
+    [Fact]
+    public void IsDescendant_WhenNotDescendant2_ReturnsFalse()
+    {
+        string directory = Path.Join("C:", "folder");
+        string file = Path.Join("C:", "folder1", "file.txt");
+        Assert.False(PathHelpers.IsDescendant(file, directory));
+    }
+
+
+    [Fact]
+    public void IsDescendant_WhenNotDescendantAndEndingSeparator_ReturnsFalse()
+    {
+        string directory = Path.Join("C:", "folder") + Path.DirectorySeparatorChar;
+        string file = Path.Join("C:", "differentFolder", "file.txt");
+        Assert.False(PathHelpers.IsDescendant(file, directory));
+    }
 }
