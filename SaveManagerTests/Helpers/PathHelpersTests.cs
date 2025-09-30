@@ -5,40 +5,60 @@ namespace SaveManagerTests.Helpers;
 public class PathHelpersTests
 {
     [Fact]
-    public void AreParentChildDirectories_ReturnsTrue_WhenParentAndChild()
+    public void IsEitherDirectoryDescendant_WhenParentAndChild_ReturnsTrue()
     {
         string parent = Path.Join("C:","Parent");
         string child = Path.Join(parent, "Child");
-        Assert.True(PathHelpers.AreParentChildDirectories(parent, child));
-        Assert.True(PathHelpers.AreParentChildDirectories(child, parent));
+        Assert.True(PathHelpers.IsEitherDirectoryDescendant(parent, child));
+        Assert.True(PathHelpers.IsEitherDirectoryDescendant(child, parent));
     }
 
 
     [Fact]
-    public void AreParentChildDirectories_ReturnsFalse_WhenSiblings()
+    public void IsEitherDirectoryDescendant_WhenParentAndChildWithEndingSeparator_ReturnsTrue()
+    {
+        string parent = Path.Join("C:","Parent") + Path.DirectorySeparatorChar;
+        string child = Path.Join(parent, "Child") + Path.DirectorySeparatorChar;
+        Assert.True(PathHelpers.IsEitherDirectoryDescendant(parent, child));
+        Assert.True(PathHelpers.IsEitherDirectoryDescendant(child, parent));
+    }
+
+
+    [Fact]
+    public void IsEitherDirectoryDescendant_WhenSiblings_ReturnsFalse()
     {
         string first = @"C:\somerandomdir";
         string second = @"C:\someotherdir";
-        Assert.False(PathHelpers.AreParentChildDirectories(first, second));
-        Assert.False(PathHelpers.AreParentChildDirectories(second, first));
+        Assert.False(PathHelpers.IsEitherDirectoryDescendant(first, second));
+        Assert.False(PathHelpers.IsEitherDirectoryDescendant(second, first));
     }
 
 
     [Fact]
-    public void AreParentChildDirectories_ReturnsFalse_WhenNotParentChild()
+    public void IsEitherDirectoryDescendant_WhenNotParentChild_ReturnsFalse()
     {
         string first = Path.Join("C:","a", "b");
         string second = Path.Join("C:","b", "f", "g");
-        Assert.False(PathHelpers.AreParentChildDirectories(first, second));
-        Assert.False(PathHelpers.AreParentChildDirectories(second, first));
+        Assert.False(PathHelpers.IsEitherDirectoryDescendant(first, second));
+        Assert.False(PathHelpers.IsEitherDirectoryDescendant(second, first));
     }
 
 
     [Fact]
-    public void AreParentChildDirectories_ReturnsFalse_WhenGivenSamePath()
+    public void IsEitherDirectoryDescendant_WhenNotParentChildWithEndingSeparator_ReturnsFalse()
+    {
+        string first = Path.Join("C:","a", "b") + Path.DirectorySeparatorChar;
+        string second = Path.Join("C:","b", "f", "g") + Path.DirectorySeparatorChar;
+        Assert.False(PathHelpers.IsEitherDirectoryDescendant(first, second));
+        Assert.False(PathHelpers.IsEitherDirectoryDescendant(second, first));
+    }
+
+
+    [Fact]
+    public void IsEitherDirectoryDescendant_WhenGivenSamePath_ReturnsFalse()
     {
         string path = Path.Join("C:", "Folder");
-        Assert.False(PathHelpers.AreParentChildDirectories(path, path));
+        Assert.False(PathHelpers.IsEitherDirectoryDescendant(path, path));
     }
 
 

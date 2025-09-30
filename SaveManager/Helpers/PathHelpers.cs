@@ -5,12 +5,12 @@ namespace SaveManager.Helpers;
 public static class PathHelpers
 {
     /// <summary>
-    /// Returns true if neither path is the parent of the other, otherwise false.
+    /// Returns true if neither path is a descendant of the other, otherwise false.
     /// </summary>
     /// <param name="first"></param>
     /// <param name="second"></param>
     /// <returns></returns>
-    public static bool AreParentChildDirectories(string first, string second)
+    public static bool IsEitherDirectoryDescendant(string first, string second)
     {
         if (first == second)
             return false;

@@ -151,7 +151,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
         if (otherProfilesDirectories.Contains(location))
             throw new ValidationException("Another game uses this folder as a profiles directory.");
 
-        if (otherProfilesDirectories.Any(x => PathHelpers.AreParentChildDirectories(location, x)))
+        if (otherProfilesDirectories.Any(x => PathHelpers.IsEitherDirectoryDescendant(location, x)))
             throw new ValidationException("This folder is the parent / child of another game's profiles directory");
 
         ActiveGame.ProfilesDirectory = location;        
