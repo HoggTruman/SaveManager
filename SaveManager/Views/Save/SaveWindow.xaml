@@ -124,7 +124,8 @@
                     <ItemsControl MouseDoubleClick="SaveListItem_MouseDoubleClick"
                                   Height="16"
                                   Padding="{Binding Converter={StaticResource paddingConverter}}"
-                                  IsTabStop="False">
+                                  IsTabStop="False"
+                                  Background="Transparent">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Grid>
@@ -167,7 +168,8 @@
                     <TextBlock Text="{Binding Name}"
                                VerticalAlignment="Center"
                                Height="16"
-                               Padding="{Binding Converter={StaticResource paddingConverter}}" />
+                               Padding="{Binding Converter={StaticResource paddingConverter}}" 
+                               Background="Transparent"/>
                 </DataTemplate>
             </ListBox.Resources>
 
