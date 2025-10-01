@@ -4,6 +4,7 @@ using SaveManager.Models;
 using SaveManager.Services;
 using SaveManager.ViewModels;
 using SaveManager.Views.Save;
+using System.IO;
 using System.Windows;
 
 namespace SaveManager;
@@ -43,7 +44,7 @@ public partial class App : Application
     /// <param name="appdataService"></param>
     /// <returns>A list of loaded games</returns>
     /// <exception cref="FilesystemException"></exception>
-    internal List<Game> LoadGames(AppdataService appdataService)
+    internal static List<Game> LoadGames(AppdataService appdataService)
     {
         List<Game> games = [];
         int invalidGameCount = 0;
@@ -52,17 +53,12 @@ public partial class App : Application
         {
             try
             {
-                Game game = new(gameDTO.Name) { SavefileLocation = gameDTO.SavefileLocation };
-                try
+                Game game = new(gameDTO.Name)
                 {
-                    game.ProfilesDirectory = gameDTO.ProfilesDirectory;
-                    games.Add(game);
-                }
-                catch (FilesystemItemNotFoundException)
-                {
-                    // Profiles directory no longer exists
-                    game.ProfilesDirectory = null; 
-                }                
+                    SavefileLocation = gameDTO.SavefileLocation,
+                    ProfilesDirectory = Directory.Exists(gameDTO.ProfilesDirectory) ? gameDTO.ProfilesDirectory : null
+                };
+                games.Add(game);             
             }
             catch (ValidationException)
             {
@@ -72,7 +68,7 @@ public partial class App : Application
         }
 
         if (invalidGameCount > 0)
-                MessageBox.Show($"{invalidGameCount} games removed due to invalid data.");
+            MessageBox.Show($"{invalidGameCount} games removed due to invalid data.");
 
         return games;
     }

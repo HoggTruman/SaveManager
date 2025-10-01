@@ -138,7 +138,6 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <param name="location"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void SetProfilesDirectory(string location)
     {
         if (ActiveGame == null)

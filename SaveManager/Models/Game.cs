@@ -39,7 +39,6 @@ public class Game : NotifyPropertyChanged
     /// <summary>
     /// The full path of the savefile.
     /// </summary>
-    /// <exception cref="FilesystemException"></exception>
     public string? SavefileLocation
     { 
         get => _savefile?.Location; 
@@ -65,11 +64,9 @@ public class Game : NotifyPropertyChanged
 
 
     /// <summary>
-    /// The full path of the directory containing profile directories.
-    /// If setting to a path that doesn't exist, throws a <see cref="FilesystemItemNotFoundException"/>.
+    /// The full path of the directory containing the game's profiles.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
     public string? ProfilesDirectory
     { 
         get => _profilesFolder?.Location; 
@@ -81,12 +78,7 @@ public class Game : NotifyPropertyChanged
                 Profiles = [];
             }
             else
-            {
-                if (!Directory.Exists(value))
-                {
-                    throw new FilesystemItemNotFoundException(value, "The directory provided does not exist.");
-                }                    
-
+            {              
                 Folder newProfilesFolder = new(value, null);
                 SetProperty(ref _profilesFolder, newProfilesFolder);
                 Profiles = [..newProfilesFolder.Children.Where(x => x is Folder).Select(x => new Profile((Folder)x, this))];             

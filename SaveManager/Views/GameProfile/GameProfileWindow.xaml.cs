@@ -141,12 +141,9 @@ public partial class GameProfileWindow : Window
             {
                 new OkDialog("Invalid directory", ex.Message).ShowDialog(this);
             }
-            catch (Exception ex)
+            catch (FilesystemException)
             {
-                if (ex is FilesystemException or FilesystemItemNotFoundException)
-                    new OkDialog("An error occurred", "An error occurred while setting the profiles directory.").ShowDialog(this);
-                else
-                    throw;
+                new OkDialog("An error occurred", "An error occurred while setting the profiles directory.").ShowDialog(this);
             }
         }
     }
