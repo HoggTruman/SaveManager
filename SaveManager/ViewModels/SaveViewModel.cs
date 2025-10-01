@@ -39,6 +39,11 @@ public class SaveViewModel : NotifyPropertyChanged
     public bool CanDelete => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
     public bool CanRename => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
     public bool CanRefresh => ActiveGame != null;
+    public bool CanBackupSave => ActiveGame != null && ActiveGame.ActiveProfile != null;
+    public bool CanLoadSave => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry is File;
+    public bool CanReplaceSave => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry is File;
+
+
 
 
     public SaveViewModel(AppdataService appdataService, IEnumerable<Game> games)
@@ -49,6 +54,17 @@ public class SaveViewModel : NotifyPropertyChanged
     }
 
 
+
+
+    /// <summary>
+    /// Raises OnPropertyChanged for the properties which control whether buttons are enabled.
+    /// </summary>
+    public void EnableDisableButtons()
+    {
+        OnPropertyChanged(nameof(CanBackupSave));
+        OnPropertyChanged(nameof(CanLoadSave));
+        OnPropertyChanged(nameof(CanReplaceSave));
+    }
 
 
     /// <summary>

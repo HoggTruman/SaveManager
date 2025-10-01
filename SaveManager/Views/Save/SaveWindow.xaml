@@ -81,6 +81,7 @@
                       ItemsSource="{Binding ActiveGame.Profiles}"
                       SelectedItem="{Binding ActiveGame.ActiveProfile}"
                       DisplayMemberPath="Name"
+                      SelectionChanged="ProfileComboBox_SelectionChanged"
                       HorizontalAlignment="Stretch"
                       Grid.Row="1"
                       Grid.Column="1"
@@ -106,6 +107,7 @@
                  MouseDown="SaveListBox_MouseDown"
                  ContextMenuOpening="SaveListBox_ContextMenuOpening"
                  KeyUp="SaveListBox_KeyUp"
+                 SelectionChanged="SaveListBox_SelectionChanged"
                  HorizontalContentAlignment="Stretch"
                  Margin="10 5"
                  Width="Auto"
@@ -225,6 +227,7 @@
 
             <Button x:Name="BackupSaveButton"
                     Click="BackupSaveButton_Click"
+                    IsEnabled="{Binding CanBackupSave}"
                     Content="Backup Save"
                     Width="Auto"
                     Height="30"
@@ -233,15 +236,17 @@
 
             <Button x:Name="LoadSaveButton"
                     Click="LoadSaveButton_Click"
+                    IsEnabled="{Binding CanLoadSave}"
                     Content="Load Save"
                     Width="Auto"
                     Height="30"
                     Grid.Column="1"
                     Margin="10" />
 
-            <Button x:Name="ReplaceSaveButton"
-                    Content="Replace Save"
+            <Button x:Name="ReplaceSaveButton"                    
                     Click="ReplaceSaveButton_Click"
+                    IsEnabled="{Binding CanReplaceSave}"
+                    Content="Replace Save"
                     Width="Auto"
                     Height="30"
                     Grid.Column="2"

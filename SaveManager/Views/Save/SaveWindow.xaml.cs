@@ -31,6 +31,12 @@ public partial class SaveWindow : Window
 
 
 
+    private void ProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        SaveViewModel.EnableDisableButtons();
+    }
+
+
     private void GameProfileEditButton_Click(object sender, RoutedEventArgs e)
     {
         GameProfileWindow gameProfileWindow = new(ViewModelFactory.CreateGameProfileViewModel(SaveViewModel.Games, SaveViewModel.ActiveGame));
@@ -68,6 +74,12 @@ public partial class SaveWindow : Window
             PromptRenameSelectedEntry();
         else if (e.Key == DeleteKey)
             PromptDeleteSelectedEntry();
+    }
+
+
+    private void SaveListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        SaveViewModel.EnableDisableButtons();
     }
 
 
