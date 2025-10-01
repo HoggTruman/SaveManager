@@ -1,7 +1,6 @@
 ﻿using SaveManager.Exceptions;
 using SaveManager.ViewModels;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace SaveManager.Models;
 
