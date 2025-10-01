@@ -39,7 +39,7 @@ public class SaveViewModel : NotifyPropertyChanged
     public bool CanDelete => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
     public bool CanRename => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
     public bool CanRefresh => ActiveGame != null;
-    public bool CanBackupSave => ActiveGame != null && ActiveGame.ActiveProfile != null;
+    public bool CanImportSave => ActiveGame != null && ActiveGame.ActiveProfile != null;
     public bool CanLoadSave => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry is File;
     public bool CanReplaceSave => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry is File;
 
@@ -61,7 +61,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// </summary>
     public void EnableDisableButtons()
     {
-        OnPropertyChanged(nameof(CanBackupSave));
+        OnPropertyChanged(nameof(CanImportSave));
         OnPropertyChanged(nameof(CanLoadSave));
         OnPropertyChanged(nameof(CanReplaceSave));
     }
@@ -157,7 +157,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// <exception cref="SavefileNotFoundException"></exception>
     /// <exception cref="FilesystemItemNotFoundException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    public void BackupSavefile()
+    public void ImportSavefile()
     {
         if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null)
         {

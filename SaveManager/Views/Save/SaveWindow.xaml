@@ -225,9 +225,9 @@
                 <ColumnDefinition Width="50" />
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="BackupSaveButton"
-                    Click="BackupSaveButton_Click"
-                    IsEnabled="{Binding CanBackupSave}"
+            <Button x:Name="ImportSaveButton"
+                    Click="ImportSaveButton_Click"
+                    IsEnabled="{Binding CanImportSave}"
                     Width="Auto"
                     Height="30"
                     Grid.Column="0"

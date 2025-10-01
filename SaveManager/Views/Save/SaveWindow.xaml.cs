@@ -92,7 +92,7 @@ public partial class SaveWindow : Window
     }
 
 
-    private void BackupSaveButton_Click(object sender, RoutedEventArgs e)
+    private void ImportSaveButton_Click(object sender, RoutedEventArgs e)
     {
         if (SaveViewModel.ActiveGame == null || SaveViewModel.ActiveGame.ActiveProfile == null)
         {
@@ -107,7 +107,7 @@ public partial class SaveWindow : Window
 
         try
         {
-            SaveViewModel.BackupSavefile();
+            SaveViewModel.ImportSavefile();
         }
         catch (SavefileNotFoundException)
         {
