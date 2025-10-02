@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 
 namespace SaveManager.Components;
 
@@ -9,11 +10,12 @@ public partial class OkDialog : Window
 {
     public string Prompt => PromptLabel.Content.ToString()!;
 
-    public OkDialog(string title, string prompt)
+    public OkDialog(string title, string prompt, ImageSource imageSource)
     {
         InitializeComponent();
         Title = title;
         PromptLabel.Content = prompt;
+        PromptImage.Source = imageSource;
     }
 
     private void OkButton_Click(object sender, RoutedEventArgs e)

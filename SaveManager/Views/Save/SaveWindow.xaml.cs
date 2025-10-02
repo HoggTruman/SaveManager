@@ -1,4 +1,5 @@
-﻿using SaveManager.Components;
+﻿using SaveManager.Assets;
+using SaveManager.Components;
 using SaveManager.Exceptions;
 using SaveManager.Extensions;
 using SaveManager.Models;
@@ -29,6 +30,15 @@ public partial class SaveWindow : Window
     }
 
 
+
+
+    private static OkDialog CreateErrorDialog(string description) => new("An error occurred", description, ImageSources.Error);
+
+    private static OkDialog SaveNotSetDialog => new("Savefile location not set", 
+        "The game's savefile location must be set to perform this action.", ImageSources.Warning);
+
+    private static OkDialog SaveDoesNotExistDialog => new("Savefile does not exist", 
+        "The game's savefile location does not exist.\nPlease set a new one.", ImageSources.Error);
 
 
     private void ProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -101,7 +111,7 @@ public partial class SaveWindow : Window
 
         if (SaveViewModel.ActiveGame.SavefileLocation == null)
         {
-            new OkDialog("Savefile location not set", "The game's savefile location must be set to perform this action.").ShowDialog(this);
+            SaveNotSetDialog.ShowDialog(this);
             return;
         }
 
@@ -111,16 +121,16 @@ public partial class SaveWindow : Window
         }
         catch (SavefileNotFoundException)
         {
-            new OkDialog("Savefile does not exist", "The game's savefile location does not exist.\nPlease set a new one.").ShowDialog(this);
+            SaveDoesNotExistDialog.ShowDialog(this);
         }
         catch (FilesystemItemNotFoundException)
         {
-            new OkDialog("An error occurred", "Reloading profiles from the filesystem...").ShowDialog(this);
+            CreateErrorDialog("Reloading profiles from the filesystem...").ShowDialog(this);
             RefreshProfiles();
         }
         catch (FilesystemException)
         {
-            new OkDialog("An error occurred", "An error occurred while backing up the savefile.").ShowDialog(this);
+            CreateErrorDialog("An error occurred while backing up the savefile.").ShowDialog(this);
         }
     }
 
@@ -134,27 +144,27 @@ public partial class SaveWindow : Window
 
         if (SaveViewModel.ActiveGame.SavefileLocation == null)
         {
-            new OkDialog("Savefile location not set", "The game's savefile location must be set to perform this action.").ShowDialog(this);
+            SaveNotSetDialog.ShowDialog(this);
             return;
         }
 
         try
         {
             SaveViewModel.LoadSelectedEntry();
-            new OkDialog("Save Loaded", "Save successfully loaded.").ShowDialog(this);
+            new OkDialog("Save Loaded", "Save successfully loaded.", ImageSources.Success).ShowDialog(this);
         }
         catch (SavefileNotFoundException)
         {
-            new OkDialog("Savefile does not exist", "The game's savefile location does not exist.\nPlease set a new one.").ShowDialog(this);
+            SaveDoesNotExistDialog.ShowDialog(this);
         }
         catch (FilesystemItemNotFoundException)
         {
-            new OkDialog("An error occurred", "The savefile you are trying to load does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+            CreateErrorDialog("The savefile you are trying to load does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
             RefreshProfiles();
         }
         catch (FilesystemException)
         {
-            new OkDialog("An error occurred", "An error occurred while loading the savefile.").ShowDialog(this);
+            CreateErrorDialog("An error occurred while loading the savefile.").ShowDialog(this);
         }
     }
 
@@ -170,27 +180,27 @@ public partial class SaveWindow : Window
 
         if (SaveViewModel.ActiveGame.SavefileLocation == null)
         {
-            new OkDialog("Savefile location not set", "The game's savefile location must be set to perform this action.").ShowDialog(this);
+            SaveNotSetDialog.ShowDialog(this);
             return;
         }
 
         try
         {
             SaveViewModel.ReplaceSelectedEntry();
-            new OkDialog("Save Replaced", "Save successfully replaced.").ShowDialog(this);
+            new OkDialog("Save Replaced", "Save successfully replaced.", ImageSources.Success).ShowDialog(this);
         }
         catch (SavefileNotFoundException)
         {
-            new OkDialog("Savefile does not exist", "The game's savefile location does not exist.\nPlease set a new one.").ShowDialog(this);
+            SaveDoesNotExistDialog.ShowDialog(this);
         }
         catch (FilesystemItemNotFoundException)
         {
-            new OkDialog("An error occurred", "The savefile you are trying to replace does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+            CreateErrorDialog("The savefile you are trying to replace does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
             RefreshProfiles();
         }
         catch (FilesystemException)
         {
-            new OkDialog("An error occurred", "An error occurred while replacing the savefile.").ShowDialog(this);
+            CreateErrorDialog("An error occurred while replacing the savefile.").ShowDialog(this);
         }
     }
 
@@ -213,18 +223,18 @@ public partial class SaveWindow : Window
             }
             catch (ValidationException ex)
             {
-                new OkDialog("Invalid name", ex.Message).ShowDialog(this);
+                new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
                 addFolderDialog = new(addFolderDialog.Title, addFolderDialog.Prompt, addFolderDialog.Input);
             }
             catch (FilesystemItemNotFoundException)
             {
-                new OkDialog("An error occurred", "Reloading profiles from the filesystem...").ShowDialog(this);
+                CreateErrorDialog("Reloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
                 return;
             }
             catch (FilesystemException)
             {
-                new OkDialog("An error occurred", "An error occurred while creating a new folder.").ShowDialog(this);
+                CreateErrorDialog("An error occurred while creating a new folder.").ShowDialog(this);
                 return;
             }
         }   
@@ -267,13 +277,12 @@ public partial class SaveWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                new OkDialog($"An error occurred", 
-                    $"'{SaveViewModel.SelectedEntry.Name}' does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+                CreateErrorDialog($"'{SaveViewModel.SelectedEntry.Name}' does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
             }
             catch (FilesystemException)
             {
-                new OkDialog("An error occurred", $"An error occurred while deleting '{SaveViewModel.SelectedEntry.Name}'").ShowDialog(this);
+                CreateErrorDialog($"An error occurred while deleting '{SaveViewModel.SelectedEntry.Name}'").ShowDialog(this);
             }
         }
     }
@@ -295,18 +304,18 @@ public partial class SaveWindow : Window
             }
             catch (ValidationException ex)
             {
-                new OkDialog("Invalid name", ex.Message).ShowDialog(this);
+                new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
                 renameDialog = new(renameDialog.Title, renameDialog.Prompt, renameDialog.Input);
             }
             catch (FilesystemItemNotFoundException)
             {
-                new OkDialog($"An error occurred", $"'{SaveViewModel.SelectedEntry.Name}' does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+                CreateErrorDialog($"'{SaveViewModel.SelectedEntry.Name}' does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
                 return;
             }
             catch (FilesystemException)
             {
-                new OkDialog("An error occurred", $"An error occurred while renaming '{SaveViewModel.SelectedEntry.Name}'").ShowDialog(this);
+                CreateErrorDialog($"An error occurred while renaming '{SaveViewModel.SelectedEntry.Name}'").ShowDialog(this);
                 return;
             }
         }   
@@ -324,11 +333,12 @@ public partial class SaveWindow : Window
         }
         catch (FilesystemException)
         {
-            new OkDialog("An error occurred", "Failed to reload profiles.").ShowDialog(this);
+            CreateErrorDialog("Failed to reload profiles.").ShowDialog(this);
         }
         catch (FilesystemItemNotFoundException)
         {
-            new OkDialog("Profiles directory reset", "The current game's profiles directory no longer exists.\nPlease set a new one.").ShowDialog(this);
+            new OkDialog("Profiles directory reset", 
+                "The current game's profiles directory no longer exists.\nPlease set a new one.", ImageSources.Error).ShowDialog(this);
         }
     }
 }

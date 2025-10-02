@@ -9,40 +9,46 @@
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
-        ContentRendered="Window_ContentRendered">
+        ContentRendered="Window_ContentRendered"
+        Background="{x:Static SystemColors.ControlBrush}">
     <Grid Margin="15">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        
+
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Label x:Name="PromptLabel"
-               Grid.Column="1">Prompt</Label>
-        <TextBox x:Name="InputTextBox"
-                 Grid.Column="1"
-                 Grid.Row="1"
-                 MinWidth="250">Input</TextBox>
+        <Image Source="/Assets/Input.png"
+               Width="50"
+               Height="50"
+               Margin="0 0 20 0" />
 
-        
+        <StackPanel Grid.Column="1">
+            <Label x:Name="PromptLabel"
+                   Content="Prompt" />
+            <TextBox x:Name="InputTextBox"
+                     Text="Input"
+                     MinHeight="20"
+                     MinWidth="240" />
+        </StackPanel>
+
+
         <WrapPanel Grid.Row="2"
                    Grid.ColumnSpan="2"
                    HorizontalAlignment="Center"
                    Margin="0,15,0,0">
-            
             <Button x:Name="OkButton"
-                    IsDefault="True"                    
+                    IsDefault="True"
                     Click="OkButton_Click"
-                    MinWidth="60"
+                    MinWidth="80"
                     Margin="0,0,30,0">_Ok</Button>
-            
+
             <Button IsCancel="True"
-                    MinWidth="60">_Cancel</Button>
+                    MinWidth="80">_Cancel</Button>
         </WrapPanel>
     </Grid>
 </Window>

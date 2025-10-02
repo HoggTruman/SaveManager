@@ -11,14 +11,19 @@
   <ItemGroup>
     <None Remove="Assets\AddFolderIcon.png" />
     <None Remove="Assets\DeleteIcon.png" />
+    <None Remove="Assets\Error.png" />
     <None Remove="Assets\FolderClosed.png" />
     <None Remove="Assets\FolderOpen.png" />
     <None Remove="Assets\ImportSave.png" />
+    <None Remove="Assets\Input.png" />
     <None Remove="Assets\LoadSave.png" />
+    <None Remove="Assets\Question.png" />
     <None Remove="Assets\RefreshIcon.png" />
     <None Remove="Assets\RenameIcon.png" />
     <None Remove="Assets\ReplaceSave.png" />
     <None Remove="Assets\Settings.png" />
+    <None Remove="Assets\Success.png" />
+    <None Remove="Assets\Warning.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,14 +39,19 @@
   <ItemGroup>
     <Resource Include="Assets\AddFolderIcon.png" />
     <Resource Include="Assets\DeleteIcon.png" />
+    <Resource Include="Assets\Error.png" />
     <Resource Include="Assets\FolderClosed.png" />
     <Resource Include="Assets\FolderOpen.png" />
     <Resource Include="Assets\ImportSave.png" />
+    <Resource Include="Assets\Input.png" />
     <Resource Include="Assets\LoadSave.png" />
+    <Resource Include="Assets\Question.png" />
     <Resource Include="Assets\RefreshIcon.png" />
     <Resource Include="Assets\RenameIcon.png" />
     <Resource Include="Assets\ReplaceSave.png" />
     <Resource Include="Assets\Settings.png" />
+    <Resource Include="Assets\Success.png" />
+    <Resource Include="Assets\Warning.png" />
   </ItemGroup>
 
 </Project>

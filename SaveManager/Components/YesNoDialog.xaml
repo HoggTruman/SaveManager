@@ -8,29 +8,46 @@
         Title="YesNo"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
-        WindowStartupLocation="CenterOwner">
+        WindowStartupLocation="CenterOwner"
+        Background="{x:Static SystemColors.ControlBrush}">
     <Grid Margin="15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+
+        <Image x:Name="PromptImage"
+               Source="/Assets/Question.png"
+               Width="50"
+               Height="50"
+               Margin="0 0 20 0" />
+
         <Label x:Name="PromptLabel"
-               MinWidth="250">Prompt</Label>
+               Content="Prompt"
+               Grid.Column="1"
+               VerticalAlignment="Center"
+               MinWidth="240" />
 
 
         <WrapPanel Grid.Row="1"
+                   Grid.ColumnSpan="2"
                    HorizontalAlignment="Center"
                    Margin="0,15,0,0">
 
             <Button x:Name="YesButton"
                     IsDefault="True"
                     Click="YesButton_Click"
-                    MinWidth="60"
+                    MinWidth="80"
                     Margin="0,0,30,0">_Yes</Button>
 
             <Button IsCancel="True"
-                    MinWidth="60">_No</Button>
+                    MinWidth="80">_No</Button>
         </WrapPanel>
     </Grid>
 </Window>

@@ -8,23 +8,42 @@
         Title="OkDialog"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
-        WindowStartupLocation="CenterOwner">
+        WindowStartupLocation="CenterOwner"
+        Background="{x:Static SystemColors.ControlBrush}">
     <Grid Margin="15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+
+        <Image x:Name="PromptImage"
+               Source="/Assets/Error.png"
+               Width="50"
+               Height="50"
+               Margin="0 0 20 0" />
+
+
         <Label x:Name="PromptLabel"
-               MinWidth="250">Prompt</Label>
+               Content="Prompt"
+               VerticalAlignment="Center"
+               Grid.Column="1"
+               MinWidth="240" />
 
 
         <Button x:Name="OkButton"
+                Content="_Ok"
                 IsDefault="True"
                 Click="OkButton_Click"
                 Width="60"
                 HorizontalAlignment="Center"
                 Margin="0,15,0,0"
-                Grid.Row="1">_Ok</Button>
+                Grid.Row="1"
+                Grid.ColumnSpan="2" />
     </Grid>
 </Window>

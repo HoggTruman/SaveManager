@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using SaveManager.Assets;
 using SaveManager.Components;
 using SaveManager.Exceptions;
 using SaveManager.Extensions;
@@ -23,6 +24,11 @@ public partial class GameProfileWindow : Window
     }
 
 
+
+    
+    private static OkDialog CreateErrorDialog(string description) => new("An error occurred", description, ImageSources.Error);
+
+
     private void AddGameButton_Click(object sender, RoutedEventArgs e)
     {   
         InputDialog addGameDialog = new("Add Game", "Enter the name of the new game:");
@@ -36,7 +42,7 @@ public partial class GameProfileWindow : Window
             }
             catch (ValidationException ex)
             {
-                new OkDialog("Invalid name", ex.Message).ShowDialog(this);
+                new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
                 addGameDialog = new(addGameDialog.Title, addGameDialog.Prompt, addGameDialog.Input);
             }                                  
         }            
@@ -78,7 +84,7 @@ public partial class GameProfileWindow : Window
             }
             catch (ValidationException ex)
             {
-                new OkDialog("Invalid name", ex.Message).ShowDialog(this);
+                new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
                 renameGameDialog = new(renameGameDialog.Title, renameGameDialog.Prompt, renameGameDialog.Input);
             }                                  
         }   
@@ -107,11 +113,11 @@ public partial class GameProfileWindow : Window
             }
             catch (ValidationException ex)
             {
-                new OkDialog("Invalid file", ex.Message).ShowDialog(this);
+                new OkDialog("Invalid file", ex.Message, ImageSources.Warning).ShowDialog(this);
             }
             catch (FilesystemException)
             {
-                new OkDialog("An error occurred", "An error occurred while setting the savefile location.").ShowDialog(this);
+                CreateErrorDialog("An error occurred while setting the savefile location.").ShowDialog(this);
             }
         }
     }   
@@ -139,11 +145,11 @@ public partial class GameProfileWindow : Window
             }
             catch (ValidationException ex)
             {
-                new OkDialog("Invalid directory", ex.Message).ShowDialog(this);
+                new OkDialog("Invalid directory", ex.Message, ImageSources.Warning).ShowDialog(this);
             }
             catch (FilesystemException)
             {
-                new OkDialog("An error occurred", "An error occurred while setting the profiles directory.").ShowDialog(this);
+                CreateErrorDialog("An error occurred while setting the profiles directory.").ShowDialog(this);
             }
         }
     }
@@ -167,18 +173,18 @@ public partial class GameProfileWindow : Window
             }
             catch (ValidationException ex)
             {
-                new OkDialog("Invalid name", ex.Message).ShowDialog(this);
+                new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
                 newProfileDialog = new(newProfileDialog.Title, newProfileDialog.Prompt, newProfileDialog.Input);
             }
             catch (FilesystemItemNotFoundException)
             {
-                new OkDialog("An error occurred", "An error occurred while creating a new profile.\nReloading profiles from the filesystem...").ShowDialog(this);
+                CreateErrorDialog("An error occurred while creating a new profile.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
                 return;
             }
             catch (FilesystemException)
             {
-                new OkDialog("An error occurred", "An error occurred while creating a new profile.").ShowDialog(this);
+                CreateErrorDialog("An error occurred while creating a new profile.").ShowDialog(this);
                 return;
             }
         }     
@@ -203,18 +209,18 @@ public partial class GameProfileWindow : Window
             }
             catch (ValidationException ex)
             {
-                new OkDialog("Invalid name", ex.Message).ShowDialog(this);
+                new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
                 renameProfileDialog = new(renameProfileDialog.Title, renameProfileDialog.Prompt, renameProfileDialog.Input);
             }
             catch (FilesystemItemNotFoundException)
             {
-                new OkDialog("An error occurred", "The profile you are trying to rename does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+                CreateErrorDialog("The profile you are trying to rename does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
                 return;
             }
             catch (FilesystemException)
             {
-                new OkDialog("An error occurred", "An error occurred while renaming the profile.").ShowDialog(this);
+                CreateErrorDialog("An error occurred while renaming the profile.").ShowDialog(this);
                 return;
             }
         }   
@@ -238,12 +244,12 @@ public partial class GameProfileWindow : Window
             }
             catch (FilesystemItemNotFoundException)
             {
-                new OkDialog("An error occurred", "The profile you are trying to delete does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+                CreateErrorDialog("The profile you are trying to delete does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
             }
             catch (FilesystemException)
             {
-                new OkDialog("An error occurred", "An error occurred while deleting the profile.").ShowDialog(this);
+                CreateErrorDialog("An error occurred while deleting the profile.").ShowDialog(this);
             }
         }
     }
@@ -263,7 +269,8 @@ public partial class GameProfileWindow : Window
             catch (AppdataException)
             {
                 YesNoDialog tryAgainDialog = new("Failed to save",
-                    "Failed to save changes to games (appdata.xml might be in use by another program)\nWould you like to try again?");
+                    "Failed to save changes to games (appdata.xml might be in use by another program)\nWould you like to try again?",
+                    ImageSources.Error);
 
                 if (tryAgainDialog.ShowDialog(this) != true)
                 {
@@ -283,15 +290,15 @@ public partial class GameProfileWindow : Window
         try
         {
             GameProfileViewModel.RefreshProfiles();
-            new OkDialog("Profiles reloaded", "The current game's profiles have been reloaded.").ShowDialog(this);
         }
         catch (FilesystemException)
         {
-            new OkDialog("An error occurred", "Failed to reload profiles.").ShowDialog(this);
+            CreateErrorDialog("Failed to reload profiles.").ShowDialog(this);
         }
         catch (FilesystemItemNotFoundException)
         {
-            new OkDialog("Profiles directory reset", "The current game's profiles directory no longer exists.\nPlease set a new one.").ShowDialog(this);
+            new OkDialog("Profiles directory reset", 
+                "The current game's profiles directory no longer exists.\nPlease set a new one.", ImageSources.Error).ShowDialog(this);
         }
     }
 }
