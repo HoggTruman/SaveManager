@@ -25,6 +25,17 @@
             </Style.Triggers>
         </Style>-->
 
+        <Style x:Key="FadeWhenDisabled"
+               TargetType="Image">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled"
+                         Value="False">
+                    <Setter Property="Opacity"
+                            Value="0.35" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <PopupAnimation x:Key="{x:Static SystemParameters.MenuPopupAnimationKey}">None</PopupAnimation>
 
     </Window.Resources>
@@ -235,7 +246,8 @@
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/ImportSave.png"
                            Height="20"
-                           Width="20" />
+                           Width="20"
+                           Style="{StaticResource FadeWhenDisabled}" />
                     <TextBlock Text="Import Save"
                                VerticalAlignment="Center"
                                Padding="5 0 2 0" />
@@ -252,7 +264,8 @@
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/LoadSave.png"
                            Height="20"
-                           Width="20" />
+                           Width="20"
+                           Style="{StaticResource FadeWhenDisabled}" />
                     <TextBlock Text="Load Selected"
                                VerticalAlignment="Center"
                                Padding="5 0 1 0" />
@@ -269,7 +282,8 @@
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/ReplaceSave.png"
                            Height="20"
-                           Width="20" />
+                           Width="20"
+                           Style="{StaticResource FadeWhenDisabled}" />
                     <TextBlock Text="Replace Selected"
                                VerticalAlignment="Center"
                                Padding="5 0 0 0" />
@@ -281,9 +295,9 @@
                     Height="30"
                     Grid.Column="3"
                     Margin="10">
-                <Image Source="/Assets/Settings.png" 
+                <Image Source="/Assets/Settings.png"
                        Height="24"
-                       Width="24"/>
+                       Width="24" />
             </Button>
         </Grid>
     </Grid>
