@@ -151,7 +151,7 @@ public partial class SaveWindow : Window
         try
         {
             SaveViewModel.LoadSelectedEntry();
-            new OkDialog("Save Loaded", "Save successfully loaded.", ImageSources.Success).ShowDialog(this);
+            ShowNotification(LoadedNotification);
         }
         catch (SavefileNotFoundException)
         {
@@ -187,7 +187,7 @@ public partial class SaveWindow : Window
         try
         {
             SaveViewModel.ReplaceSelectedEntry();
-            new OkDialog("Save Replaced", "Save successfully replaced.", ImageSources.Success).ShowDialog(this);
+            ShowNotification(ReplacedNotification);
         }
         catch (SavefileNotFoundException)
         {
@@ -340,5 +340,15 @@ public partial class SaveWindow : Window
             new OkDialog("Profiles directory reset", 
                 "The current game's profiles directory no longer exists.\nPlease set a new one.", ImageSources.Error).ShowDialog(this);
         }
+    }
+
+
+
+    private void ShowNotification(FrameworkElement notification)
+    {
+        LoadedNotification.Visibility = Visibility.Hidden;
+        ReplacedNotification.Visibility = Visibility.Hidden;
+
+        notification.Visibility = Visibility.Visible;
     }
 }
