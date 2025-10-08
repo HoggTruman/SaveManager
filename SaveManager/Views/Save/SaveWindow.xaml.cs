@@ -31,14 +31,26 @@ public partial class SaveWindow : Window
 
 
 
-
+    /// <summary>
+    /// Returns a new dialog with the provided description for when an error occurs.
+    /// </summary>
+    /// <param name="description"></param>
+    /// <returns></returns>
     private static OkDialog CreateErrorDialog(string description) => new("An error occurred", description, ImageSources.Error);
 
+    /// <summary>
+    /// Returns a new dialog for when the active game's savefile has not been set.
+    /// </summary>
     private static OkDialog SaveNotSetDialog => new("Savefile location not set", 
         "The game's savefile location must be set to perform this action.", ImageSources.Warning);
 
+    /// <summary>
+    /// Returns a new dialog for when the active game's savefile does not exist.
+    /// </summary>
     private static OkDialog SaveDoesNotExistDialog => new("Savefile does not exist", 
         "The game's savefile location does not exist.\nPlease set a new one.", ImageSources.Error);
+
+
 
 
     private void ProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -102,6 +114,8 @@ public partial class SaveWindow : Window
     }
 
 
+
+
     private void ImportSaveButton_Click(object sender, RoutedEventArgs e)
     {
         if (SaveViewModel.ActiveGame == null || SaveViewModel.ActiveGame.ActiveProfile == null)
@@ -133,6 +147,8 @@ public partial class SaveWindow : Window
             CreateErrorDialog("An error occurred while backing up the savefile.").ShowDialog(this);
         }
     }
+
+
 
 
     private void LoadSaveButton_Click(object sender, RoutedEventArgs e)
@@ -261,6 +277,9 @@ public partial class SaveWindow : Window
 
 
 
+    /// <summary>
+    /// Asks the user if they want to delete the selected entry and then attempts to.
+    /// </summary>
     private void PromptDeleteSelectedEntry()
     {
         if (!SaveViewModel.CanDelete)
@@ -290,6 +309,9 @@ public partial class SaveWindow : Window
     }
 
 
+    /// <summary>
+    /// Asks the user if they want to rename the selected entry and then attempts to.
+    /// </summary>
     public void PromptRenameSelectedEntry()
     {
         if (!SaveViewModel.CanRename)
@@ -324,6 +346,9 @@ public partial class SaveWindow : Window
     }
 
 
+    /// <summary>
+    /// Attempts to reload the active game's profiles from the filesystem.
+    /// </summary>
     private void RefreshProfiles()
     {
         if (!SaveViewModel.CanRefresh)
@@ -353,7 +378,10 @@ public partial class SaveWindow : Window
     }
 
 
-
+    /// <summary>
+    /// Shows the provided notification on screen briefly.
+    /// </summary>
+    /// <param name="notification"></param>
     private void ShowNotification(FrameworkElement notification)
     {
         LoadedNotification.Visibility = Visibility.Hidden;
