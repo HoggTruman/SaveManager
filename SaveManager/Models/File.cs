@@ -5,7 +5,7 @@ namespace SaveManager.Models;
 
 public class File : IFilesystemItem
 {
-    public string Location { get; private set; }
+    public string Location { get; set; }
     public string Name => Path.GetFileName(Location);
     public bool Exists => System.IO.File.Exists(Location);
 
@@ -87,7 +87,7 @@ public class File : IFilesystemItem
         {
             string newLocation = Path.Join(Parent.Location, newName);
             System.IO.File.Move(Location, newLocation);
-            UpdateLocation(newLocation);
+            Location = newLocation;
             Parent.SortChildren();
         }
         catch(Exception ex)
@@ -159,16 +159,6 @@ public class File : IFilesystemItem
     }
 
 
-    /// <summary>
-    /// Updates the File's location for the internal filesystem representation.
-    /// Does not actually affect any files or directories.
-    /// </summary>
-    /// <param name="newLocation"></param>
-    /// <exception cref="FilesystemException"></exception>
-    public void UpdateLocation(string newLocation)
-    {
-        Location = newLocation;
-    }
 
 
     /// <summary>

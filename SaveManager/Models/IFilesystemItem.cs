@@ -5,9 +5,10 @@ namespace SaveManager.Models;
 public interface IFilesystemItem
 {
     /// <summary>
-    /// The full filesystem path of the underlying file / directory.
+    /// The full filesystem path of the underlying file / directory.</br>
+    /// Setting a value does not affect the underlying items in the filesystem.
     /// </summary>
-    public string Location { get; }
+    public string Location { get; set; }
 
     /// <summary>
     /// The name of the underlying file / directory.
@@ -39,12 +40,4 @@ public interface IFilesystemItem
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void Delete();
-
-
-    /// <summary>
-    /// Updates the IFilesystemItem's location for the internal filesystem representation.
-    /// Does not actually affect any files or directories.
-    /// </summary>
-    /// <param name="newLocation"></param>
-    public void UpdateLocation(string newLocation);
 }

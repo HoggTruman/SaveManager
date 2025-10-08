@@ -6,7 +6,26 @@ namespace SaveManager.Models;
 
 public class Folder : IFilesystemItem
 {
-    public string Location { get; private set; }
+    private string _location;
+
+    /// <summary>
+    /// The full filesystem path of the underlying file / directory.<br/>
+    /// Setting a new value updates the location of the Folder and its children in the internal representation but not the filesystem.
+    /// </summary>
+    public string Location
+    { 
+        get => _location; 
+        set
+        {
+            _location = value;
+        
+            foreach (IFilesystemItem child in Children)
+            {
+                child.Location = Path.Join(_location, child.Name);
+            }
+        } 
+    }
+
     public string Name => Path.GetFileName(Location);
     public bool Exists => Directory.Exists(Location);
     public ObservableCollection<IFilesystemItem> Children { get; set; } = [];
@@ -29,7 +48,7 @@ public class Folder : IFilesystemItem
     /// <exception cref="FilesystemException"></exception>
     public Folder(string location, Folder? parent)
     {
-        Location = location;        
+        _location = location;        
         Parent = parent;
         LoadChildren();
     }
@@ -93,7 +112,7 @@ public class Folder : IFilesystemItem
         {
             string newLocation = Path.Join(Parent.Location, newName);
             Directory.Move(Location, newLocation);
-            UpdateLocation(newLocation);
+            Location = newLocation;
             Parent.SortChildren();
         }
         catch(Exception ex)
@@ -134,20 +153,6 @@ public class Folder : IFilesystemItem
     }
 
 
-    /// <summary>
-    /// Updates the location of the Folder and its children in the internal representation.
-    /// Does not actually affect any files or directories in the filesytem.
-    /// </summary>
-    public void UpdateLocation(string newLocation)
-    {
-        Location = newLocation;
-        
-        foreach (IFilesystemItem child in Children)
-        {
-            string newChildLocation = Path.Join(Location, child.Name);
-            child.UpdateLocation(newChildLocation);
-        }
-    }
 
 
     /// <summary>

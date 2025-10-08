@@ -125,7 +125,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void UpdateLocation_UpdatesDescendantLocations()
+    public void LocationSetter_UpdatesDescendantLocations()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -134,7 +134,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
         string newLocation = Path.Join(folder.Location, "new");
-        folder.UpdateLocation(newLocation);
+        folder.Location = newLocation;
         Assert.Equal(newLocation, folder.Location);
 
         IEnumerable<IFilesystemItem> children = folder.Children;

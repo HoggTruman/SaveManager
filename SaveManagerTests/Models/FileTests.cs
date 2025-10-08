@@ -40,11 +40,11 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void UpdateLocation_UpdatesLocation()
+    public void LocationSetter_UpdatesLocation()
     {
         SaveManager.Models.File file = new(Path.Join(Directory.GetCurrentDirectory(), "file.file"), null);
         string newLocation = Path.Join(Directory.GetCurrentDirectory(), "newlocation.file");
-        file.UpdateLocation(newLocation);
+        file.Location = newLocation;
         Assert.Equal(newLocation, file.Location);
     }
 
