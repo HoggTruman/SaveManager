@@ -32,6 +32,9 @@
         <SolidColorBrush x:Key="ReplaceBrush"
                          Color="#ff9500" />
 
+        <SolidColorBrush x:Key="RefreshBrush"
+                         Color="#a538ff" />
+
 
         <Style x:Key="FadeWhenDisabled"
                TargetType="Image">
@@ -295,6 +298,21 @@
                 <TextBlock Text="Replace Successful"
                            FontSize="24"
                            Foreground="{StaticResource ReplaceBrush}"
+                           Margin="10 2" />
+            </StackPanel>
+        </Border>
+
+
+        <Border x:Name="RefreshNotification"
+                Style="{StaticResource Notification}"
+                BorderBrush="{StaticResource RefreshBrush}">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="/Assets/RefreshIcon.png"
+                       Width="30"
+                       Margin="10 2" />
+                <TextBlock Text="Profiles Refreshed"
+                           FontSize="24"
+                           Foreground="{StaticResource RefreshBrush}"
                            Margin="10 2" />
             </StackPanel>
         </Border>

@@ -255,8 +255,10 @@ public partial class SaveWindow : Window
 
     private void RefreshMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        RefreshProfiles();
+        RefreshProfiles();        
     }
+
+
 
 
     private void PromptDeleteSelectedEntry()
@@ -327,9 +329,17 @@ public partial class SaveWindow : Window
         if (!SaveViewModel.CanRefresh)
             return;
 
+        if (SaveViewModel.ActiveGame!.ProfilesDirectory == null)
+        {
+            new OkDialog("Profiles directory not set", 
+                "The game's profiles directory must be set to refresh profiles.", ImageSources.Warning).ShowDialog(this);
+            return;
+        }
+
         try
         {
             SaveViewModel.RefreshProfiles();
+            ShowNotification(RefreshNotification);
         }
         catch (FilesystemException)
         {
@@ -348,6 +358,7 @@ public partial class SaveWindow : Window
     {
         LoadedNotification.Visibility = Visibility.Hidden;
         ReplacedNotification.Visibility = Visibility.Hidden;
+        RefreshNotification.Visibility = Visibility.Hidden;
 
         notification.Visibility = Visibility.Visible;
     }
