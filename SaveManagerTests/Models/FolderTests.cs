@@ -1,4 +1,5 @@
-﻿using SaveManager.Models;
+﻿using SaveManager.Exceptions;
+using SaveManager.Models;
 using SaveManagerTests.TestHelpers;
 using System.Reflection;
 
@@ -37,8 +38,11 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
 
 
+
+    #region Constructor Tests
+
     [Fact]
-    public void FolderLoadsChildrenOnConstruction()
+    public void Constructor_LoadsChildren()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -49,6 +53,20 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Assert.True(TestFolder.IsEquivalentTo(folder));
     }
 
+
+    [Fact]
+    public void Constructor_WhenLocationDoesNotExist_ThrowsFilesystemException()
+    {
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Assert.Throws<FilesystemException>(() => new Folder(Path.Join(testCaseDirectory, "FolderThatDoesNotExist"), null));
+    }
+
+    #endregion
+
+
+
+
+    #region Create Tests
 
     [Fact]
     public void Create_UpdatesParentsChildren()
@@ -63,6 +81,26 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Assert.Contains(newFolder, parent.Children);
     }
 
+
+    [Fact]
+    public void Create_WhenParentDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Directory.Delete(parent.Location, true);
+        Assert.Throws<FilesystemItemNotFoundException>(() => Folder.Create("New Folder", parent));
+    }
+
+    #endregion
+
+
+
+
+    #region Rename Tests
 
     [Fact]
     public void Rename_UpdatesParentsChildren()
@@ -92,7 +130,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         // test
         Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
         Folder renameFolder = (Folder)parent.Children.First(x => x is Folder);      
-        renameFolder.Rename("New Folder");
+        renameFolder.Rename("Renamed Folder");
 
         IEnumerable<IFilesystemItem> children = renameFolder.Children;
         while (children.Any())
@@ -106,6 +144,28 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         }        
     }
 
+
+    [Fact]
+    public void Rename_WhenFolderDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder renameFolder = (Folder)parent.Children.First(x => x is Folder);      
+        Directory.Delete(renameFolder.Location, true);
+
+        Assert.Throws<FilesystemItemNotFoundException>(() => renameFolder.Rename("Renamed Folder"));
+    }
+
+    #endregion
+
+
+
+
+    #region Delete Tests
 
     [Fact]
     public void Delete_UpdatesParentsChildren()
@@ -123,6 +183,28 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Assert.DoesNotContain(parent.Children, x => x.Name == deleteFolder.Name);
     }
 
+
+    [Fact]
+    public void Delete_WhenFolderDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder folderToDelete = (Folder)parent.Children.First(x => x is Folder);      
+        Directory.Delete(folderToDelete.Location, true);
+
+        Assert.Throws<FilesystemItemNotFoundException>(folderToDelete.Delete);
+    }
+
+    #endregion
+
+
+
+
+    #region Location Tests
 
     [Fact]
     public void LocationSetter_UpdatesDescendantLocations()
@@ -148,4 +230,6 @@ public class FolderTests : IClassFixture<FilesystemFixture>
             children = children.SelectMany(x => x is Folder folder ? folder.Children: []);
         }  
     }
+
+    #endregion
 }
