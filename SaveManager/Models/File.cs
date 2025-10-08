@@ -34,25 +34,25 @@ public class File : IFilesystemItem
     /// <summary>
     /// Creates a copy of the file in the provided folder. Returns the copy.
     /// </summary>
-    /// <param name="parent"></param>
+    /// <param name="parentOfCopy">The parent of the new copy.</param>
     /// <returns>The copy of the original file.</returns>
     /// <exception cref="FilesystemItemNotFoundException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    public File CopyTo(Folder copyParent)
+    public File CopyTo(Folder parentOfCopy)
     {
         if (!Exists)
             throw new FilesystemItemNotFoundException(Location, "The file you are trying to copy does not exist.");
 
-        if (!copyParent.Exists)
-            throw new FilesystemItemNotFoundException(copyParent.Location, "The parent directory does not exist.");
+        if (!parentOfCopy.Exists)
+            throw new FilesystemItemNotFoundException(parentOfCopy.Location, "The parent directory does not exist.");
 
         try
         {
-            string copyLocation = Path.Join(copyParent.Location, GenerateFileName(Name, copyParent.Children));
+            string copyLocation = Path.Join(parentOfCopy.Location, GenerateFileName(Name, parentOfCopy.Children));
             System.IO.File.Copy(Location, copyLocation);            
-            File copiedFile = new(copyLocation, copyParent);
-            copyParent.Children.Add(copiedFile);
-            copyParent.SortChildren();
+            File copiedFile = new(copyLocation, parentOfCopy);
+            parentOfCopy.Children.Add(copiedFile);
+            parentOfCopy.SortChildren();
             return copiedFile;
         }
         catch(Exception ex)
