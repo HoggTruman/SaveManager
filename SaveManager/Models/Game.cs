@@ -139,17 +139,23 @@ public class Game : NotifyPropertyChanged
             throw ex;
         }
 
-        Profile? oldActiveProfile = ActiveProfile;
+        string? oldActiveProfileName = ActiveProfile?.Name;
         _profilesFolder.LoadChildren();
         Profiles = [.._profilesFolder.Children.Where(x => x is Folder).Select(x => new Profile((Folder)x, this))];
+        TrySetActiveProfileByName(oldActiveProfileName);
+    }
 
-        if (oldActiveProfile != null && Profiles.Any(x => x.Name == oldActiveProfile.Name))
+
+    /// <summary>
+    /// If the game has a profile with the name provided, it is set as the active profile.
+    /// </summary>
+    /// <param name="name"></param>
+    public void TrySetActiveProfileByName(string? name)
+    {
+        Profile? match = Profiles.FirstOrDefault(x => x.Name == name);
+        if (match != null)
         {
-            ActiveProfile = Profiles.FirstOrDefault(x => x.Name == oldActiveProfile.Name);
-        }
-        else
-        {
-            ActiveProfile = Profiles.FirstOrDefault();
+            ActiveProfile = match;
         }
     }
 
