@@ -18,13 +18,21 @@ public static class ViewModelFactory
 
     public static SaveViewModel CreateSaveViewModel(IEnumerable<Game> games)
     {
-        if (_appdataService == null) throw new InvalidOperationException("ViewModelFactory has not been initialized.");
+        if (_appdataService == null)
+        {
+            throw new InvalidOperationException("ViewModelFactory has not been initialized.");
+        }
+
         return new(_appdataService, games);
     }
 
     public static GameProfileViewModel CreateGameProfileViewModel(IEnumerable<Game> games, Game? activeGame)
     {
-        if (_appdataService == null) throw new InvalidOperationException("ViewModelFactory has not been initialized.");
+        if (_appdataService == null)
+        {
+            throw new InvalidOperationException("ViewModelFactory has not been initialized.");
+        }
+
         return new(_appdataService, games, activeGame);
     }
 }
