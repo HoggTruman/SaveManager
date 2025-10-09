@@ -100,10 +100,10 @@ public class AppdataService
 
 
     /// <summary>
-    /// Replaces the game data in the internal appdata representation.
+    /// Sets the game data in the internal appdata representation.
     /// </summary>
     /// <param name="games"></param>
-    public void ReplaceGames(IEnumerable<Game> games)
+    public void SetGameData(IEnumerable<Game> games)
     {
         _appdata.Games = games.Select(ConvertToGameDTO).OrderBy(x => x.Name);
     }
@@ -116,6 +116,26 @@ public class AppdataService
     public IEnumerable<GameDTO> GetGameData()
     {
         return _appdata.Games;
+    }
+
+
+    /// <summary>
+    /// Sets the startup preferences in the internal appdata representation.
+    /// </summary>
+    /// <param name="startupPreferences"></param>
+    public void SetStartupPreferences(StartupPreferences startupPreferences)
+    {
+        _appdata.StartupPreferences = startupPreferences;
+    }
+
+
+    /// <summary>
+    /// Gets the startup preferences from the internal appdata representation.
+    /// </summary>
+    /// <returns></returns>
+    public StartupPreferences GetStartupPreferences()
+    {
+        return _appdata.StartupPreferences;
     }
 
 

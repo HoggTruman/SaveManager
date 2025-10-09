@@ -235,7 +235,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <exception cref="AppdataException"/>
     public void SaveGameChanges()
     {
-        _appdataService.ReplaceGames(Games);
+        _appdataService.SetGameData(Games);
         _appdataService.SaveAppdata();
     }
 }

@@ -3,9 +3,9 @@
 
 public class StartupPreferences
 {
-    public string? SelectedGame { get; set; } = null;
-    public string? SelectedProfile { get; set; } = null;
-    public int WindowWidth { get; set; }
-    public int WindowHeight { get; set; }
+    public string? ActiveGame { get; set; } = null;
+    public string? ActiveProfile { get; set; } = null;
+    public double WindowWidth { get; set; }
+    public double WindowHeight { get; set; }
     public bool WindowMaximized { get; set; }
 }

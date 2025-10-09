@@ -246,6 +246,22 @@ public class SaveViewModel : NotifyPropertyChanged
 
 
     /// <summary>
+    /// Saves games and startup preferences to the appdata file.
+    /// </summary>
+    /// <param name="startupPreferences"></param>
+    /// <exception cref="AppdataException"></exception>
+    public void SaveAppdata(StartupPreferences startupPreferences)
+    {
+        _appdataService.SetStartupPreferences(startupPreferences);
+        _appdataService.SetGameData(Games);
+        _appdataService.SaveAppdata();
+    }
+
+
+
+
+
+    /// <summary>
     /// Retrieves the parent <see cref="Folder"/> based on the selected save list entry.
     /// </summary>
     /// <returns>The parent <see cref="Folder"/> of the selection.</returns>

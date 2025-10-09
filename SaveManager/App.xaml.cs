@@ -20,11 +20,12 @@ public partial class App : Application
         {
             AppdataService appdataService = new();
             ViewModelFactory.Initialize(appdataService);
-            List<Game> games = LoadGames(appdataService);            
 
             // update game data once games are loaded to remove any invalid/outdated data.
-            appdataService.ReplaceGames(games);
-            SaveWindow mainWindow = new(ViewModelFactory.CreateSaveViewModel(games));
+            List<Game> games = LoadGames(appdataService);
+            appdataService.SetGameData(games);
+            
+            SaveWindow mainWindow = new(ViewModelFactory.CreateSaveViewModel(games), appdataService.GetStartupPreferences());
             mainWindow.Show();  
         }
         catch (FilesystemException ex)

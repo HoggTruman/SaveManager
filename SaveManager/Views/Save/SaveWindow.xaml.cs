@@ -3,6 +3,7 @@ using SaveManager.Components;
 using SaveManager.Exceptions;
 using SaveManager.Extensions;
 using SaveManager.Models;
+using SaveManager.Services.Appdata;
 using SaveManager.ViewModels;
 using SaveManager.Views.GameProfile;
 using System.Windows;
@@ -22,11 +23,20 @@ public partial class SaveWindow : Window
 
     public SaveViewModel SaveViewModel { get; }
 
-    public SaveWindow(SaveViewModel saveViewModel)
+    public SaveWindow(SaveViewModel saveViewModel, StartupPreferences startupPreferences)
     {
         InitializeComponent();
         SaveViewModel = saveViewModel;
-        DataContext = SaveViewModel;        
+        DataContext = SaveViewModel;
+        Width = startupPreferences.WindowWidth;
+        Height = startupPreferences.WindowHeight;
+        WindowState = startupPreferences.WindowMaximized ? WindowState.Maximized: WindowState.Normal;
+
+        if (SaveViewModel.Games.Any(x => x.Name == startupPreferences.ActiveGame))
+        {
+            SaveViewModel.ActiveGame = SaveViewModel.Games.First(x => x.Name == startupPreferences.ActiveGame);
+            SaveViewModel.ActiveGame.TrySetActiveProfileByName(startupPreferences.ActiveProfile);
+        }
     }
 
 
@@ -279,7 +289,16 @@ public partial class SaveWindow : Window
 
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
-        //SaveViewModel.SaveAppdata();
+        StartupPreferences startupPreferences = new()
+        {
+            ActiveGame = SaveViewModel.ActiveGame?.Name,
+            ActiveProfile = SaveViewModel.ActiveGame?.ActiveProfile?.Name,
+            WindowWidth = Width,
+            WindowHeight = Height,
+            WindowMaximized = WindowState == WindowState.Maximized
+        };
+
+        SaveViewModel.SaveAppdata(startupPreferences);
     }
 
 
