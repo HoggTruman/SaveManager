@@ -1,7 +1,7 @@
 ﻿using SaveManager.Exceptions;
 using SaveManager.Helpers;
 using SaveManager.Models;
-using SaveManager.Services;
+using SaveManager.Services.Appdata;
 using System.Collections.ObjectModel;
 
 namespace SaveManager.ViewModels;
@@ -236,5 +236,6 @@ public class GameProfileViewModel : NotifyPropertyChanged
     public void SaveGameChanges()
     {
         _appdataService.ReplaceGames(Games);
+        _appdataService.SaveAppdata();
     }
 }

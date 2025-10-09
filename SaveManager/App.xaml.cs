@@ -1,7 +1,6 @@
-﻿using SaveManager.DTOs;
-using SaveManager.Exceptions;
+﻿using SaveManager.Exceptions;
 using SaveManager.Models;
-using SaveManager.Services;
+using SaveManager.Services.Appdata;
 using SaveManager.ViewModels;
 using SaveManager.Views.Save;
 using System.IO;
@@ -23,20 +22,25 @@ public partial class App : Application
             ViewModelFactory.Initialize(appdataService);
             List<Game> games = LoadGames(appdataService);            
 
-            // Save games once they have been loaded to remove any invalid/outdated data.
+            // update game data once games are loaded to remove any invalid/outdated data.
             appdataService.ReplaceGames(games);
             SaveWindow mainWindow = new(ViewModelFactory.CreateSaveViewModel(games));
             mainWindow.Show();  
         }
-        catch (FilesystemException)
+        catch (FilesystemException ex)
         {
+            Console.WriteLine(ex.InnerException);
             MessageBox.Show("Failed to initialize app.");
+            Current.Shutdown();
         }
         catch (AppdataException ex)
         {
+            Console.WriteLine(ex.InnerException);
             MessageBox.Show(ex.Message);
+            Current.Shutdown();
         }        
     }
+
 
     /// <summary>
     /// Retrieves the user's games from the appdata service and loads their profiles from the filesystem.

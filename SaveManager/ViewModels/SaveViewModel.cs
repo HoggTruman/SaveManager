@@ -1,6 +1,6 @@
 ﻿using SaveManager.Exceptions;
 using SaveManager.Models;
-using SaveManager.Services;
+using SaveManager.Services.Appdata;
 using System.Collections.ObjectModel;
 
 namespace SaveManager.ViewModels;

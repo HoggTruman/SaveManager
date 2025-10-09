@@ -277,6 +277,14 @@ public partial class SaveWindow : Window
 
 
 
+    private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        //SaveViewModel.SaveAppdata();
+    }
+
+
+
+
     /// <summary>
     /// Asks the user if they want to delete the selected entry and then attempts to.
     /// </summary>
