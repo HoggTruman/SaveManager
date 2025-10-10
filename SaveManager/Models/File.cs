@@ -5,6 +5,8 @@ namespace SaveManager.Models;
 
 public class File : IFilesystemItem
 {
+    public override string ToString() => Name;
+
     public string Location { get; set; }
     public string Name => Path.GetFileName(Location);
     public bool Exists => System.IO.File.Exists(Location);

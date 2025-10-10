@@ -8,6 +8,8 @@ public class Folder : IFilesystemItem
 {
     private string _location;
 
+    public override string ToString() => Name;
+
     /// <summary>
     /// The full filesystem path of the underlying file / directory.<br/>
     /// Setting a new value updates the location of the Folder and its children in the internal representation but not the filesystem.
