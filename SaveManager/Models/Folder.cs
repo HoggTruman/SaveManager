@@ -155,6 +155,52 @@ public class Folder : IFilesystemItem
     }
 
 
+    /// <summary>
+    /// Moves the underlying directory into the folder provided.
+    /// </summary>
+    /// <param name="newParent"></param>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    public void Move(Folder newParent)
+    {
+        if (Parent == null)
+            throw new InvalidOperationException("A folder without a parent can not be moved.");
+
+        if (newParent == Parent || newParent == this)
+            throw new ArgumentException("Invalid parent provided.");
+
+        if (newParent.Children.Any(x => x.Name == Name))
+            throw new ValidationException("The destination already contains a folder with this name.");
+
+        if (!Exists)
+            throw new FilesystemItemNotFoundException(Location, "The folder you are trying to move does not exist.");
+        
+        if (!newParent.Exists)
+            throw new FilesystemItemNotFoundException(newParent.Location, "The destination folder does not exist.");
+
+        try
+        {
+            string newLocation = Path.Join(newParent.Location, Name);
+            Directory.Move(Location, newLocation);
+            Parent.Children = [..Parent.Children.Where(x => x != this)];
+            Location = newLocation;            
+            newParent.Children.Add(this);
+            newParent.SortChildren();
+            Parent = newParent;
+        }
+        catch (Exception ex)
+        {
+            if (ex is IOException or UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException)
+            {
+                throw new FilesystemException(ex.Message, ex);
+            }
+
+            throw;
+        }
+    }
+
+
 
 
     /// <summary>

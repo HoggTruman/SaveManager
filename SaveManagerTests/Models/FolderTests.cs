@@ -204,6 +204,105 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
 
 
+    #region Move Tests
+
+    [Fact]
+    public void Move_MovesFolder()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder movingFolder = (Folder)baseFolder.Children.Last(x => x is Folder);
+        Folder destination = (Folder)baseFolder.Children.First(x => x is Folder);
+        movingFolder.Move(destination);
+
+        Assert.DoesNotContain(movingFolder, baseFolder.Children);
+        Assert.Contains(movingFolder, destination.Children);
+        Assert.Equal(destination, movingFolder.Parent);
+        Assert.Equal(movingFolder.Parent!.Location, Path.GetDirectoryName(movingFolder.Location));
+
+        // check the descendants have their locations updated
+        List<IFilesystemItem> movedDescendants = [..movingFolder.Children];
+
+        while(movedDescendants.Count > 0)
+        {
+            foreach (IFilesystemItem item in movedDescendants)
+            {
+                Assert.Equal(item.Parent!.Location, Path.GetDirectoryName(item.Location));
+            }
+
+            movedDescendants = [..movedDescendants.SelectMany(x => x is Folder f? f.Children: [])];
+        }
+    }
+
+
+    [Fact]
+    public void Move_ToItself_ThrowsArgumentException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
+        Assert.Throws<ArgumentException>(() => movingFolder.Move(movingFolder));
+    }
+
+
+    [Fact]
+    public void Move_ToItsParent_ThrowsArgumentException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
+        Assert.Throws<ArgumentException>(() => movingFolder.Move(movingFolder.Parent!));
+    }
+
+
+    [Fact]
+    public void Move_WhenFolderDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
+        Folder destination = (Folder)baseFolder.Children.Last(x => x is Folder);
+        Directory.Delete(movingFolder.Location);
+        Assert.Throws<FilesystemItemNotFoundException>(() => movingFolder.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_WhenDestinationDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
+        Folder destination = (Folder)baseFolder.Children.Last(x => x is Folder);
+        Directory.Delete(destination.Location, true);
+        Assert.Throws<FilesystemItemNotFoundException>(() => movingFolder.Move(destination));
+    }
+
+    #endregion
+
+
+
+
     #region Location Tests
 
     [Fact]
