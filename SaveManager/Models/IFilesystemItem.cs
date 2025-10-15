@@ -40,4 +40,13 @@ public interface IFilesystemItem
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void Delete();
+
+    /// <summary>
+    /// Moves the underlying file / directory into the folder provided.
+    /// </summary>
+    /// <param name="newParent"></param>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="ValidationException"></exception>
+    public void Move(Folder newParent);
 }
