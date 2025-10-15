@@ -208,6 +208,66 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
 
 
+    #region Move Tests
+
+    [Fact]
+    public void Move_MovesFile()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        SaveManager.Models.File movingFile = (SaveManager.Models.File)folder.Children.First(x => x is SaveManager.Models.File);
+        Folder destination = (Folder)folder.Children.First(x => x is Folder);
+        movingFile.Move(destination);
+
+        Assert.Equal(destination, movingFile.Parent);
+        Assert.Contains(movingFile, destination.Children);
+        Assert.DoesNotContain(movingFile, folder.Children);
+        Assert.Equal(destination.Location, Path.GetDirectoryName(movingFile.Location));
+    }
+
+
+    [Fact]
+    public void Move_WhenMovingFileDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        SaveManager.Models.File movingFile = (SaveManager.Models.File)folder.Children.First(x => x is SaveManager.Models.File);
+        Folder destination = (Folder)folder.Children.First(x => x is Folder);
+        System.IO.File.Delete(movingFile.Location);
+
+        Assert.Throws<FilesystemItemNotFoundException>(() => movingFile.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_WhenDestinationDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        SaveManager.Models.File movingFile = (SaveManager.Models.File)folder.Children.First(x => x is SaveManager.Models.File);
+        Folder destination = (Folder)folder.Children.First(x => x is Folder);
+        Directory.Delete(destination.Location);
+
+        Assert.Throws<FilesystemItemNotFoundException>(() => movingFile.Move(destination));
+    }
+
+    #endregion
+
+
+
+
     #region OverwriteContents
 
     [Fact]

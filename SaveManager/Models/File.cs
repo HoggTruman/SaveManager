@@ -133,6 +133,53 @@ public class File : IFilesystemItem
 
 
     /// <summary>
+    /// Moves the underlying file into the folder provided.
+    /// </summary>
+    /// <param name="newParent"></param>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    public void Move(Folder newParent)
+    {
+        if (Parent == null)
+            throw new InvalidOperationException("A file without a parent can not be moved.");
+
+        if (newParent == Parent)
+            throw new InvalidOperationException("The file is already a child of the new parent.");
+
+        if (newParent.Children.Any(x => x.Name == Name))
+            throw new ValidationException("The destination already contains a file with this name.");
+
+        if (!Exists)
+            throw new FilesystemItemNotFoundException(Location, "The file you are trying to move does not exist.");
+        
+        if (!newParent.Exists)
+            throw new FilesystemItemNotFoundException(newParent.Location, "The destination folder does not exist.");
+
+        try
+        {
+            string newLocation = Path.Join(newParent.Location, Name);
+            System.IO.File.Move(Location, newLocation);
+            Parent.Children = [..Parent.Children.Where(x => x != this)];
+            Location = newLocation;
+            newParent.Children.Add(this);
+            newParent.SortChildren();
+            Parent = newParent;
+        }
+        catch (Exception ex)
+        {
+            if (ex is IOException or FileNotFoundException or ArgumentException or UnauthorizedAccessException or 
+                PathTooLongException or DirectoryNotFoundException or NotSupportedException)
+            {
+                throw new FilesystemException(ex.Message, ex);
+            }
+
+            throw;
+        }
+    }
+
+
+    /// <summary>
     /// Overwrites the contents of the file with those from the file provided.
     /// </summary>
     /// <param name="file">The file to copy the contents of.</param>
