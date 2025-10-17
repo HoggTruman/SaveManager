@@ -21,6 +21,23 @@ public partial class SaveWindow : Window
     private const Key RenameKey = Key.F2;
     private const Key DeleteKey = Key.Delete;
 
+    /// <summary>
+    /// The position of mouse left click used to determine if the mouse has moved enough to start a drag.
+    /// </summary>
+    private Point _dragStartPoint = new();
+
+    /// <summary>
+    /// The filesystem item at the mouse left click. 
+    /// Used so that when dragging at the edge of an item, the one orignally clicked is dragged, not the one dragged onto.
+    /// </summary>
+    private IFilesystemItem? _dragStartItem;
+
+    /// <summary>
+    /// A valued indicating if a drag is active. Prevents repeating logic for initiating drag.
+    /// </summary>
+    private bool _isDragging = false;
+
+
     public SaveViewModel SaveViewModel { get; }
 
     public SaveWindow(SaveViewModel saveViewModel, StartupPreferences startupPreferences)
@@ -79,6 +96,8 @@ public partial class SaveWindow : Window
     }
 
 
+
+
     private void SaveListBox_MouseDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ChangedButton == MouseButton.Left || e.ChangedButton == MouseButton.Right)
@@ -92,11 +111,23 @@ public partial class SaveWindow : Window
 
     private void SaveListBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
     {
+        // updates selection when right click during a drag
+        SaveViewModel.SelectedEntry = ((FrameworkElement)e.OriginalSource).DataContext as IFilesystemItem;
+
         // used instead of binding to prevent flickering issues on context menu as much as possible
         AddFolderMenuItem.IsEnabled = SaveViewModel.CanAddFolder;
         DeleteMenuItem.IsEnabled = SaveViewModel.CanDelete;
         RenameMenuItem.IsEnabled = SaveViewModel.CanRename;
         RefreshMenuItem.IsEnabled = SaveViewModel.CanRefresh;
+    }
+
+
+    private void SaveListBox_Drop(object sender, DragEventArgs e)
+    {
+        _isDragging = false;
+        _dragStartItem = null;
+        IFilesystemItem draggedItem = (IFilesystemItem)e.Data.GetData(typeof(IFilesystemItem));       
+        MoveEntry(draggedItem, null);
     }
 
 
@@ -115,12 +146,54 @@ public partial class SaveWindow : Window
     }
 
 
+
+
     private void SaveListItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (e.ChangedButton == MouseButton.Left)
         {
             SaveViewModel.OpenCloseSelectedEntry();
+            e.Handled = true;
         }        
+    }
+
+
+    private void SaveListItem_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.LeftButton == MouseButtonState.Pressed)
+        {
+            _dragStartPoint = e.GetPosition(this);
+            _dragStartItem = (IFilesystemItem)((FrameworkElement)sender).DataContext;
+        }
+    }
+
+
+    private void SaveListItem_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (!_isDragging && _dragStartItem != null && e.LeftButton == MouseButtonState.Pressed)
+        {
+            Point current = e.GetPosition(this);
+            if (Math.Abs(current.X - _dragStartPoint.X) >= SystemParameters.MinimumHorizontalDragDistance ||
+                Math.Abs(current.Y - _dragStartPoint.Y) >= SystemParameters.MinimumVerticalDragDistance)
+            {
+                _isDragging = true;
+                SaveViewModel.SelectedEntry = _dragStartItem;
+                DataObject data = new(typeof(IFilesystemItem), _dragStartItem);
+                DragDrop.DoDragDrop((FrameworkElement)sender, data, DragDropEffects.Move);                
+            }            
+        }
+    }
+
+
+    private void SaveListItem_Drop(object sender, DragEventArgs e)
+    {
+        _isDragging = false;
+        _dragStartItem = null;
+        IFilesystemItem draggedItem = (IFilesystemItem)e.Data.GetData(typeof(IFilesystemItem));
+        IFilesystemItem? droppedOnItem = (IFilesystemItem)((FrameworkElement)sender).DataContext;
+        MoveEntry(draggedItem, droppedOnItem);
+        // set handled to true to prevent SaveListBox_Drop being called too.
+        e.Handled = true;
     }
 
 
@@ -287,6 +360,13 @@ public partial class SaveWindow : Window
 
 
 
+    private void Window_MouseUp(object sender, MouseButtonEventArgs e)
+    {
+        _isDragging = false;
+        _dragStartItem = null;
+    }
+
+
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         StartupPreferences startupPreferences = new()
@@ -370,6 +450,38 @@ public partial class SaveWindow : Window
                 return;
             }
         }   
+    }
+
+
+    /// <summary>
+    /// Moves an entry to a different folder based on where it is dropped.
+    /// </summary>
+    /// <param name="draggedItem"></param>
+    /// <param name="droppedOnItem"></param>
+    private void MoveEntry(IFilesystemItem draggedItem, IFilesystemItem? droppedOnItem)
+    {
+        if (SaveViewModel.ActiveGame == null || SaveViewModel.ActiveGame.ActiveProfile == null || draggedItem == droppedOnItem)
+        {
+            return;
+        }
+
+        try
+        {
+            SaveViewModel.MoveEntry(draggedItem, droppedOnItem);
+        }
+        catch (ValidationException ex)
+        {
+            new OkDialog($"{(draggedItem is File ? "File" : "Folder")} already exists", ex.Message, ImageSources.Warning).ShowDialog(this);
+        }
+        catch (FilesystemItemNotFoundException)
+        {
+            CreateErrorDialog("Reloading profiles from the filesystem...").ShowDialog(this);
+            RefreshProfiles();
+        }
+        catch (FilesystemException)
+        {
+            CreateErrorDialog($"An error occurred while moving the {(draggedItem is File ? "File" : "Folder")}.").ShowDialog(this);
+        }
     }
 
 

@@ -14,6 +14,7 @@
         MinHeight="450"
         MinWidth="570"
         WindowStartupLocation="CenterScreen"
+        MouseUp="Window_MouseUp"
         Closing="Window_Closing">
     <Window.Resources>
         <!--<Style TargetType="{x:Type MenuItem}">
@@ -28,7 +29,6 @@
 
         <SolidColorBrush x:Key="LoadBrush"
                          Color="#2eb9ff" />
-
 
         <SolidColorBrush x:Key="ReplaceBrush"
                          Color="#ff9500" />
@@ -166,12 +166,14 @@
                  ContextMenuOpening="SaveListBox_ContextMenuOpening"
                  KeyUp="SaveListBox_KeyUp"
                  SelectionChanged="SaveListBox_SelectionChanged"
+                 Drop="SaveListBox_Drop"
                  HorizontalContentAlignment="Stretch"
                  Margin="10 5"
                  Width="Auto"
                  Grid.Row="1"
                  IsTabStop="False"
-                 FocusVisualStyle="{x:Null}">
+                 FocusVisualStyle="{x:Null}"
+                 AllowDrop="True">
             <ListBox.Resources>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="IsTabStop"
@@ -181,11 +183,16 @@
                 <local:SaveListItemPaddingConverter x:Key="paddingConverter" />
 
                 <DataTemplate DataType="{x:Type models:Folder}">
-                    <ItemsControl MouseDoubleClick="SaveListItem_MouseDoubleClick"
+                    <ItemsControl x:Name="FolderTemplate"
+                                  MouseDoubleClick="SaveListItem_MouseDoubleClick"
+                                  MouseDown="SaveListItem_MouseDown"
+                                  MouseMove="SaveListItem_MouseMove"
+                                  Drop="SaveListItem_Drop"
                                   Height="16"
                                   Padding="{Binding Converter={StaticResource paddingConverter}}"
+                                  Background="Transparent"
                                   IsTabStop="False"
-                                  Background="Transparent">
+                                  AllowDrop="True">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Grid>
@@ -225,11 +232,16 @@
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type models:File}">
-                    <TextBlock Text="{Binding Name}"
+                    <TextBlock x:Name="FileTemplate"
+                               MouseDown="SaveListItem_MouseDown"
+                               MouseMove="SaveListItem_MouseMove"
+                               Drop="SaveListItem_Drop"
+                               Text="{Binding Name}"
                                VerticalAlignment="Center"
                                Height="16"
                                Padding="{Binding Converter={StaticResource paddingConverter}}"
-                               Background="Transparent" />
+                               Background="Transparent"
+                               AllowDrop="True" />
                 </DataTemplate>
             </ListBox.Resources>
 

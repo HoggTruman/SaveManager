@@ -84,6 +84,33 @@ public class SaveViewModel : NotifyPropertyChanged
 
 
     /// <summary>
+    /// Moves an entry into a different folder based on selection.
+    /// </summary>
+    /// <param name="movingEntry"></param>
+    /// <param name="targetEntry"></param>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="ValidationException"></exception>
+    public void MoveEntry(IFilesystemItem movingEntry, IFilesystemItem? targetEntry)
+    {
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null)
+            throw new InvalidOperationException("The ActiveGame and ActiveProfile can not be null");
+        
+        Folder newParent = GetParentFromSelection(targetEntry);
+
+        if (movingEntry.Parent != newParent && movingEntry != newParent)
+        {
+            movingEntry.Move(newParent);
+            newParent.IsOpen = true;
+            ActiveGame.ActiveProfile.UpdateSaveListEntries();
+            SelectedEntry = movingEntry;
+        }
+    }
+
+
+
+
+    /// <summary>
     /// Adds a new folder entry, with location based on the current selection.
     /// </summary>
     /// <param name="name"></param>
@@ -95,7 +122,7 @@ public class SaveViewModel : NotifyPropertyChanged
         if (ActiveGame == null || ActiveGame.ActiveProfile == null)
             throw new InvalidOperationException("The ActiveGame and its ActiveProfile can not be null.");
 
-        Folder parentFolder = GetParentFromSelection();
+        Folder parentFolder = GetParentFromSelection(SelectedEntry);
         Folder newFolder = Folder.Create(name, parentFolder);
         parentFolder.IsOpen = true;
         ActiveGame.ActiveProfile.UpdateSaveListEntries();
@@ -151,6 +178,8 @@ public class SaveViewModel : NotifyPropertyChanged
     }
 
 
+
+
     /// <summary>
     /// Creates a copy of the active game's savefile in a folder based on the current selection.
     /// </summary>
@@ -166,7 +195,7 @@ public class SaveViewModel : NotifyPropertyChanged
 
         try
         {
-            Folder parent = GetParentFromSelection();        
+            Folder parent = GetParentFromSelection(SelectedEntry);        
             File copiedSavefile = ActiveGame.Savefile.CopyTo(parent);
             parent.IsOpen = true;
             ActiveGame.ActiveProfile.UpdateSaveListEntries();
@@ -265,17 +294,17 @@ public class SaveViewModel : NotifyPropertyChanged
     /// Retrieves the parent <see cref="Folder"/> based on the selected save list entry.
     /// </summary>
     /// <returns>The parent <see cref="Folder"/> of the selection.</returns>
-    private Folder GetParentFromSelection()
+    private Folder GetParentFromSelection(IFilesystemItem? selection)
     {
         if (ActiveGame == null || ActiveGame.ActiveProfile == null)
             throw new InvalidOperationException("The ActiveGame and its ActiveProfile can not be null.");
 
-        if (SelectedEntry == null)
-            return ActiveGame.ActiveProfile.Folder;
+        if (selection is Folder)
+            return (Folder)selection;
 
-        if (SelectedEntry is File)
-            return SelectedEntry.Parent!;
-
-        return (Folder)SelectedEntry;
+        if (selection is File)
+            return selection.Parent!;
+        
+        return ActiveGame.ActiveProfile.Folder;
     }
 }
