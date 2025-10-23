@@ -256,7 +256,7 @@ public class Folder : IFilesystemItem
         if (Path.GetInvalidFileNameChars().Any(name.Contains))
             throw new ValidationException($"Folder name can not contain any of the following: {new(Path.GetInvalidFileNameChars())}");
 
-        if (siblings.Any(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)))
+        if (siblings.Any(x => x.Name.FilesystemEquals(name)))
             throw new ValidationException("A folder already exists with this name.");
     }
 }

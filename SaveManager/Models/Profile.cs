@@ -45,7 +45,7 @@ public class Profile : NotifyPropertyChanged
             throw new InvalidOperationException("ProfilesDirectory must be set before a profile can be created.");
         }
 
-        if (game.Profiles.Any(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)))
+        if (game.Profiles.Any(x => x.Name.FilesystemEquals(name)))
         {
             throw new ValidationException($"A profile already exists with this name.");
         }
@@ -67,7 +67,7 @@ public class Profile : NotifyPropertyChanged
     /// <exception cref="FilesystemItemNotFoundException"></exception>
     public void Rename(string newName)
     {
-        if (Game.Profiles.Any(x => x.Name.Equals(newName, StringComparison.CurrentCultureIgnoreCase)))
+        if (Game.Profiles.Any(x => x.Name.FilesystemEquals(newName)))
         {
             throw new ValidationException("A Profile already exists with this name");
         }

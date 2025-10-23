@@ -223,7 +223,7 @@ public class File : IFilesystemItem
         if (Path.GetInvalidFileNameChars().Any(name.Contains))
             throw new ValidationException($"File name can not contain any of the following: {new(Path.GetInvalidFileNameChars())}");
 
-        if (siblings.Any(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)))
+        if (siblings.Any(x => x.Name.FilesystemEquals(name)))
             throw new ValidationException("A file already exists with this name.");
     }
 
@@ -238,7 +238,7 @@ public class File : IFilesystemItem
     {
         long suffix = 1;
         string generatedName = name;
-        while (siblings.Any(x => x.Name.Equals(generatedName, StringComparison.CurrentCultureIgnoreCase)))
+        while (siblings.Any(x => x.Name.FilesystemEquals(generatedName)))
         {
             generatedName = $"{name}_{suffix++}";
         }

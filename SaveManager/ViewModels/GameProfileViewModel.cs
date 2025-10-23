@@ -57,7 +57,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <exception cref="ValidationException"></exception>
     public void AddGame(string name)
     {
-        if (Games.Any(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)))
+        if (Games.Any(x => x.Name.FilesystemEquals(name)))
         {
             throw new ValidationException($"A game already exists with this name.");
         }
@@ -81,7 +81,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
             return;
         }
 
-        if (Games.Any(x => x.Name.Equals(newName, StringComparison.CurrentCultureIgnoreCase)))
+        if (Games.Any(x => x.Name.FilesystemEquals(newName)))
         {
             throw new ValidationException($"A game already exists with name.");
         }
@@ -122,7 +122,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
 
         IEnumerable<string> profilesDirectories = Games.Where(x => x.ProfilesDirectory != null).Select(x => x.ProfilesDirectory!);
 
-        if (Games.Any(x => x.SavefileLocation != null && x.SavefileLocation.Equals(location, StringComparison.CurrentCultureIgnoreCase)))
+        if (Games.Any(x => x.SavefileLocation != null && x.SavefileLocation.FilesystemEquals(location)))
             throw new ValidationException("Another game uses this savefile.");
 
         if (profilesDirectories.Any(x => PathHelpers.IsDescendant(location, x)))

@@ -33,4 +33,17 @@ public static class PathHelpers
         Uri directoryUri = new (directory.EndsWith(Path.DirectorySeparatorChar) ? directory : directory + Path.DirectorySeparatorChar);
         return directoryUri.IsBaseOf(fileUri);
     }
+
+
+    /// <summary>
+    /// Returns true if the two strings are considered equal in the filesystem.<br/>
+    /// For Windows, case is ignored.
+    /// </summary>
+    /// <param name="first"></param>
+    /// <param name="second"></param>
+    /// <returns></returns>
+    public static bool FilesystemEquals(this string first, string second)
+    {
+        return first.Equals(second, StringComparison.CurrentCultureIgnoreCase);
+    }
 }
