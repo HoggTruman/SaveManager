@@ -168,7 +168,7 @@ public class Folder : IFilesystemItem
         if (Parent == null)
             throw new InvalidOperationException("A folder without a parent can not be moved.");
 
-        if (newParent == Parent || newParent == this)
+        if (newParent == Parent || newParent == this || newParent.IsDescendantOf(this))
             throw new ArgumentException("Invalid parent provided.");
 
         if (newParent.Children.Any(x => x.Name == Name))

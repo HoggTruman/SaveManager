@@ -15,7 +15,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Folders = 
         [
             new() { Name = "Folder1" },
-            new() { Name = "Folder2", Folders = [new() { Name = "Folder3" }], Files = ["file3.file"] }
+            new() { Name = "Folder2", Folders = [new() { Name = "Folder3", Folders = [new() { Name = "Folder4" }] }], Files = ["file3.file"] }
         ],
         Files = ["file1.file", "file2.file"]
     };
@@ -250,6 +250,37 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
         Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
         Assert.Throws<ArgumentException>(() => movingFolder.Move(movingFolder));
+    }
+
+
+    [Fact]
+    public void Move_ToChild_ThrowsArgumentException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder folder && folder.Children.Count > 0);
+        Folder childFolder = (Folder)movingFolder.Children.First(x => x is Folder);
+        Assert.Throws<ArgumentException>(() => movingFolder.Move(childFolder));
+    }
+
+
+    [Fact]
+    public void Move_ToDescendant_ThrowsArgumentException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder folder && folder.Children.Count > 0);
+        Folder childFolder = (Folder)movingFolder.Children.First(x => x is Folder);
+        Folder descendantFolder = (Folder)childFolder.Children.First(x => x is Folder);
+        Assert.Throws<ArgumentException>(() => movingFolder.Move(descendantFolder));
     }
 
 
