@@ -30,12 +30,8 @@ public partial class SaveWindow : Window
     /// The filesystem item at the mouse left click. 
     /// Used so that when dragging at the edge of an item, the one orignally clicked is dragged, not the one dragged onto.
     /// </summary>
-    private IFilesystemItem? _dragStartItem;
+    private IFilesystemItem? _draggedItem;
 
-    /// <summary>
-    /// A valued indicating if a drag is active. Prevents repeating logic for initiating drag.
-    /// </summary>
-    private bool _isDragging = false;
 
 
     public SaveViewModel SaveViewModel { get; }
@@ -124,8 +120,6 @@ public partial class SaveWindow : Window
 
     private void SaveListBox_Drop(object sender, DragEventArgs e)
     {
-        _isDragging = false;
-        _dragStartItem = null;
         IFilesystemItem draggedItem = (IFilesystemItem)e.Data.GetData(typeof(IFilesystemItem));       
         MoveEntry(draggedItem, null);
     }
@@ -158,28 +152,29 @@ public partial class SaveWindow : Window
     }
 
 
-    private void SaveListItem_MouseDown(object sender, MouseButtonEventArgs e)
+    private void SaveListItem_PreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
         if (e.LeftButton == MouseButtonState.Pressed)
         {
             _dragStartPoint = e.GetPosition(this);
-            _dragStartItem = (IFilesystemItem)((FrameworkElement)sender).DataContext;
+            _draggedItem = (IFilesystemItem)((FrameworkElement)sender).DataContext;
         }
     }
 
 
-    private void SaveListItem_MouseMove(object sender, MouseEventArgs e)
+    private void SaveListItem_PreviewMouseMove(object sender, MouseEventArgs e)
     {
-        if (!_isDragging && _dragStartItem != null && e.LeftButton == MouseButtonState.Pressed)
+        if (_draggedItem != null && e.LeftButton == MouseButtonState.Pressed)
         {
             Point current = e.GetPosition(this);
             if (Math.Abs(current.X - _dragStartPoint.X) >= SystemParameters.MinimumHorizontalDragDistance ||
                 Math.Abs(current.Y - _dragStartPoint.Y) >= SystemParameters.MinimumVerticalDragDistance)
             {
-                _isDragging = true;
-                SaveViewModel.SelectedEntry = _dragStartItem;
-                DataObject data = new(typeof(IFilesystemItem), _dragStartItem);
-                DragDrop.DoDragDrop((FrameworkElement)sender, data, DragDropEffects.Move);                
+                SaveViewModel.SelectedEntry = _draggedItem;
+                SetDropTargets();
+                DataObject data = new(typeof(IFilesystemItem), _draggedItem);
+                DragDrop.DoDragDrop((FrameworkElement)sender, data, DragDropEffects.Move);
+                _draggedItem = null;
             }            
         }
     }
@@ -187,14 +182,25 @@ public partial class SaveWindow : Window
 
     private void SaveListItem_Drop(object sender, DragEventArgs e)
     {
-        _isDragging = false;
-        _dragStartItem = null;
         IFilesystemItem draggedItem = (IFilesystemItem)e.Data.GetData(typeof(IFilesystemItem));
         IFilesystemItem? droppedOnItem = (IFilesystemItem)((FrameworkElement)sender).DataContext;
-        MoveEntry(draggedItem, droppedOnItem);
+        SetListBoxItemDraggingStyle(sender, false);
+        MoveEntry(draggedItem, droppedOnItem);        
         // set handled to true to prevent SaveListBox_Drop being called too.
         e.Handled = true;
     }
+
+
+    private void SaveListItem_DragEnter(object sender, DragEventArgs e)
+    {
+        SetListBoxItemDraggingStyle(sender, true);
+    }
+
+
+    private void SaveListItem_DragLeave(object sender, DragEventArgs e)
+    {
+        SetListBoxItemDraggingStyle(sender, false);
+    }    
 
 
 
@@ -360,13 +366,6 @@ public partial class SaveWindow : Window
 
 
 
-    private void Window_MouseUp(object sender, MouseButtonEventArgs e)
-    {
-        _isDragging = false;
-        _dragStartItem = null;
-    }
-
-
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         StartupPreferences startupPreferences = new()
@@ -528,5 +527,35 @@ public partial class SaveWindow : Window
         RefreshNotification.Visibility = Visibility.Hidden;
 
         notification.Visibility = Visibility.Visible;
+    }
+
+
+    /// <summary>
+    /// Sets the "AllowDrop" value for each <see cref="ListBoxItem"/> based on the dragged item.
+    /// </summary>
+    private void SetDropTargets()
+    {
+        if (_draggedItem == null)
+        {
+            throw new InvalidOperationException("There must be a dragged item to set drop targets");
+        }
+
+        foreach (IFilesystemItem item in SaveListBox.Items)
+        {
+            FrameworkElement child = (FrameworkElement)SaveListBox.ItemContainerGenerator.ContainerFromItem(item);
+            child.AllowDrop = SaveViewModel.IsValidDropTarget(_draggedItem, item);
+        }
+    }
+
+    /// <summary>
+    /// Updates the style for a ListBoxItem being dragged over.
+    /// </summary>
+    /// <param name="sender">The object that triggered the drag related event</param>
+    /// <param name="isDraggedOver">true if the sender currently being dragged over. Otherwise false.</param>
+    private void SetListBoxItemDraggingStyle(object sender, bool isDraggedOver)
+    {
+        object item = ((FrameworkElement)sender).DataContext;
+        ListBoxItem listBoxItem = (ListBoxItem)SaveListBox.ItemContainerGenerator.ContainerFromItem(item);
+        listBoxItem.BorderBrush = isDraggedOver ? (DrawingBrush)Resources["DraggedOverBorderBrush"] : null;
     }
 }

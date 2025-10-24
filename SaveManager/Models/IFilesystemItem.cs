@@ -49,4 +49,11 @@ public interface IFilesystemItem
     /// <exception cref="FilesystemItemNotFoundException"></exception>
     /// <exception cref="ValidationException"></exception>
     public void Move(Folder newParent);
+
+    /// <summary>
+    /// Returns a bool indicating if the item is a descendant of the provided folder.
+    /// </summary>
+    /// <param name="potentialAncestor"></param>
+    /// <returns></returns>
+    public bool IsDescendantOf(Folder potentialAncestor);
 }

@@ -1,4 +1,5 @@
 ﻿using SaveManager.Exceptions;
+using SaveManager.Helpers;
 using System.Collections.ObjectModel;
 using System.IO;
 
@@ -231,6 +232,23 @@ public class Folder : IFilesystemItem
 
             throw;
         }
+    }
+
+
+    public bool IsDescendantOf(Folder potentialAncestor)
+    {
+        Folder? ancestor = Parent;
+        while (ancestor != null)
+        {
+            if (ancestor == potentialAncestor)
+            {
+                return true;
+            }
+
+            ancestor = ancestor.Parent;
+        }
+
+        return false;
     }
 
 

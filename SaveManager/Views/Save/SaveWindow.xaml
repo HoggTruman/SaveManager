@@ -14,7 +14,6 @@
         MinHeight="450"
         MinWidth="570"
         WindowStartupLocation="CenterScreen"
-        MouseUp="Window_MouseUp"
         Closing="Window_Closing">
     <Window.Resources>
         <!--<Style TargetType="{x:Type MenuItem}">
@@ -85,7 +84,27 @@
 
         <PopupAnimation x:Key="{x:Static SystemParameters.MenuPopupAnimationKey}">None</PopupAnimation>
 
+        <DrawingBrush x:Key="DraggedOverBorderBrush"
+                      Viewport="0,0,8,8"
+                      ViewportUnits="Absolute"
+                      TileMode="Tile">
+            <DrawingBrush.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="Black">
+                        <GeometryDrawing.Geometry>
+                            <GeometryGroup>
+                                <RectangleGeometry Rect="0,0,50,50" />
+                                <RectangleGeometry Rect="50,50,50,50" />
+                            </GeometryGroup>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
+
     </Window.Resources>
+
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60" />
@@ -168,6 +187,7 @@
                  SelectionChanged="SaveListBox_SelectionChanged"
                  Drop="SaveListBox_Drop"
                  HorizontalContentAlignment="Stretch"
+                 VerticalContentAlignment="Stretch"
                  Margin="10 5"
                  Width="Auto"
                  Grid.Row="1"
@@ -185,14 +205,10 @@
                 <DataTemplate DataType="{x:Type models:Folder}">
                     <ItemsControl x:Name="FolderTemplate"
                                   MouseDoubleClick="SaveListItem_MouseDoubleClick"
-                                  MouseDown="SaveListItem_MouseDown"
-                                  MouseMove="SaveListItem_MouseMove"
-                                  Drop="SaveListItem_Drop"
                                   Height="16"
                                   Padding="{Binding Converter={StaticResource paddingConverter}}"
                                   Background="Transparent"
-                                  IsTabStop="False"
-                                  AllowDrop="True">
+                                  IsTabStop="False">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Grid>
@@ -233,17 +249,32 @@
 
                 <DataTemplate DataType="{x:Type models:File}">
                     <TextBlock x:Name="FileTemplate"
-                               MouseDown="SaveListItem_MouseDown"
-                               MouseMove="SaveListItem_MouseMove"
-                               Drop="SaveListItem_Drop"
                                Text="{Binding Name}"
-                               VerticalAlignment="Center"
                                Height="16"
+                               VerticalAlignment="Center"
                                Padding="{Binding Converter={StaticResource paddingConverter}}"
-                               Background="Transparent"
-                               AllowDrop="True" />
+                               Background="Transparent" />
                 </DataTemplate>
             </ListBox.Resources>
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <EventSetter Event="PreviewMouseDown"
+                                 Handler="SaveListItem_PreviewMouseDown" />
+                    <EventSetter Event="PreviewMouseMove"
+                                 Handler="SaveListItem_PreviewMouseMove" />
+                    <EventSetter Event="DragEnter"
+                                 Handler="SaveListItem_DragEnter" />
+                    <EventSetter Event="DragLeave"
+                                 Handler="SaveListItem_DragLeave" />
+                    <EventSetter Event="Drop"
+                                 Handler="SaveListItem_Drop" />
+                    <Setter Property="Margin"
+                            Value="0" />
+                    <Setter Property="IsTabStop"
+                            Value="False" />
+                </Style>
+            </ListBox.ItemContainerStyle>
 
             <ListBox.ContextMenu>
                 <ContextMenu x:Name="SaveListContextMenu">

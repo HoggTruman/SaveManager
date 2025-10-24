@@ -287,7 +287,21 @@ public class SaveViewModel : NotifyPropertyChanged
     }
 
 
+    /// <summary>
+    /// Returns true if the dragged item is allowed to be dropped on the drop item.
+    /// </summary>
+    /// <param name="dragged">The item being dragged.</param>
+    /// <param name="drop">The item being dropped on.</param>
+    /// <returns></returns>
+    public static bool IsValidDropTarget(IFilesystemItem dragged, IFilesystemItem? drop)
+    {
+        if (dragged is File || drop == null || dragged == drop)
+        {
+            return true;
+        }
 
+        return !drop.IsDescendantOf((Folder)dragged);
+    }
 
 
     /// <summary>
