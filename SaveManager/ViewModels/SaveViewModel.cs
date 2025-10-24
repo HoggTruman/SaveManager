@@ -1,4 +1,5 @@
 ﻿using SaveManager.Exceptions;
+using SaveManager.Helpers;
 using SaveManager.Models;
 using SaveManager.Services.Appdata;
 using System.Collections.ObjectModel;
@@ -300,7 +301,7 @@ public class SaveViewModel : NotifyPropertyChanged
             return true;
         }
 
-        return !drop.IsDescendantOf((Folder)dragged);
+        return !drop.Location.IsDescendantOf(dragged.Location);
     }
 
 

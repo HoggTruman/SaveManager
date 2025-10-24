@@ -5,7 +5,7 @@ namespace SaveManager.Helpers;
 public static class PathHelpers
 {
     /// <summary>
-    /// Returns true if the location is a descendant of the directory, otherwise false.
+    /// Returns true if the path represented by the string is a descendant of the directory string provided, otherwise false.
     /// </summary>
     /// <param name="location">The full path of the potential descendant.</param>
     /// <param name="directory">The full path of the potential ancestor.</param>

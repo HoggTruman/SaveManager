@@ -168,7 +168,7 @@ public class Folder : IFilesystemItem
         if (Parent == null)
             throw new InvalidOperationException("A folder without a parent can not be moved.");
 
-        if (newParent == Parent || newParent == this || newParent.IsDescendantOf(this))
+        if (newParent == Parent || newParent == this || newParent.Location.IsDescendantOf(Location))
             throw new ArgumentException("Invalid parent provided.");
 
         if (newParent.Children.Any(x => x.Name == Name))
@@ -232,23 +232,6 @@ public class Folder : IFilesystemItem
 
             throw;
         }
-    }
-
-
-    public bool IsDescendantOf(Folder potentialAncestor)
-    {
-        Folder? ancestor = Parent;
-        while (ancestor != null)
-        {
-            if (ancestor == potentialAncestor)
-            {
-                return true;
-            }
-
-            ancestor = ancestor.Parent;
-        }
-
-        return false;
     }
 
 
