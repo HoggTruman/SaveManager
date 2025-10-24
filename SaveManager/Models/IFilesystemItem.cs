@@ -5,7 +5,7 @@ namespace SaveManager.Models;
 public interface IFilesystemItem
 {
     /// <summary>
-    /// The full filesystem path of the underlying file / directory.</br>
+    /// The full filesystem path of the underlying file / directory.<br/>
     /// Setting a value does not affect the underlying items in the filesystem.
     /// </summary>
     public string Location { get; set; }
