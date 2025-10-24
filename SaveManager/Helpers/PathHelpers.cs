@@ -5,33 +5,24 @@ namespace SaveManager.Helpers;
 public static class PathHelpers
 {
     /// <summary>
-    /// Returns true if neither path is a descendant of the other, otherwise false.
+    /// Returns true if the location is a descendant of the directory, otherwise false.
     /// </summary>
-    /// <param name="first"></param>
-    /// <param name="second"></param>
+    /// <param name="location">The full path of the potential descendant.</param>
+    /// <param name="directory">The full path of the potential ancestor.</param>
     /// <returns></returns>
-    public static bool IsEitherDirectoryDescendant(string first, string second)
+    public static bool IsDescendantOf(this string location, string directory)
     {
-        if (first == second)
+        if (Path.TrimEndingDirectorySeparator(location) == Path.TrimEndingDirectorySeparator(directory))
+        {
             return false;
+        }
 
-        Uri firstUri = new(first.EndsWith(Path.DirectorySeparatorChar) ? first : first + Path.DirectorySeparatorChar);
-        Uri secondUri = new(second.EndsWith(Path.DirectorySeparatorChar) ? second : second + Path.DirectorySeparatorChar);
-        return firstUri.IsBaseOf(secondUri) || secondUri.IsBaseOf(firstUri);
-    }
+        if (!directory.EndsWith(Path.DirectorySeparatorChar))
+        {
+            directory += Path.DirectorySeparatorChar;
+        }
 
-
-    /// <summary>
-    /// Returns true if the file is a descendant of the directory, otherwise false.
-    /// </summary>
-    /// <param name="file"></param>
-    /// <param name="directory"></param>
-    /// <returns></returns>
-    public static bool IsDescendant(string file, string directory)
-    {
-        Uri fileUri = new(file);
-        Uri directoryUri = new (directory.EndsWith(Path.DirectorySeparatorChar) ? directory : directory + Path.DirectorySeparatorChar);
-        return directoryUri.IsBaseOf(fileUri);
+        return location.StartsWith(directory);
     }
 
 

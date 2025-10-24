@@ -125,7 +125,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
         if (Games.Any(x => x.SavefileLocation != null && x.SavefileLocation.FilesystemEquals(location)))
             throw new ValidationException("Another game uses this savefile.");
 
-        if (profilesDirectories.Any(x => PathHelpers.IsDescendant(location, x)))
+        if (profilesDirectories.Any(location.IsDescendantOf))
             throw new ValidationException("This file is a descendant of a game's profiles directory.");
 
         ActiveGame.SavefileLocation = location;
@@ -151,10 +151,10 @@ public class GameProfileViewModel : NotifyPropertyChanged
         if (otherProfilesDirectories.Contains(location))
             throw new ValidationException("Another game uses this folder as a profiles directory.");
 
-        if (otherProfilesDirectories.Any(x => PathHelpers.IsEitherDirectoryDescendant(location, x)))
+        if (otherProfilesDirectories.Any(x => x.IsDescendantOf(location) || location.IsDescendantOf(x)))
             throw new ValidationException("This folder is the parent / child of another game's profiles directory.");
 
-        if (savefileLocations.Any(x => PathHelpers.IsDescendant(x, location)))
+        if (savefileLocations.Any(x => x.IsDescendantOf(location)))
             throw new ValidationException("This folder contains a game's savefile.");
 
         ActiveGame.ProfilesDirectory = location;        
