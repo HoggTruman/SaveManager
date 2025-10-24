@@ -98,9 +98,7 @@ public partial class SaveWindow : Window
     {
         if (e.ChangedButton == MouseButton.Left || e.ChangedButton == MouseButton.Right)
         {
-            HitTestResult r = VisualTreeHelper.HitTest(this, e.GetPosition(this));
-            if (r.VisualHit.GetType() != typeof(ListBoxItem))
-                SaveViewModel.SelectedEntry = null;
+            SaveViewModel.SelectedEntry = null;
         }
     }
 
