@@ -4,10 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SaveManager.Views.GameProfile"
+        xmlns:viewmodels="clr-namespace:SaveManager.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:GameProfileViewModel}"
         mc:Ignorable="d"
         Title="Configure Games / Profiles"
-        Height="415"
-        Width="500"
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
@@ -85,13 +85,13 @@
 
 
         <Grid Width="500"
-              Height="130"
+              Height="Auto"
               Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="20" />
-                <RowDefinition Height="45" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="20" />
-                <RowDefinition Height="45" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -107,7 +107,7 @@
 
             <Label Content="{Binding Path=ActiveGame.SavefileLocation}"
                    Width="Auto"
-                   Height="25"
+                   Height="28"
                    Grid.Row="1"
                    Grid.Column="0"
                    Margin="10"
@@ -132,7 +132,7 @@
 
             <Label Content="{Binding Path=ActiveGame.ProfilesDirectory}"
                    Width="Auto"
-                   Height="25"
+                   Height="28"
                    Grid.Row="3"
                    Margin="10"
                    BorderBrush="DarkGray"
