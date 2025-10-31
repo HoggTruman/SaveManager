@@ -14,6 +14,7 @@
         MinHeight="450"
         MinWidth="570"
         WindowStartupLocation="CenterScreen"
+        MouseDown="Window_MouseDown"
         Closing="Window_Closing">
     <Window.Resources>
         <!--<Style TargetType="{x:Type MenuItem}">
@@ -261,8 +262,8 @@
                 <Style TargetType="{x:Type ListBoxItem}">
                     <EventSetter Event="PreviewMouseDown"
                                  Handler="SaveListItem_PreviewMouseDown" />
-                    <EventSetter Event="PreviewMouseMove"
-                                 Handler="SaveListItem_PreviewMouseMove" />
+                    <EventSetter Event="MouseMove"
+                                 Handler="SaveListItem_MouseMove" />
                     <EventSetter Event="DragEnter"
                                  Handler="SaveListItem_DragEnter" />
                     <EventSetter Event="DragLeave"

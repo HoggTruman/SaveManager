@@ -152,6 +152,7 @@ public partial class SaveWindow : Window
 
     private void SaveListItem_PreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
+        // preview used to prevent the default ListBoxItem MouseDown blocking the event.
         if (e.LeftButton == MouseButtonState.Pressed)
         {
             _dragStartPoint = e.GetPosition(this);
@@ -160,7 +161,7 @@ public partial class SaveWindow : Window
     }
 
 
-    private void SaveListItem_PreviewMouseMove(object sender, MouseEventArgs e)
+    private void SaveListItem_MouseMove(object sender, MouseEventArgs e)
     {
         if (_draggedItem != null && e.LeftButton == MouseButtonState.Pressed)
         {
@@ -173,7 +174,7 @@ public partial class SaveWindow : Window
                 DataObject data = new(typeof(IFilesystemItem), _draggedItem);
                 DragDrop.DoDragDrop((FrameworkElement)sender, data, DragDropEffects.Move);
                 _draggedItem = null;
-            }            
+            }
         }
     }
 
@@ -364,6 +365,14 @@ public partial class SaveWindow : Window
 
 
 
+    private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        // resets the dragged item when clicking elsewhere to prevent initiating drags from 
+        // outside the savelist entry
+        _draggedItem = null;
+    }
+
+
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         StartupPreferences startupPreferences = new()
@@ -376,7 +385,7 @@ public partial class SaveWindow : Window
         };
 
         SaveViewModel.SaveAppdata(startupPreferences);
-    }
+    }   
 
 
 
