@@ -167,7 +167,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <param name="name"></param>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void CreateProfile(string name)
     {
         if (ActiveGame == null)
@@ -185,7 +185,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// <param name="newName"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void RenameProfile(string newName)
     {
         if (SelectedProfile == null)
@@ -201,7 +201,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// Deletes the selected profile.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void DeleteProfile()
     {
         if (SelectedProfile == null)
@@ -217,7 +217,7 @@ public class GameProfileViewModel : NotifyPropertyChanged
     /// Reloads the active game's profiles from the filesystem.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void RefreshProfiles()
     {
         if (ActiveGame == null)

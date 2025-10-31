@@ -225,7 +225,7 @@ public partial class SaveWindow : Window
         {
             SaveDoesNotExistDialog.ShowDialog(this);
         }
-        catch (FilesystemItemNotFoundException)
+        catch (FilesystemMismatchException)
         {
             CreateErrorDialog("Reloading profiles from the filesystem...").ShowDialog(this);
             RefreshProfiles();
@@ -261,7 +261,7 @@ public partial class SaveWindow : Window
         {
             SaveDoesNotExistDialog.ShowDialog(this);
         }
-        catch (FilesystemItemNotFoundException)
+        catch (FilesystemMismatchException)
         {
             CreateErrorDialog("The savefile you are trying to load does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
             RefreshProfiles();
@@ -297,7 +297,7 @@ public partial class SaveWindow : Window
         {
             SaveDoesNotExistDialog.ShowDialog(this);
         }
-        catch (FilesystemItemNotFoundException)
+        catch (FilesystemMismatchException)
         {
             CreateErrorDialog("The savefile you are trying to replace does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
             RefreshProfiles();
@@ -330,7 +330,7 @@ public partial class SaveWindow : Window
                 new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
                 addFolderDialog = new(addFolderDialog.Title, addFolderDialog.Prompt, addFolderDialog.Input);
             }
-            catch (FilesystemItemNotFoundException)
+            catch (FilesystemMismatchException)
             {
                 CreateErrorDialog("Reloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
@@ -409,7 +409,7 @@ public partial class SaveWindow : Window
             {
                 SaveViewModel.DeleteSelectedEntry();
             }
-            catch (FilesystemItemNotFoundException)
+            catch (FilesystemMismatchException)
             {
                 CreateErrorDialog($"'{SaveViewModel.SelectedEntry.Name}' does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
@@ -444,7 +444,7 @@ public partial class SaveWindow : Window
                 new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
                 renameDialog = new(renameDialog.Title, renameDialog.Prompt, renameDialog.Input);
             }
-            catch (FilesystemItemNotFoundException)
+            catch (FilesystemMismatchException)
             {
                 CreateErrorDialog($"'{SaveViewModel.SelectedEntry.Name}' does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
@@ -479,7 +479,7 @@ public partial class SaveWindow : Window
         {
             new OkDialog($"{(draggedItem is File ? "File" : "Folder")} already exists", ex.Message, ImageSources.Warning).ShowDialog(this);
         }
-        catch (FilesystemItemNotFoundException)
+        catch (FilesystemMismatchException)
         {
             CreateErrorDialog("Reloading profiles from the filesystem...").ShowDialog(this);
             RefreshProfiles();
@@ -515,7 +515,7 @@ public partial class SaveWindow : Window
         {
             CreateErrorDialog("Failed to reload profiles.").ShowDialog(this);
         }
-        catch (FilesystemItemNotFoundException)
+        catch (FilesystemMismatchException)
         {
             new OkDialog("Profiles directory reset", 
                 "The current game's profiles directory no longer exists.\nPlease set a new one.", ImageSources.Error).ShowDialog(this);

@@ -90,7 +90,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// <param name="movingEntry"></param>
     /// <param name="targetEntry"></param>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="ValidationException"></exception>
     public void MoveEntry(IFilesystemItem movingEntry, IFilesystemItem? targetEntry)
     {
@@ -116,7 +116,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// </summary>
     /// <param name="name"></param>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="ValidationException"></exception>
     public void AddFolder(string name)
     {
@@ -135,7 +135,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// Deletes the selected entry.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void DeleteSelectedEntry()
     {
         if (ActiveGame == null || ActiveGame.ActiveProfile == null || SelectedEntry == null)
@@ -153,7 +153,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// <param name="newName"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void RenameSelectedEntry(string newName)
     {
         if (ActiveGame == null || ActiveGame.ActiveProfile == null || SelectedEntry == null)
@@ -168,7 +168,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// Reloads the active game's profiles from the filesystem.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void RefreshProfiles()
     {
         if (ActiveGame == null)
@@ -185,7 +185,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// Creates a copy of the active game's savefile in a folder based on the current selection.
     /// </summary>
     /// <exception cref="SavefileNotFoundException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public void ImportSavefile()
     {
@@ -202,7 +202,7 @@ public class SaveViewModel : NotifyPropertyChanged
             ActiveGame.ActiveProfile.UpdateSaveListEntries();
             SelectedEntry = copiedSavefile;
         }
-        catch (FilesystemItemNotFoundException ex)
+        catch (FilesystemMismatchException ex)
         {
             if (ex.Location == ActiveGame.SavefileLocation)
             {
@@ -220,7 +220,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// </summary>
     /// <exception cref="SavefileNotFoundException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void LoadSelectedEntry()
     {
         if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null || SelectedEntry is not File)
@@ -232,7 +232,7 @@ public class SaveViewModel : NotifyPropertyChanged
         {
             ActiveGame.Savefile.OverwriteContents((File)SelectedEntry);
         }
-        catch (FilesystemItemNotFoundException ex)
+        catch (FilesystemMismatchException ex)
         {
             if (ex.Location == ActiveGame.SavefileLocation)
             {
@@ -249,7 +249,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// Overwrites the selected entry if it is a file, with the active game's savefile.
     /// </summary>
     /// <exception cref="SavefileNotFoundException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public void ReplaceSelectedEntry()
     {
@@ -262,7 +262,7 @@ public class SaveViewModel : NotifyPropertyChanged
         {
             ((File)SelectedEntry).OverwriteContents(ActiveGame.Savefile);
         }
-        catch (FilesystemItemNotFoundException ex)
+        catch (FilesystemMismatchException ex)
         {
             if (ex.Location == ActiveGame.SavefileLocation)
             {

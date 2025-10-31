@@ -67,17 +67,17 @@ public class Folder : IFilesystemItem
     /// <returns></returns>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public static Folder Create(string name, Folder parent)
     {
         ValidateFolderName(name, parent.Children);
         string location = Path.Join(parent.Location, name);
 
         if (!parent.Exists)
-            throw new FilesystemItemNotFoundException(parent.Location, "The parent folder does not exist.");
+            throw new FilesystemMismatchException(parent.Location, "The parent folder does not exist.");
 
         if (Directory.Exists(location))
-            throw new FilesystemItemNotFoundException(location, "A folder already exists at the creation location");
+            throw new FilesystemMismatchException(location, "A folder already exists at the creation location");
 
         try
         {
@@ -103,7 +103,7 @@ public class Folder : IFilesystemItem
     /// <param name="newName"></param>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void Rename(string newName)
     {
         if (Parent == null)
@@ -113,10 +113,10 @@ public class Folder : IFilesystemItem
         string newLocation = Path.Join(Parent.Location, newName);
         
         if (!Exists)
-            throw new FilesystemItemNotFoundException(Location, "The folder you are trying to rename does not exist.");
+            throw new FilesystemMismatchException(Location, "The folder you are trying to rename does not exist.");
 
         if (Directory.Exists(newLocation))
-            throw new FilesystemItemNotFoundException(newLocation, "A folder already exists at the renamed location.");
+            throw new FilesystemMismatchException(newLocation, "A folder already exists at the renamed location.");
 
         try
         {
@@ -138,14 +138,14 @@ public class Folder : IFilesystemItem
     /// Deletes the Folder and underlying directory in the filesystem.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void Delete()
     {
         if (Parent == null)
             throw new InvalidOperationException("A Folder representing a game's profiles directory should not be deleted.");
 
         if (!Exists)
-            throw new FilesystemItemNotFoundException(Location, "The folder you are trying to delete does not exist.");
+            throw new FilesystemMismatchException(Location, "The folder you are trying to delete does not exist.");
 
         try
         {
@@ -167,7 +167,7 @@ public class Folder : IFilesystemItem
     /// </summary>
     /// <param name="newParent"></param>
     /// <exception cref="ValidationException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public void Move(Folder newParent)
     {
@@ -181,15 +181,15 @@ public class Folder : IFilesystemItem
             throw new ValidationException("The destination already contains a folder with this name.");
 
         if (!Exists)
-            throw new FilesystemItemNotFoundException(Location, "The folder you are trying to move does not exist.");
+            throw new FilesystemMismatchException(Location, "The folder you are trying to move does not exist.");
         
         if (!newParent.Exists)
-            throw new FilesystemItemNotFoundException(newParent.Location, "The destination folder does not exist.");
+            throw new FilesystemMismatchException(newParent.Location, "The destination folder does not exist.");
 
         string newLocation = Path.Join(newParent.Location, Name);
 
         if (Directory.Exists(newLocation))
-            throw new FilesystemItemNotFoundException(newLocation, "A folder already exists at the new location");
+            throw new FilesystemMismatchException(newLocation, "A folder already exists at the new location");
 
         try
         {

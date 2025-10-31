@@ -122,10 +122,10 @@ public class Game : NotifyPropertyChanged
 
     /// <summary>
     /// Reloads the game's profiles from the filesystem.<br/>
-    /// If the profiles directory no longer exists, sets it to null and throws a <see cref="FilesystemItemNotFoundException"/>.
+    /// If the profiles directory no longer exists, sets it to null and throws a <see cref="FilesystemMismatchException"/>.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void RefreshProfiles()
     {
         if (_profilesFolder == null || ProfilesDirectory == null)
@@ -136,7 +136,7 @@ public class Game : NotifyPropertyChanged
 
         if (!_profilesFolder.Exists)
         {
-            FilesystemItemNotFoundException ex = new(ProfilesDirectory, "The profiles directory no longer exists.");
+            FilesystemMismatchException ex = new(ProfilesDirectory, "The profiles directory no longer exists.");
             ProfilesDirectory = null;
             throw ex;
         }

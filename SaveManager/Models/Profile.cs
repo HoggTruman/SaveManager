@@ -38,7 +38,7 @@ public class Profile : NotifyPropertyChanged
     /// <param name="game"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public static Profile Create(string name, Game game)
     {
         if (game.ProfilesFolder == null)
@@ -65,7 +65,7 @@ public class Profile : NotifyPropertyChanged
     /// <param name="newName"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void Rename(string newName)
     {
         if (Game.Profiles.Any(x => x.Name.FilesystemEquals(newName)))
@@ -82,7 +82,7 @@ public class Profile : NotifyPropertyChanged
     /// Deletes the <see cref="Profile"/>.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void Delete()
     {
         Folder.Delete();

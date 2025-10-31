@@ -176,7 +176,7 @@ public partial class GameProfileWindow : Window
                 new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
                 newProfileDialog = new(newProfileDialog.Title, newProfileDialog.Prompt, newProfileDialog.Input);
             }
-            catch (FilesystemItemNotFoundException)
+            catch (FilesystemMismatchException)
             {
                 CreateErrorDialog("An error occurred while creating a new profile.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
@@ -212,7 +212,7 @@ public partial class GameProfileWindow : Window
                 new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
                 renameProfileDialog = new(renameProfileDialog.Title, renameProfileDialog.Prompt, renameProfileDialog.Input);
             }
-            catch (FilesystemItemNotFoundException)
+            catch (FilesystemMismatchException)
             {
                 CreateErrorDialog("The profile you are trying to rename does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
@@ -242,7 +242,7 @@ public partial class GameProfileWindow : Window
             {
                 GameProfileViewModel.DeleteProfile();
             }
-            catch (FilesystemItemNotFoundException)
+            catch (FilesystemMismatchException)
             {
                 CreateErrorDialog("The profile you are trying to delete does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
                 RefreshProfiles();
@@ -295,7 +295,7 @@ public partial class GameProfileWindow : Window
         {
             CreateErrorDialog("Failed to reload profiles.").ShowDialog(this);
         }
-        catch (FilesystemItemNotFoundException)
+        catch (FilesystemMismatchException)
         {
             new OkDialog("Profiles directory reset", 
                 "The current game's profiles directory no longer exists.\nPlease set a new one.", ImageSources.Error).ShowDialog(this);

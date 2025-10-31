@@ -83,7 +83,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void Create_WhenParentDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void Create_WhenParentDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -92,12 +92,12 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         // test
         Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
         Directory.Delete(parent.Location, true);
-        Assert.Throws<FilesystemItemNotFoundException>(() => Folder.Create("New Folder", parent));
+        Assert.Throws<FilesystemMismatchException>(() => Folder.Create("New Folder", parent));
     }
 
 
     [Fact]
-    public void Create_WhenAlreadyExistsInFilesystemButNotInternally_ThrowsFilesystemItemNotFoundException()
+    public void Create_WhenAlreadyExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -109,7 +109,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         string newFolderLocation = Path.Join(parent.Location, newFolderName);
         Directory.CreateDirectory(newFolderLocation);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => Folder.Create(newFolderName, parent));
+        Assert.Throws<FilesystemMismatchException>(() => Folder.Create(newFolderName, parent));
     }
 
     #endregion
@@ -163,7 +163,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void Rename_WhenFolderDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void Rename_WhenFolderDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -174,12 +174,12 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Folder renameFolder = (Folder)parent.Children.First(x => x is Folder);      
         Directory.Delete(renameFolder.Location, true);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => renameFolder.Rename("Renamed Folder"));
+        Assert.Throws<FilesystemMismatchException>(() => renameFolder.Rename("Renamed Folder"));
     }
 
 
     [Fact]
-    public void Rename_WhenRenameLocationExistsInFilesystemButNotInternally_ThrowsFilesystemItemNotFoundException()
+    public void Rename_WhenRenameLocationExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -192,7 +192,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         string newLocation = Path.Join(parent.Location, newName);
         Directory.CreateDirectory(newLocation);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => renameFolder.Rename(newName));
+        Assert.Throws<FilesystemMismatchException>(() => renameFolder.Rename(newName));
     }
 
     #endregion
@@ -220,7 +220,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void Delete_WhenFolderDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void Delete_WhenFolderDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -231,7 +231,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Folder folderToDelete = (Folder)parent.Children.First(x => x is Folder);      
         Directory.Delete(folderToDelete.Location, true);
 
-        Assert.Throws<FilesystemItemNotFoundException>(folderToDelete.Delete);
+        Assert.Throws<FilesystemMismatchException>(folderToDelete.Delete);
     }
 
     #endregion
@@ -334,7 +334,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void Move_WhenFolderDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void Move_WhenFolderDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -345,12 +345,12 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
         Folder destination = (Folder)baseFolder.Children.Last(x => x is Folder);
         Directory.Delete(movingFolder.Location);
-        Assert.Throws<FilesystemItemNotFoundException>(() => movingFolder.Move(destination));
+        Assert.Throws<FilesystemMismatchException>(() => movingFolder.Move(destination));
     }
 
 
     [Fact]
-    public void Move_WhenDestinationDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void Move_WhenDestinationDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -361,12 +361,12 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
         Folder destination = (Folder)baseFolder.Children.Last(x => x is Folder);
         Directory.Delete(destination.Location, true);
-        Assert.Throws<FilesystemItemNotFoundException>(() => movingFolder.Move(destination));
+        Assert.Throws<FilesystemMismatchException>(() => movingFolder.Move(destination));
     }
 
 
     [Fact]
-    public void Move_WhenDestinationFolderExistsInFilesystemButNotInternally_ThrowsFilesystemItemNotFoundException()
+    public void Move_WhenDestinationFolderExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -379,7 +379,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         string newLocation = Path.Join(destination.Location, movingFolder.Name);
         Directory.CreateDirectory(newLocation);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => movingFolder.Move(destination));
+        Assert.Throws<FilesystemMismatchException>(() => movingFolder.Move(destination));
     }
 
     #endregion

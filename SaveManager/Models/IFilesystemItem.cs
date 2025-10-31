@@ -31,14 +31,14 @@ public interface IFilesystemItem
     /// <param name="newName"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void Rename(string newName);
 
     /// <summary>
     /// Deletes the underlying file / directory.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     public void Delete();
 
     /// <summary>
@@ -46,7 +46,7 @@ public interface IFilesystemItem
     /// </summary>
     /// <param name="newParent"></param>
     /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="ValidationException"></exception>
     public void Move(Folder newParent);
 }

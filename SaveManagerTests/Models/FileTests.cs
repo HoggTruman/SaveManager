@@ -97,7 +97,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void CopyTo_WhenFileDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void CopyTo_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -107,12 +107,12 @@ public class FileTests : IClassFixture<FilesystemFixture>
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
         SaveManager.Models.File fileToCopy = new(Path.Join(folder.Location, "aFileThatDoesNotExist.file"), null);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => fileToCopy.CopyTo(folder));
+        Assert.Throws<FilesystemMismatchException>(() => fileToCopy.CopyTo(folder));
     }
 
 
     [Fact]
-    public void CopyTo_WhenParentDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void CopyTo_WhenParentDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -123,12 +123,12 @@ public class FileTests : IClassFixture<FilesystemFixture>
         SaveManager.Models.File fileToCopy = (SaveManager.Models.File)folder.Children.First(x => x is SaveManager.Models.File);
         Directory.Delete(folder.Location, true);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => fileToCopy.CopyTo(folder));
+        Assert.Throws<FilesystemMismatchException>(() => fileToCopy.CopyTo(folder));
     }
 
 
     [Fact]
-    public void CopyTo_WhenFileExistsInFilesystemButNotInternally_ThrowsFilesystemItemNotFoundException()
+    public void CopyTo_WhenFileExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -141,7 +141,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
         string copyLocation = Path.Join(destination.Location, fileToCopy.Name);
         using FileStream stream = System.IO.File.Create(copyLocation);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => fileToCopy.CopyTo(destination));
+        Assert.Throws<FilesystemMismatchException>(() => fileToCopy.CopyTo(destination));
     }
 
     #endregion
@@ -171,7 +171,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void Rename_WhenFileDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void Rename_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -180,12 +180,12 @@ public class FileTests : IClassFixture<FilesystemFixture>
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
         SaveManager.Models.File testFile = new(Path.Join(testCaseDirectory, "fileThatDoesNotExist.file"), folder);
-        Assert.Throws<FilesystemItemNotFoundException>(() => testFile.Rename("newName"));
+        Assert.Throws<FilesystemMismatchException>(() => testFile.Rename("newName"));
     }
 
 
     [Fact]
-    public void Rename_WhenFileExistsInFilesystemButNotInternally_ThrowsFilesystemItemNotFoundException()
+    public void Rename_WhenFileExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -198,7 +198,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
         string renamedLocation = Path.Join(folder.Location, newName);
         using FileStream stream = System.IO.File.Create(renamedLocation);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => testFile.Rename(newName));
+        Assert.Throws<FilesystemMismatchException>(() => testFile.Rename(newName));
     }
 
     #endregion
@@ -227,7 +227,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void Delete_WhenFileDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void Delete_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -236,7 +236,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
         SaveManager.Models.File testFile = new(Path.Join(testCaseDirectory, "fileThatDoesNotExist.file"), folder);
-        Assert.Throws<FilesystemItemNotFoundException>(testFile.Delete);
+        Assert.Throws<FilesystemMismatchException>(testFile.Delete);
     }
 
     #endregion
@@ -267,7 +267,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
 
     [Fact]
-    public void Move_WhenMovingFileDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void Move_WhenMovingFileDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -279,12 +279,12 @@ public class FileTests : IClassFixture<FilesystemFixture>
         Folder destination = (Folder)folder.Children.First(x => x is Folder);
         System.IO.File.Delete(movingFile.Location);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => movingFile.Move(destination));
+        Assert.Throws<FilesystemMismatchException>(() => movingFile.Move(destination));
     }
 
 
     [Fact]
-    public void Move_WhenDestinationDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void Move_WhenDestinationDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -296,12 +296,12 @@ public class FileTests : IClassFixture<FilesystemFixture>
         Folder destination = (Folder)folder.Children.First(x => x is Folder);
         Directory.Delete(destination.Location);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => movingFile.Move(destination));
+        Assert.Throws<FilesystemMismatchException>(() => movingFile.Move(destination));
     }
 
 
     [Fact]
-    public void Move_WhenNewLocationExistsInFilesystemButNotInternally_ThrowsFilesystemItemNotFoundException()
+    public void Move_WhenNewLocationExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -314,7 +314,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
         string newFileLocation = Path.Join(destination.Location, movingFile.Name);
         using FileStream stream = System.IO.File.Create(newFileLocation);
 
-        Assert.Throws<FilesystemItemNotFoundException>(() => movingFile.Move(destination));
+        Assert.Throws<FilesystemMismatchException>(() => movingFile.Move(destination));
     }
 
     #endregion
@@ -325,7 +325,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
     #region OverwriteContents
 
     [Fact]
-    public void OverwriteContents_WhenFileDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void OverwriteContents_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -335,12 +335,12 @@ public class FileTests : IClassFixture<FilesystemFixture>
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
         SaveManager.Models.File testFile = new(Path.Join(testCaseDirectory, "fileThatDoesNotExist.file"), folder);
         SaveManager.Models.File fileToCopy = (SaveManager.Models.File)folder.Children.First(x => x is SaveManager.Models.File);
-        Assert.Throws<FilesystemItemNotFoundException>(() => testFile.OverwriteContents(fileToCopy));
+        Assert.Throws<FilesystemMismatchException>(() => testFile.OverwriteContents(fileToCopy));
     }
 
 
     [Fact]
-    public void OverwriteContents_WhenFileToCopyDoesNotExist_ThrowsFilesystemItemNotFoundException()
+    public void OverwriteContents_WhenFileToCopyDoesNotExist_ThrowsFilesystemMismatchException()
     {
         // setup
         string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
@@ -350,7 +350,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
         SaveManager.Models.File testFile = (SaveManager.Models.File)folder.Children.First(x => x is SaveManager.Models.File);
         SaveManager.Models.File fileToCopy = new(Path.Join(testCaseDirectory, "fileThatDoesNotExist.file"), folder);
-        Assert.Throws<FilesystemItemNotFoundException>(() => testFile.OverwriteContents(fileToCopy));
+        Assert.Throws<FilesystemMismatchException>(() => testFile.OverwriteContents(fileToCopy));
     }
 
     #endregion

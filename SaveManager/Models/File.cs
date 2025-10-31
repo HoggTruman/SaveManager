@@ -39,20 +39,20 @@ public class File : IFilesystemItem
     /// </summary>
     /// <param name="parentOfCopy">The parent of the new copy.</param>
     /// <returns>The copy of the original file.</returns>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public File CopyTo(Folder parentOfCopy)
     {
         if (!Exists)
-            throw new FilesystemItemNotFoundException(Location, "The file you are trying to copy does not exist.");
+            throw new FilesystemMismatchException(Location, "The file you are trying to copy does not exist.");
 
         if (!parentOfCopy.Exists)
-            throw new FilesystemItemNotFoundException(parentOfCopy.Location, "The parent directory does not exist.");
+            throw new FilesystemMismatchException(parentOfCopy.Location, "The parent directory does not exist.");
 
         string copyLocation = Path.Join(parentOfCopy.Location, GenerateFileName(Name, parentOfCopy.Children));
 
         if (System.IO.File.Exists(copyLocation))
-            throw new FilesystemItemNotFoundException(copyLocation, "A file already exists at the copy location");
+            throw new FilesystemMismatchException(copyLocation, "A file already exists at the copy location");
 
         try
         {
@@ -77,7 +77,7 @@ public class File : IFilesystemItem
     /// Renames the file in the filesystem.
     /// </summary>
     /// <param name="newName"></param>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
     public void Rename(string newName)
@@ -89,10 +89,10 @@ public class File : IFilesystemItem
         string newLocation = Path.Join(Parent.Location, newName);
         
         if (!Exists)
-            throw new FilesystemItemNotFoundException(Location, "The file you are trying to rename does not exist.");
+            throw new FilesystemMismatchException(Location, "The file you are trying to rename does not exist.");
 
         if (System.IO.File.Exists(newLocation))
-            throw new FilesystemItemNotFoundException(newLocation, "A file already exists at the renamed location");
+            throw new FilesystemMismatchException(newLocation, "A file already exists at the renamed location");
 
         try
         {
@@ -114,7 +114,7 @@ public class File : IFilesystemItem
     /// <summary>
     /// Deletes the file in the filesystem and updates its parent.
     /// </summary>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public void Delete()
     {
@@ -122,7 +122,7 @@ public class File : IFilesystemItem
             throw new InvalidOperationException("A file without a parent should not be deleted.");
 
         if (!Exists)
-            throw new FilesystemItemNotFoundException(Location, "The file you are trying to delete does not exist.");
+            throw new FilesystemMismatchException(Location, "The file you are trying to delete does not exist.");
 
         try
         {
@@ -145,7 +145,7 @@ public class File : IFilesystemItem
     /// </summary>
     /// <param name="newParent"></param>
     /// <exception cref="ValidationException"></exception>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public void Move(Folder newParent)
     {
@@ -159,15 +159,15 @@ public class File : IFilesystemItem
             throw new ValidationException("The destination already contains a file with this name.");
 
         if (!Exists)
-            throw new FilesystemItemNotFoundException(Location, "The file you are trying to move does not exist.");
+            throw new FilesystemMismatchException(Location, "The file you are trying to move does not exist.");
         
         if (!newParent.Exists)
-            throw new FilesystemItemNotFoundException(newParent.Location, "The destination folder does not exist.");
+            throw new FilesystemMismatchException(newParent.Location, "The destination folder does not exist.");
 
         string newLocation = Path.Join(newParent.Location, Name);
 
         if (System.IO.File.Exists(newLocation))
-            throw new FilesystemItemNotFoundException(newLocation, "A file already exists at the new location");
+            throw new FilesystemMismatchException(newLocation, "A file already exists at the new location");
 
         try
         {
@@ -195,15 +195,15 @@ public class File : IFilesystemItem
     /// Overwrites the contents of the file with those from the file provided.
     /// </summary>
     /// <param name="file">The file to copy the contents of.</param>
-    /// <exception cref="FilesystemItemNotFoundException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public void OverwriteContents(File fileToCopy)
     {
         if (!Exists)
-            throw new FilesystemItemNotFoundException(Location, "The file you are trying to overwrite does not exist.");
+            throw new FilesystemMismatchException(Location, "The file you are trying to overwrite does not exist.");
 
         if (!fileToCopy.Exists)
-            throw new FilesystemItemNotFoundException(fileToCopy.Location, "The file you provided to copy the contents of does not exist.");
+            throw new FilesystemMismatchException(fileToCopy.Location, "The file you provided to copy the contents of does not exist.");
 
         try
         {
