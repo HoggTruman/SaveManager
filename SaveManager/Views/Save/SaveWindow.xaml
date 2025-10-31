@@ -178,27 +178,33 @@
                         Width="80"
                         Margin="10,0"
                         Orientation="Horizontal">
-                <Button x:Name="AddProfileButton"
-                        Click="AddProfileButton_Click"
+                <Button x:Name="CreateProfileButton"
+                        Click="CreateProfileButton_Click"
+                        IsEnabled="{Binding CanClickCreateProfile}"
                         Width="24"
                         Height="24"
                         Margin="0,0,4,0">
-                    <Image Source="/Assets/PlusIcon.png" />
+                    <Image Source="/Assets/PlusIcon.png"
+                           Style="{StaticResource FadeWhenDisabled}"/>
                 </Button>
 
                 <Button x:Name="RenameProfileButton"
                         Click="RenameProfileButton_Click"
+                        IsEnabled="{Binding CanRenameProfile}"
                         Width="24"
                         Height="24">
-                    <Image Source="/Assets/RenameIcon.png" />
+                    <Image Source="/Assets/RenameIcon.png"
+                           Style="{StaticResource FadeWhenDisabled}" />
                 </Button>
 
-                <Button x:Name="RemoveProfileButton"
-                        Click="RemoveProfileButton_Click"
+                <Button x:Name="DeleteProfileButton"
+                        Click="DeleteProfileButton_Click"
+                        IsEnabled="{Binding CanDeleteProfile}"
                         Width="24"
                         Height="24"
                         Margin="4,0,0,0">
-                    <Image Source="/Assets/DeleteIcon.png" />
+                    <Image Source="/Assets/DeleteIcon.png"
+                           Style="{StaticResource FadeWhenDisabled}"/>
                 </Button>
 
                 

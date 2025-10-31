@@ -35,7 +35,9 @@ public class SaveViewModel : NotifyPropertyChanged
         set => SetProperty(ref _selectedEntry, value); 
     }
 
-
+    public bool CanClickCreateProfile => ActiveGame != null;
+    public bool CanRenameProfile => ActiveGame != null && ActiveGame.ActiveProfile != null;
+    public bool CanDeleteProfile => ActiveGame != null && ActiveGame.ActiveProfile != null;
     public bool CanAddFolder => ActiveGame != null && ActiveGame.ActiveProfile != null;
     public bool CanDelete => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
     public bool CanRename => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
@@ -62,9 +64,64 @@ public class SaveViewModel : NotifyPropertyChanged
     /// </summary>
     public void EnableDisableButtons()
     {
+        OnPropertyChanged(nameof(CanClickCreateProfile));
+        OnPropertyChanged(nameof(CanRenameProfile));
+        OnPropertyChanged(nameof(CanDeleteProfile));
         OnPropertyChanged(nameof(CanImportSave));
         OnPropertyChanged(nameof(CanLoadSave));
         OnPropertyChanged(nameof(CanReplaceSave));
+    }
+
+
+    /// <summary>
+    /// Creates a new profile.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
+    public void CreateProfile(string name)
+    {
+        if (ActiveGame == null)
+        {
+            return;
+        }
+
+        ActiveGame.ActiveProfile = Profile.Create(name, ActiveGame);
+    }
+
+
+    /// <summary>
+    /// Renames the selected profile.
+    /// </summary>
+    /// <param name="newName"></param>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
+    public void RenameProfile(string newName)
+    {
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null)
+        {
+            return;
+        }
+
+        ActiveGame.ActiveProfile.Rename(newName);
+    }
+
+
+    /// <summary>
+    /// Deletes the selected profile.
+    /// </summary>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
+    public void DeleteProfile()
+    {
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null)
+        {
+            return;
+        }
+
+        ActiveGame.ActiveProfile.Delete();
     }
 
 

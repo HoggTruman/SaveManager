@@ -96,21 +96,111 @@ public partial class SaveWindow : Window
 
 
 
-    private void AddProfileButton_Click(object sender, RoutedEventArgs e)
+    private void CreateProfileButton_Click(object sender, RoutedEventArgs e)
     {
+        if (SaveViewModel.ActiveGame == null)
+        {
+            return;
+        }
 
+        if (SaveViewModel.ActiveGame.ProfilesDirectory == null)
+        {
+            new OkDialog("Profiles directory not set", 
+                "The game's profiles directory must be set before you can create a profile.", ImageSources.Warning).ShowDialog(this);
+            return;
+        }
+
+        InputDialog newProfileDialog = new("New Profile", "Enter the name of the new profile:");
+
+        while (newProfileDialog.ShowDialog(this) == true)
+        {
+            try
+            {
+                SaveViewModel.CreateProfile(newProfileDialog.Input);
+                return;
+            }
+            catch (ValidationException ex)
+            {
+                new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
+                newProfileDialog = new(newProfileDialog.Title, newProfileDialog.Prompt, newProfileDialog.Input);
+            }
+            catch (FilesystemMismatchException)
+            {
+                CreateErrorDialog("An error occurred while creating a new profile.\nReloading profiles from the filesystem...").ShowDialog(this);
+                RefreshProfiles();
+                return;
+            }
+            catch (FilesystemException)
+            {
+                CreateErrorDialog("An error occurred while creating a new profile.").ShowDialog(this);
+                return;
+            }
+        }     
     }
 
 
     private void RenameProfileButton_Click(object sender, RoutedEventArgs e)
     {
+        if (SaveViewModel.ActiveGame == null || SaveViewModel.ActiveGame.ActiveProfile == null)
+        {
+            return;
+        }
 
+        InputDialog renameProfileDialog = new("Rename Profile", "Enter the new name of the profile:", SaveViewModel.ActiveGame.ActiveProfile.Name);
+
+        while (renameProfileDialog.ShowDialog(this) == true)
+        {
+            try
+            {
+                SaveViewModel.RenameProfile(renameProfileDialog.Input);
+                return;
+            }
+            catch (ValidationException ex)
+            {
+                new OkDialog("Invalid name", ex.Message, ImageSources.Warning).ShowDialog(this);
+                renameProfileDialog = new(renameProfileDialog.Title, renameProfileDialog.Prompt, renameProfileDialog.Input);
+            }
+            catch (FilesystemMismatchException)
+            {
+                CreateErrorDialog("The profile you are trying to rename does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+                RefreshProfiles();
+                return;
+            }
+            catch (FilesystemException)
+            {
+                CreateErrorDialog("An error occurred while renaming the profile.").ShowDialog(this);
+                return;
+            }
+        }
     }
 
 
-    private void RemoveProfileButton_Click(object sender, RoutedEventArgs e)
+    private void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
     {
+        if (SaveViewModel.ActiveGame == null || SaveViewModel.ActiveGame.ActiveProfile == null)
+        {
+            return;
+        }
 
+        YesNoDialog confirmationDialog = new("Delete Profile", 
+            "Are you sure you want to delete this profile?\nThis will delete the associated folder and all its contents.");
+
+        if (confirmationDialog.ShowDialog(this) == true)
+        {
+            try
+            {
+                SaveViewModel.DeleteProfile();
+            }
+            catch (FilesystemMismatchException)
+            {
+                CreateErrorDialog("The profile you are trying to delete does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+                RefreshProfiles();
+            }
+            catch (FilesystemException)
+            {
+                CreateErrorDialog("An error occurred while deleting the profile.").ShowDialog(this);
+            }
+        }
     }    
 
 

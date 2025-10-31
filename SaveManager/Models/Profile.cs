@@ -75,6 +75,7 @@ public class Profile : NotifyPropertyChanged
 
         Folder.Rename(newName);
         Game.SortProfiles();
+        OnPropertyChanged(nameof(Name));
     }
 
 
