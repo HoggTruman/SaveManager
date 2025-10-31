@@ -82,7 +82,9 @@ public partial class SaveWindow : Window
     }
 
 
-    private void GameProfileEditButton_Click(object sender, RoutedEventArgs e)
+
+
+    private void GameEditButton_Click(object sender, RoutedEventArgs e)
     {
         GameProfileWindow gameProfileWindow = new(ViewModelFactory.CreateGameProfileViewModel(SaveViewModel.Games, SaveViewModel.ActiveGame));
         gameProfileWindow.ShowDialog(this);
@@ -90,6 +92,26 @@ public partial class SaveWindow : Window
         SaveViewModel.ActiveGame = gameProfileWindow.GameProfileViewModel.ActiveGame;
         SaveViewModel.SelectedEntry = null;
     }
+
+
+
+
+    private void AddProfileButton_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+
+    private void RenameProfileButton_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+
+    private void RemoveProfileButton_Click(object sender, RoutedEventArgs e)
+    {
+
+    }    
 
 
 

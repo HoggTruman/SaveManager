@@ -17,6 +17,7 @@
     <None Remove="Assets\ImportSave.png" />
     <None Remove="Assets\Input.png" />
     <None Remove="Assets\LoadSave.png" />
+    <None Remove="Assets\PlusIcon.png" />
     <None Remove="Assets\Question.png" />
     <None Remove="Assets\RefreshIcon.png" />
     <None Remove="Assets\RenameIcon.png" />
@@ -45,6 +46,7 @@
     <Resource Include="Assets\ImportSave.png" />
     <Resource Include="Assets\Input.png" />
     <Resource Include="Assets\LoadSave.png" />
+    <Resource Include="Assets\PlusIcon.png" />
     <Resource Include="Assets\Question.png" />
     <Resource Include="Assets\RefreshIcon.png" />
     <Resource Include="Assets\RenameIcon.png" />

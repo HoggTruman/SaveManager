@@ -9,10 +9,9 @@
         d:DataContext="{d:DesignInstance Type=viewmodels:SaveViewModel}"
         mc:Ignorable="d"
         Title="Save Manager"
-        Height="450"
-        Width="570"
-        MinHeight="450"
+        MinHeight="500"
         MinWidth="570"
+        Background="GhostWhite"
         WindowStartupLocation="CenterScreen"
         MouseDown="Window_MouseDown"
         Closing="Window_Closing">
@@ -108,22 +107,22 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="50" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
 
-        <Grid Height="60"
-              Grid.Row="0"
+        <Grid Height="Auto"
               VerticalAlignment="Top">
             <Grid.RowDefinitions>
-                <RowDefinition Height="20" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="170" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="100" />
             </Grid.ColumnDefinitions>
@@ -131,28 +130,37 @@
             <Label Target="{Binding ElementName=GameComboBox}"
                    Content="Game:"
                    HorizontalAlignment="Left"
-                   Grid.Column="0"
+                   VerticalAlignment="Center"
                    FontSize="14"
-                   Margin="10, 2, 0, 0"
+                   Margin="10,2,0,0"
                    Padding="0" />
 
             <ComboBox x:Name="GameComboBox"
                       ItemsSource="{Binding Games}"
                       SelectedItem="{Binding ActiveGame}"
                       DisplayMemberPath="Name"
-                      HorizontalAlignment="Center"
+                      HorizontalAlignment="Stretch"
                       Grid.Row="1"
-                      Grid.Column="0"
-                      Width="150"
-                      Height="25"
-                      Margin="10,0,10,0" />
+                      Height="24"
+                      Margin="10,5" />
+
+            <Button x:Name="GameEditButton"
+                    Click="GameEditButton_Click"
+                    Content="Edit"
+                    HorizontalAlignment="Center"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="80"
+                    Height="24"
+                    Margin="10,0,10,0" />
 
             <Label Target="{Binding ElementName=ProfileComboBox}"
                    Content="Profile:"
                    HorizontalAlignment="Left"
-                   Grid.Column="1"
+                   VerticalAlignment="Center"
+                   Grid.Row="2"
                    FontSize="14"
-                   Margin="10, 2, 0, 0"
+                   Margin="10,2,0,0"
                    Padding="0" />
 
             <ComboBox x:Name="ProfileComboBox"
@@ -161,20 +169,43 @@
                       DisplayMemberPath="Name"
                       SelectionChanged="ProfileComboBox_SelectionChanged"
                       HorizontalAlignment="Stretch"
-                      Grid.Row="1"
-                      Grid.Column="1"
-                      Height="25"
-                      Margin="10,0,10,0" />
+                      Grid.Row="3"
+                      Height="24"
+                      Margin="10,5" />
 
-            <Button x:Name="GameProfileEditButton"
-                    Click="GameProfileEditButton_Click"
-                    Content="Edit"
-                    HorizontalAlignment="Center"
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    Width="80"
-                    Height="25"
-                    Margin="10,0,10,0" />
+            <StackPanel Grid.Row="3"
+                        Grid.Column="1"
+                        Width="80"
+                        Margin="10,0"
+                        Orientation="Horizontal">
+                <Button x:Name="AddProfileButton"
+                        Click="AddProfileButton_Click"
+                        Width="24"
+                        Height="24"
+                        Margin="0,0,4,0">
+                    <Image Source="/Assets/PlusIcon.png" />
+                </Button>
+
+                <Button x:Name="RenameProfileButton"
+                        Click="RenameProfileButton_Click"
+                        Width="24"
+                        Height="24">
+                    <Image Source="/Assets/RenameIcon.png" />
+                </Button>
+
+                <Button x:Name="RemoveProfileButton"
+                        Click="RemoveProfileButton_Click"
+                        Width="24"
+                        Height="24"
+                        Margin="4,0,0,0">
+                    <Image Source="/Assets/DeleteIcon.png" />
+                </Button>
+
+                
+            </StackPanel>
+
+
+
         </Grid>
 
 
@@ -189,7 +220,7 @@
                  Drop="SaveListBox_Drop"
                  HorizontalContentAlignment="Stretch"
                  VerticalContentAlignment="Stretch"
-                 Margin="10 5"
+                 Margin="10 10"
                  Width="Auto"
                  Grid.Row="1"
                  IsTabStop="False"
