@@ -71,13 +71,16 @@ public class Folder : IFilesystemItem
     public static Folder Create(string name, Folder parent)
     {
         ValidateFolderName(name, parent.Children);
+        string location = Path.Join(parent.Location, name);
 
         if (!parent.Exists)
             throw new FilesystemItemNotFoundException(parent.Location, "The parent folder does not exist.");
 
+        if (Directory.Exists(location))
+            throw new FilesystemItemNotFoundException(location, "A folder already exists at the creation location");
+
         try
         {
-            string location = Path.Join(parent.Location, name);
             Directory.CreateDirectory(location);
             Folder newFolder = new(location, parent);
             parent.Children.Add(newFolder);
@@ -107,13 +110,16 @@ public class Folder : IFilesystemItem
             throw new InvalidOperationException("A Folder representing a game's profiles directory should not be renamed. Create a new instance instead");
 
         ValidateFolderName(newName, Parent.Children);
+        string newLocation = Path.Join(Parent.Location, newName);
         
         if (!Exists)
             throw new FilesystemItemNotFoundException(Location, "The folder you are trying to rename does not exist.");
 
+        if (Directory.Exists(newLocation))
+            throw new FilesystemItemNotFoundException(newLocation, "A folder already exists at the renamed location.");
+
         try
         {
-            string newLocation = Path.Join(Parent.Location, newName);
             Directory.Move(Location, newLocation);
             Location = newLocation;
             Parent.SortChildren();
@@ -180,9 +186,13 @@ public class Folder : IFilesystemItem
         if (!newParent.Exists)
             throw new FilesystemItemNotFoundException(newParent.Location, "The destination folder does not exist.");
 
+        string newLocation = Path.Join(newParent.Location, Name);
+
+        if (Directory.Exists(newLocation))
+            throw new FilesystemItemNotFoundException(newLocation, "A folder already exists at the new location");
+
         try
         {
-            string newLocation = Path.Join(newParent.Location, Name);
             Directory.Move(Location, newLocation);
             Parent.Children = [..Parent.Children.Where(x => x != this)];
             Location = newLocation;            

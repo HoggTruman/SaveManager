@@ -49,9 +49,13 @@ public class File : IFilesystemItem
         if (!parentOfCopy.Exists)
             throw new FilesystemItemNotFoundException(parentOfCopy.Location, "The parent directory does not exist.");
 
+        string copyLocation = Path.Join(parentOfCopy.Location, GenerateFileName(Name, parentOfCopy.Children));
+
+        if (System.IO.File.Exists(copyLocation))
+            throw new FilesystemItemNotFoundException(copyLocation, "A file already exists at the copy location");
+
         try
         {
-            string copyLocation = Path.Join(parentOfCopy.Location, GenerateFileName(Name, parentOfCopy.Children));
             System.IO.File.Copy(Location, copyLocation);            
             File copiedFile = new(copyLocation, parentOfCopy);
             parentOfCopy.Children.Add(copiedFile);
@@ -82,13 +86,16 @@ public class File : IFilesystemItem
             throw new InvalidOperationException("A file without a parent should not be renamed.");
 
         ValidateFileName(newName, Parent.Children);
+        string newLocation = Path.Join(Parent.Location, newName);
         
         if (!Exists)
             throw new FilesystemItemNotFoundException(Location, "The file you are trying to rename does not exist.");
 
+        if (System.IO.File.Exists(newLocation))
+            throw new FilesystemItemNotFoundException(newLocation, "A file already exists at the renamed location");
+
         try
         {
-            string newLocation = Path.Join(Parent.Location, newName);
             System.IO.File.Move(Location, newLocation);
             Location = newLocation;
             Parent.SortChildren();
@@ -157,9 +164,13 @@ public class File : IFilesystemItem
         if (!newParent.Exists)
             throw new FilesystemItemNotFoundException(newParent.Location, "The destination folder does not exist.");
 
+        string newLocation = Path.Join(newParent.Location, Name);
+
+        if (System.IO.File.Exists(newLocation))
+            throw new FilesystemItemNotFoundException(newLocation, "A file already exists at the new location");
+
         try
         {
-            string newLocation = Path.Join(newParent.Location, Name);
             System.IO.File.Move(Location, newLocation);
             Parent.Children = [..Parent.Children.Where(x => x != this)];
             Location = newLocation;

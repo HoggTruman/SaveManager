@@ -95,6 +95,23 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Assert.Throws<FilesystemItemNotFoundException>(() => Folder.Create("New Folder", parent));
     }
 
+
+    [Fact]
+    public void Create_WhenAlreadyExistsInFilesystemButNotInternally_ThrowsFilesystemItemNotFoundException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        string newFolderName = "New Folder";
+        string newFolderLocation = Path.Join(parent.Location, newFolderName);
+        Directory.CreateDirectory(newFolderLocation);
+
+        Assert.Throws<FilesystemItemNotFoundException>(() => Folder.Create(newFolderName, parent));
+    }
+
     #endregion
 
 
@@ -158,6 +175,24 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Directory.Delete(renameFolder.Location, true);
 
         Assert.Throws<FilesystemItemNotFoundException>(() => renameFolder.Rename("Renamed Folder"));
+    }
+
+
+    [Fact]
+    public void Rename_WhenRenameLocationExistsInFilesystemButNotInternally_ThrowsFilesystemItemNotFoundException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder renameFolder = (Folder)parent.Children.First(x => x is Folder);
+        string newName = "Renamed Folder";
+        string newLocation = Path.Join(parent.Location, newName);
+        Directory.CreateDirectory(newLocation);
+
+        Assert.Throws<FilesystemItemNotFoundException>(() => renameFolder.Rename(newName));
     }
 
     #endregion
@@ -326,6 +361,24 @@ public class FolderTests : IClassFixture<FilesystemFixture>
         Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
         Folder destination = (Folder)baseFolder.Children.Last(x => x is Folder);
         Directory.Delete(destination.Location, true);
+        Assert.Throws<FilesystemItemNotFoundException>(() => movingFolder.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_WhenDestinationFolderExistsInFilesystemButNotInternally_ThrowsFilesystemItemNotFoundException()
+    {
+        // setup
+        string testCaseDirectory = Path.Join(_filesystemFixture.TestDirectory, MethodBase.GetCurrentMethod()!.Name);
+        Setup(testCaseDirectory);
+
+        // test
+        Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
+        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
+        Folder destination = (Folder)baseFolder.Children.Last(x => x is Folder);
+        string newLocation = Path.Join(destination.Location, movingFolder.Name);
+        Directory.CreateDirectory(newLocation);
+
         Assert.Throws<FilesystemItemNotFoundException>(() => movingFolder.Move(destination));
     }
 
