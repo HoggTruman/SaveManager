@@ -457,16 +457,16 @@ public partial class SaveWindow : Window
     }
 
 
-    private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
-    {
-        PromptDeleteSelectedEntry();
-    }
-
-
     private void RenameMenuItem_Click(object sender, RoutedEventArgs e)
     {
         PromptRenameSelectedEntry();
     }
+
+
+    private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        PromptDeleteSelectedEntry();
+    }    
 
 
     private void RefreshMenuItem_Click(object sender, RoutedEventArgs e)
@@ -500,38 +500,6 @@ public partial class SaveWindow : Window
     }   
 
 
-
-
-    /// <summary>
-    /// Asks the user if they want to delete the selected entry and then attempts to.
-    /// </summary>
-    private void PromptDeleteSelectedEntry()
-    {
-        if (!SaveViewModel.CanDelete)
-            return;
-
-        string message = SaveViewModel.SelectedEntry is File? $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}'?":
-            $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}' and all its contents?";
-
-        YesNoDialog confirmDeleteDialog = new($"Delete '{SaveViewModel.SelectedEntry!.Name}'", message);
-
-        if (confirmDeleteDialog.ShowDialog(this) == true)
-        {
-            try
-            {
-                SaveViewModel.DeleteSelectedEntry();
-            }
-            catch (FilesystemMismatchException)
-            {
-                CreateErrorDialog($"'{SaveViewModel.SelectedEntry.Name}' does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
-                RefreshProfiles();
-            }
-            catch (FilesystemException)
-            {
-                CreateErrorDialog($"An error occurred while deleting '{SaveViewModel.SelectedEntry.Name}'").ShowDialog(this);
-            }
-        }
-    }
 
 
     /// <summary>
@@ -570,6 +538,38 @@ public partial class SaveWindow : Window
         }   
     }
 
+
+    /// <summary>
+    /// Asks the user if they want to delete the selected entry and then attempts to.
+    /// </summary>
+    private void PromptDeleteSelectedEntry()
+    {
+        if (!SaveViewModel.CanDelete)
+            return;
+
+        string message = SaveViewModel.SelectedEntry is File? $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}'?":
+            $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}' and all its contents?";
+
+        YesNoDialog confirmDeleteDialog = new($"Delete '{SaveViewModel.SelectedEntry!.Name}'", message);
+
+        if (confirmDeleteDialog.ShowDialog(this) == true)
+        {
+            try
+            {
+                SaveViewModel.DeleteSelectedEntry();
+            }
+            catch (FilesystemMismatchException)
+            {
+                CreateErrorDialog($"'{SaveViewModel.SelectedEntry.Name}' does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+                RefreshProfiles();
+            }
+            catch (FilesystemException)
+            {
+                CreateErrorDialog($"An error occurred while deleting '{SaveViewModel.SelectedEntry.Name}'").ShowDialog(this);
+            }
+        }
+    }
+    
 
     /// <summary>
     /// Moves an entry to a different folder based on where it is dropped.

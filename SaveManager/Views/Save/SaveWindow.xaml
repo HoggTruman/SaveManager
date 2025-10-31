@@ -324,15 +324,6 @@
                                    Margin="-1,-1,-1,-1" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem x:Name="DeleteMenuItem"
-                              Header="Delete"
-                              InputGestureText="Del"
-                              Click="DeleteMenuItem_Click">
-                        <MenuItem.Icon>
-                            <Image Source="/Assets/DeleteIcon.png"
-                                   Margin="-1,-1,-1,-1" />
-                        </MenuItem.Icon>
-                    </MenuItem>
                     <MenuItem x:Name="RenameMenuItem"
                               Header="Rename"
                               InputGestureText="F2"
@@ -340,6 +331,15 @@
                         <MenuItem.Icon>
                             <Image Source="/Assets/RenameIcon.png"
                                    Margin="0,-1,-2,-1" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem x:Name="DeleteMenuItem"
+                              Header="Delete"
+                              InputGestureText="Del"
+                              Click="DeleteMenuItem_Click">
+                        <MenuItem.Icon>
+                            <Image Source="/Assets/DeleteIcon.png"
+                                   Margin="-1,-1,-1,-1" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem x:Name="RefreshMenuItem"
