@@ -183,7 +183,8 @@
                         IsEnabled="{Binding CanClickCreateProfile}"
                         Width="24"
                         Height="24"
-                        Margin="0,0,4,0">
+                        Margin="0,0,4,0"
+                        ToolTip="New Profile">
                     <Image Source="/Assets/PlusIcon.png"
                            Style="{StaticResource FadeWhenDisabled}"/>
                 </Button>
@@ -192,7 +193,8 @@
                         Click="RenameProfileButton_Click"
                         IsEnabled="{Binding CanRenameProfile}"
                         Width="24"
-                        Height="24">
+                        Height="24"
+                        ToolTip="Rename Profile">
                     <Image Source="/Assets/RenameIcon.png"
                            Style="{StaticResource FadeWhenDisabled}" />
                 </Button>
@@ -202,7 +204,8 @@
                         IsEnabled="{Binding CanDeleteProfile}"
                         Width="24"
                         Height="24"
-                        Margin="4,0,0,0">
+                        Margin="4,0,0,0"
+                        ToolTip="Delete Profile">
                     <Image Source="/Assets/DeleteIcon.png"
                            Style="{StaticResource FadeWhenDisabled}"/>
                 </Button>
@@ -415,7 +418,8 @@
                     Width="Auto"
                     Height="30"
                     Grid.Column="0"
-                    Margin="10">
+                    Margin="10"
+                    ToolTip="Import a copy of the game's savefile">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/ImportSave.png"
                            Height="20"
@@ -433,7 +437,8 @@
                     Width="Auto"
                     Height="30"
                     Grid.Column="1"
-                    Margin="10">
+                    Margin="10"
+                    ToolTip="Load the selected savefile">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/LoadSave.png"
                            Height="20"
@@ -451,7 +456,8 @@
                     Width="Auto"
                     Height="30"
                     Grid.Column="2"
-                    Margin="10">
+                    Margin="10"
+                    ToolTip="Replace the selected savefile with a copy of the game's savefile">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/ReplaceSave.png"
                            Height="20"

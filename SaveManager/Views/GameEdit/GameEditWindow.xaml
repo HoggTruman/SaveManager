@@ -57,14 +57,16 @@
                     Click="AddGameButton_Click"
                     Width="24"
                     Height="24"
-                    Margin="0,0,4,0">
+                    Margin="0,0,4,0"
+                    ToolTip="Add Game">
                 <Image Source="/Assets/PlusIcon.png" />
             </Button>
 
             <Button x:Name="RenameGameButton"
                     Click="RenameGameButton_Click"
                     Width="24"
-                    Height="24">
+                    Height="24"
+                    ToolTip="Rename Game">
                 <Image Source="/Assets/RenameIcon.png" />
             </Button>
 
@@ -72,7 +74,8 @@
                     Click="RemoveGameButton_Click"
                     Width="24"
                     Height="24"
-                    Margin="4,0,0,0">
+                    Margin="4,0,0,0"
+                    ToolTip="Remove Game">
                 <Image Source="/Assets/DeleteIcon.png" />
             </Button>
         </StackPanel>
