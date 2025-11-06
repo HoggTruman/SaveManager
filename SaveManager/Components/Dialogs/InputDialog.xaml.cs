@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace SaveManager.Components;
+namespace SaveManager.Components.Dialogs;
 
 /// <summary>
 /// Interaction logic for InputDialog.xaml

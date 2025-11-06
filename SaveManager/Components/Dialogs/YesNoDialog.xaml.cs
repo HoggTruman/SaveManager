@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace SaveManager.Components;
+namespace SaveManager.Components.Dialogs;
 
 /// <summary>
 /// Interaction logic for YesNoDialog.xaml

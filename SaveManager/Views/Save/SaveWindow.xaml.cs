@@ -1,5 +1,5 @@
 ﻿using SaveManager.Assets;
-using SaveManager.Components;
+using SaveManager.Components.Dialogs;
 using SaveManager.Exceptions;
 using SaveManager.Extensions;
 using SaveManager.Models;
