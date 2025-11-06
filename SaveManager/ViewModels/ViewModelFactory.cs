@@ -26,7 +26,7 @@ public static class ViewModelFactory
         return new(_appdataService, games);
     }
 
-    public static GameProfileViewModel CreateGameProfileViewModel(IEnumerable<Game> games, Game? activeGame)
+    public static GameEditViewModel CreateGameEditViewModel(IEnumerable<Game> games, Game? activeGame)
     {
         if (_appdataService == null)
         {

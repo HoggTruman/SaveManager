@@ -5,7 +5,7 @@ using SaveManager.Extensions;
 using SaveManager.Models;
 using SaveManager.Services.Appdata;
 using SaveManager.ViewModels;
-using SaveManager.Views.GameProfile;
+using SaveManager.Views.GameEdit;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -86,10 +86,10 @@ public partial class SaveWindow : Window
 
     private void GameEditButton_Click(object sender, RoutedEventArgs e)
     {
-        GameProfileWindow gameProfileWindow = new(ViewModelFactory.CreateGameProfileViewModel(SaveViewModel.Games, SaveViewModel.ActiveGame));
-        gameProfileWindow.ShowDialog(this);
-        SaveViewModel.Games = [..gameProfileWindow.GameProfileViewModel.Games];
-        SaveViewModel.ActiveGame = gameProfileWindow.GameProfileViewModel.ActiveGame;
+        GameEditWindow gameEditWindow = new(ViewModelFactory.CreateGameEditViewModel(SaveViewModel.Games, SaveViewModel.ActiveGame));
+        gameEditWindow.ShowDialog(this);
+        SaveViewModel.Games = [..gameEditWindow.GameEditViewModel.Games];
+        SaveViewModel.ActiveGame = gameEditWindow.GameEditViewModel.ActiveGame;
         SaveViewModel.SelectedEntry = null;
     }
 
