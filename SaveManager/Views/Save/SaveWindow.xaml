@@ -165,12 +165,7 @@
                     <Image Source="/Assets/DeleteIcon.png"
                            Style="{StaticResource FadeWhenDisabled}" />
                 </Button>
-
-
             </StackPanel>
-
-
-
         </Grid>
 
 
@@ -313,6 +308,8 @@
             </ListBox.ContextMenu>
         </ListBox>
 
+        
+        
 
         <Grid x:Name="NotificationContainer"
               Grid.Row="1"
@@ -349,6 +346,8 @@
                 </Style>
             </Grid.Resources>
 
+            <notifications:ImportedNotification x:Name="ImportedNotification"
+                                                Style="{StaticResource NotificationStyle}" />
             <notifications:LoadedNotification x:Name="LoadedNotification"
                                               Style="{StaticResource NotificationStyle}" />
             <notifications:RefreshedNotification x:Name="RefreshedNotification"

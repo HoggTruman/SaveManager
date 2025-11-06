@@ -332,6 +332,7 @@ public partial class SaveWindow : Window
         try
         {
             SaveViewModel.ImportSavefile();
+            ShowNotification(ImportedNotification);
         }
         catch (SavefileNotFoundException)
         {
