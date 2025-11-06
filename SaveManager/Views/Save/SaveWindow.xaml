@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:SaveManager.Views.Save"
         xmlns:models="clr-namespace:SaveManager.Models"
         xmlns:viewmodels="clr-namespace:SaveManager.ViewModels"
+        xmlns:notifications="clr-namespace:SaveManager.Components.Notifications"
         d:DataContext="{d:DesignInstance Type=viewmodels:SaveViewModel}"
         mc:Ignorable="d"
         Title="Save Manager"
@@ -26,16 +27,6 @@
             </Style.Triggers>
         </Style>-->
 
-        <SolidColorBrush x:Key="LoadBrush"
-                         Color="#2eb9ff" />
-
-        <SolidColorBrush x:Key="ReplaceBrush"
-                         Color="#ff9500" />
-
-        <SolidColorBrush x:Key="RefreshBrush"
-                         Color="#a538ff" />
-
-
         <Style x:Key="FadeWhenDisabled"
                TargetType="Image">
             <Style.Triggers>
@@ -46,41 +37,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-
-        <Style x:Key="Notification"
-               TargetType="Border">
-            <Setter Property="Visibility"
-                    Value="Hidden" />
-            <Setter Property="IsHitTestVisible"
-                    Value="False" />
-            <Setter Property="BorderThickness"
-                    Value="3" />
-            <Setter Property="Grid.Row"
-                    Value="1" />
-            <Setter Property="HorizontalAlignment"
-                    Value="Center" />
-            <Setter Property="VerticalAlignment"
-                    Value="Bottom" />
-            <Setter Property="Margin"
-                    Value="0,0,0,20" />
-            <Style.Triggers>
-                <Trigger Property="Visibility"
-                         Value="Visible">
-                    <Trigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard AutoReverse="True">
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                 From="0.0"
-                                                 To="2.5"
-                                                 Duration="0:0:1" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </Trigger.EnterActions>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
 
         <PopupAnimation x:Key="{x:Static SystemParameters.MenuPopupAnimationKey}">None</PopupAnimation>
 
@@ -186,7 +142,7 @@
                         Margin="0,0,4,0"
                         ToolTip="New Profile">
                     <Image Source="/Assets/PlusIcon.png"
-                           Style="{StaticResource FadeWhenDisabled}"/>
+                           Style="{StaticResource FadeWhenDisabled}" />
                 </Button>
 
                 <Button x:Name="RenameProfileButton"
@@ -207,10 +163,10 @@
                         Margin="4,0,0,0"
                         ToolTip="Delete Profile">
                     <Image Source="/Assets/DeleteIcon.png"
-                           Style="{StaticResource FadeWhenDisabled}"/>
+                           Style="{StaticResource FadeWhenDisabled}" />
                 </Button>
 
-                
+
             </StackPanel>
 
 
@@ -358,49 +314,50 @@
         </ListBox>
 
 
-        <Border x:Name="LoadedNotification"
-                Style="{StaticResource Notification}"
-                BorderBrush="{StaticResource LoadBrush}">
-            <StackPanel Orientation="Horizontal">
-                <Image Source="/Assets/LoadSave.png"
-                       Width="30"
-                       Margin="10 2" />
-                <TextBlock Text="Load Successful"
-                           FontSize="24"
-                           Foreground="{StaticResource LoadBrush}"
-                           Margin="10 2" />
-            </StackPanel>
-        </Border>
+        <Grid x:Name="NotificationContainer"
+              Grid.Row="1"
+              IsHitTestVisible="False"
+              Height="Auto"
+              Width="Auto"
+              VerticalAlignment="Bottom"
+              HorizontalAlignment="Center"
+              Margin="0,0,0,20">
+            <Grid.Resources>
+                <Style x:Key="NotificationStyle"
+                       TargetType="UserControl">
+                    <Setter Property="Visibility"
+                            Value="Hidden" />
+                    <Setter Property="IsHitTestVisible"
+                            Value="False" />
+                    <Setter Property="HorizontalAlignment"
+                            Value="Center" />
+                    <Style.Triggers>
+                        <Trigger Property="Visibility"
+                                 Value="Visible">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard AutoReverse="True">
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                         From="0.0"
+                                                         To="2.5"
+                                                         Duration="0:0:1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Resources>
 
+            <notifications:LoadedNotification x:Name="LoadedNotification"
+                                              Style="{StaticResource NotificationStyle}" />
+            <notifications:RefreshedNotification x:Name="RefreshedNotification"
+                                                 Style="{StaticResource NotificationStyle}" />
+            <notifications:ReplacedNotification x:Name="ReplacedNotification"
+                                                Style="{StaticResource NotificationStyle}" />
+        </Grid>
 
-        <Border x:Name="ReplacedNotification"
-                Style="{StaticResource Notification}"
-                BorderBrush="{StaticResource ReplaceBrush}">
-            <StackPanel Orientation="Horizontal">
-                <Image Source="/Assets/ReplaceSave.png"
-                       Width="30"
-                       Margin="10 2" />
-                <TextBlock Text="Replace Successful"
-                           FontSize="24"
-                           Foreground="{StaticResource ReplaceBrush}"
-                           Margin="10 2" />
-            </StackPanel>
-        </Border>
-
-
-        <Border x:Name="RefreshNotification"
-                Style="{StaticResource Notification}"
-                BorderBrush="{StaticResource RefreshBrush}">
-            <StackPanel Orientation="Horizontal">
-                <Image Source="/Assets/RefreshIcon.png"
-                       Width="30"
-                       Margin="10 2" />
-                <TextBlock Text="Profiles Refreshed"
-                           FontSize="24"
-                           Foreground="{StaticResource RefreshBrush}"
-                           Margin="10 2" />
-            </StackPanel>
-        </Border>
+        
 
 
         <Grid Width="Auto"

@@ -626,7 +626,7 @@ public partial class SaveWindow : Window
         try
         {
             SaveViewModel.RefreshProfiles();
-            ShowNotification(RefreshNotification);
+            ShowNotification(RefreshedNotification);
         }
         catch (FilesystemException)
         {
@@ -646,9 +646,10 @@ public partial class SaveWindow : Window
     /// <param name="notification"></param>
     private void ShowNotification(FrameworkElement notification)
     {
-        LoadedNotification.Visibility = Visibility.Hidden;
-        ReplacedNotification.Visibility = Visibility.Hidden;
-        RefreshNotification.Visibility = Visibility.Hidden;
+        foreach (FrameworkElement frameworkElement in NotificationContainer.Children)
+        {
+            frameworkElement.Visibility = Visibility.Hidden;
+        }
 
         notification.Visibility = Visibility.Visible;
     }
