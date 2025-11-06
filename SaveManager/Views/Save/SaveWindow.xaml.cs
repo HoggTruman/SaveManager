@@ -400,23 +400,28 @@ public partial class SaveWindow : Window
             return;
         }
 
-        try
+        YesNoDialog confirmationDialog = new("Replace selected savefile", "Are you sure you want to replace the selected savefile?");
+
+        if (confirmationDialog.ShowDialog(this) == true)
         {
-            SaveViewModel.ReplaceSelectedEntry();
-            ShowNotification(ReplacedNotification);
-        }
-        catch (SavefileNotFoundException)
-        {
-            SaveDoesNotExistDialog.ShowDialog(this);
-        }
-        catch (FilesystemMismatchException)
-        {
-            CreateErrorDialog("The savefile you are trying to replace does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
-            RefreshProfiles();
-        }
-        catch (FilesystemException)
-        {
-            CreateErrorDialog("An error occurred while replacing the savefile.").ShowDialog(this);
+            try
+            {
+                SaveViewModel.ReplaceSelectedEntry();
+                ShowNotification(ReplacedNotification);
+            }
+            catch (SavefileNotFoundException)
+            {
+                SaveDoesNotExistDialog.ShowDialog(this);
+            }
+            catch (FilesystemMismatchException)
+            {
+                CreateErrorDialog("The savefile you are trying to replace does not exist.\nReloading profiles from the filesystem...").ShowDialog(this);
+                RefreshProfiles();
+            }
+            catch (FilesystemException)
+            {
+                CreateErrorDialog("An error occurred while replacing the savefile.").ShowDialog(this);
+            }
         }
     }
 
