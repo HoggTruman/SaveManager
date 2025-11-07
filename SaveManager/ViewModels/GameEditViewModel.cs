@@ -104,12 +104,12 @@ public class GameEditViewModel : NotifyPropertyChanged
     /// <exception cref="FilesystemException"></exception>
     public void SetSavefileLocation(string location)
     {
-        if (ActiveGame == null)
+        if (ActiveGame == null || ActiveGame.SavefileLocation == location)
         {
             return;
         }
 
-        IEnumerable<string> profilesDirectories = Games.Where(x => x.ProfilesDirectory != null).Select(x => x.ProfilesDirectory!);
+        IEnumerable<string> profilesDirectories = Games.Select(x => x.ProfilesDirectory).OfType<string>();
 
         if (Games.Any(x => x.SavefileLocation != null && x.SavefileLocation.FilesystemEquals(location)))
             throw new ValidationException("Another game uses this savefile.");
