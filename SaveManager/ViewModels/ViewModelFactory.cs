@@ -16,6 +16,12 @@ public static class ViewModelFactory
         _appdataService = appdataService;
     }
 
+    /// <summary>
+    /// Creates a new SaveViewModel instance with its dependencies.
+    /// </summary>
+    /// <param name="games"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static SaveViewModel CreateSaveViewModel(IEnumerable<Game> games)
     {
         if (_appdataService == null)
@@ -23,9 +29,21 @@ public static class ViewModelFactory
             throw new InvalidOperationException("ViewModelFactory has not been initialized.");
         }
 
-        return new(_appdataService, games);
+        return new SaveViewModel(_appdataService)
+        {
+            Games = [..games],
+            ActiveGame = games.FirstOrDefault()
+        };
     }
 
+
+    /// <summary>
+    /// Creates a new GameEditViewModel instance with its dependencies.
+    /// </summary>
+    /// <param name="games"></param>
+    /// <param name="activeGame"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static GameEditViewModel CreateGameEditViewModel(IEnumerable<Game> games, Game? activeGame)
     {
         if (_appdataService == null)
@@ -33,6 +51,10 @@ public static class ViewModelFactory
             throw new InvalidOperationException("ViewModelFactory has not been initialized.");
         }
 
-        return new(_appdataService, games, activeGame);
+        return new GameEditViewModel(_appdataService)
+        {
+            Games = [..games],
+            ActiveGame = activeGame
+        };
     }
 }

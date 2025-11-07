@@ -33,11 +33,9 @@ public class GameEditViewModel : NotifyPropertyChanged
     /// Instantiates a new GameEditViewModel.
     /// </summary>
     /// <param name="appdataService"></param>
-    public GameEditViewModel(AppdataService appdataService, IEnumerable<Game> games, Game? activeGame)
+    public GameEditViewModel(AppdataService appdataService)
     {
         _appdataService = appdataService;
-        Games = [..games];
-        ActiveGame = activeGame;
     }
 
 

@@ -48,12 +48,13 @@ public class SaveViewModel : NotifyPropertyChanged
 
 
 
-
-    public SaveViewModel(AppdataService appdataService, IEnumerable<Game> games)
+    /// <summary>
+    /// Instantiates a new GameEditViewModel.
+    /// </summary>
+    /// <param name="appdataService"></param>
+    public SaveViewModel(AppdataService appdataService)
     {
         _appdataService = appdataService;
-        Games = [..games];
-        ActiveGame = games.FirstOrDefault();
     }
 
 
