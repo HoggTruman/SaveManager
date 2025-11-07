@@ -54,7 +54,7 @@ public class AppdataService
 
             if (Path.Exists(AppdataLocation))
             {
-                string jsonString = System.IO.File.ReadAllText(AppdataLocation);
+                string jsonString = File.ReadAllText(AppdataLocation);
                 _appdata = JsonSerializer.Deserialize<Appdata>(jsonString)!;
             }
         }
@@ -84,7 +84,7 @@ public class AppdataService
         string jsonString = JsonSerializer.Serialize(_appdata);
         try
         {            
-            System.IO.File.WriteAllText(AppdataLocation, jsonString);
+            File.WriteAllText(AppdataLocation, jsonString);
         }
         catch (Exception ex)
         {

@@ -24,7 +24,7 @@ public class TestFolder
         foreach (string fileName in Files)
         {
             string filePath = Path.Join(folderPath, fileName);
-            using FileStream stream = System.IO.File.Create(filePath);
+            using FileStream stream = File.Create(filePath);
         }
 
         foreach (TestFolder childFolder in Folders)
@@ -39,7 +39,7 @@ public class TestFolder
         return folder != null
             && Name == folder.Name
             && Folders.Length + Files.Length == folder.Children.Count
-            && Files.All(fileName => folder.Children.Any(y => y is SaveManager.Models.File && y.Name == fileName))
+            && Files.All(fileName => folder.Children.Any(y => y is Savefile && y.Name == fileName))
             && Folders.All(x => x.IsEquivalentTo((Folder?)folder.Children.FirstOrDefault(y => y is Folder && y.Name == x.Name)));            
     }
 }

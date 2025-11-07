@@ -239,7 +239,7 @@
                     </ItemsControl>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type models:File}">
+                <DataTemplate DataType="{x:Type models:Savefile}">
                     <TextBlock x:Name="FileTemplate"
                                Text="{Binding Name}"
                                Height="16"

@@ -230,7 +230,7 @@ public class Folder : IFilesystemItem
 
             foreach (string childFileLocation in Directory.GetFiles(Location))
             {
-                Children.Add(new File(childFileLocation, this));
+                Children.Add(new Savefile(childFileLocation, this));
             }
 
             SortChildren();

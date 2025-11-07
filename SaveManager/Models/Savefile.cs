@@ -4,16 +4,16 @@ using System.IO;
 
 namespace SaveManager.Models;
 
-public class File : IFilesystemItem
+public class Savefile : IFilesystemItem
 {
     public override string ToString() => Name;
 
     public string Location { get; set; }
     public string Name => Path.GetFileName(Location);
-    public bool Exists => System.IO.File.Exists(Location);
+    public bool Exists => File.Exists(Location);
 
     /// <summary>
-    /// The parent folder. It is only null for a file representing a game's savefile.
+    /// The parent folder. It is only null for a game's current savefile.
     /// </summary>
     public Folder? Parent { get; set; }
 
@@ -21,11 +21,11 @@ public class File : IFilesystemItem
 
     
     /// <summary>
-    /// Instantiates a new File.
+    /// Instantiates a new Savefile.
     /// </summary>
-    /// <param name="location">The absolute path of the file.</param>
+    /// <param name="location">The absolute path of the savefile.</param>
     /// <param name="parent">The parent <See cref="Folder"/>.</param>
-    public File(string location, Folder? parent)
+    public Savefile(string location, Folder? parent)
     {
         Location = location;
         Parent = parent;
@@ -35,31 +35,31 @@ public class File : IFilesystemItem
 
 
     /// <summary>
-    /// Creates a copy of the file in the provided folder. Returns the copy.
+    /// Creates a copy of the savefile in the provided folder. Returns the copy.
     /// </summary>
-    /// <param name="parentOfCopy">The parent of the new copy.</param>
+    /// <param name="destinationFolder">The parent of the new copy.</param>
     /// <returns>The copy of the original file.</returns>
     /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    public File CopyTo(Folder parentOfCopy)
+    public Savefile CopyTo(Folder destinationFolder)
     {
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The file you are trying to copy does not exist.");
 
-        if (!parentOfCopy.Exists)
-            throw new FilesystemMismatchException(parentOfCopy.Location, "The parent directory does not exist.");
+        if (!destinationFolder.Exists)
+            throw new FilesystemMismatchException(destinationFolder.Location, "The parent directory does not exist.");
 
-        string copyLocation = Path.Join(parentOfCopy.Location, GenerateFileName(Name, parentOfCopy.Children));
+        string copyLocation = Path.Join(destinationFolder.Location, GenerateFileName(Name, destinationFolder.Children));
 
-        if (System.IO.File.Exists(copyLocation))
+        if (File.Exists(copyLocation))
             throw new FilesystemMismatchException(copyLocation, "A file already exists at the copy location");
 
         try
         {
-            System.IO.File.Copy(Location, copyLocation);            
-            File copiedFile = new(copyLocation, parentOfCopy);
-            parentOfCopy.Children.Add(copiedFile);
-            parentOfCopy.SortChildren();
+            File.Copy(Location, copyLocation);            
+            Savefile copiedFile = new(copyLocation, destinationFolder);
+            destinationFolder.Children.Add(copiedFile);
+            destinationFolder.SortChildren();
             return copiedFile;
         }
         catch(Exception ex)
@@ -74,7 +74,7 @@ public class File : IFilesystemItem
 
 
     /// <summary>
-    /// Renames the file in the filesystem.
+    /// Renames the savefile in the filesystem.
     /// </summary>
     /// <param name="newName"></param>
     /// <exception cref="FilesystemMismatchException"></exception>
@@ -91,12 +91,12 @@ public class File : IFilesystemItem
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The file you are trying to rename does not exist.");
 
-        if (System.IO.File.Exists(newLocation))
+        if (File.Exists(newLocation))
             throw new FilesystemMismatchException(newLocation, "A file already exists at the renamed location");
 
         try
         {
-            System.IO.File.Move(Location, newLocation);
+            File.Move(Location, newLocation);
             Location = newLocation;
             Parent.SortChildren();
         }
@@ -112,7 +112,7 @@ public class File : IFilesystemItem
 
 
     /// <summary>
-    /// Deletes the file in the filesystem and updates its parent.
+    /// Deletes the savefile in the filesystem and updates its parent.
     /// </summary>
     /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
@@ -126,7 +126,7 @@ public class File : IFilesystemItem
 
         try
         {
-            System.IO.File.Delete(Location);
+            File.Delete(Location);
             Parent.Children = [..Parent.Children.Where(x => x != this)];
         }
         catch (Exception ex)
@@ -141,7 +141,7 @@ public class File : IFilesystemItem
 
 
     /// <summary>
-    /// Moves the underlying file into the folder provided.
+    /// Moves the savefile into the folder provided in the filesystem.
     /// </summary>
     /// <param name="newParent"></param>
     /// <exception cref="ValidationException"></exception>
@@ -166,12 +166,12 @@ public class File : IFilesystemItem
 
         string newLocation = Path.Join(newParent.Location, Name);
 
-        if (System.IO.File.Exists(newLocation))
+        if (File.Exists(newLocation))
             throw new FilesystemMismatchException(newLocation, "A file already exists at the new location");
 
         try
         {
-            System.IO.File.Move(Location, newLocation);
+            File.Move(Location, newLocation);
             Parent.Children = [..Parent.Children.Where(x => x != this)];
             Location = newLocation;
             newParent.Children.Add(this);
@@ -192,12 +192,12 @@ public class File : IFilesystemItem
 
 
     /// <summary>
-    /// Overwrites the contents of the file with those from the file provided.
+    /// Overwrites the contents of the savefile with those from the savefile provided.
     /// </summary>
-    /// <param name="file">The file to copy the contents of.</param>
+    /// <param name="fileToCopy">The savefile to copy the contents of.</param>
     /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    public void OverwriteContents(File fileToCopy)
+    public void OverwriteContents(Savefile fileToCopy)
     {
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The file you are trying to overwrite does not exist.");
@@ -207,7 +207,7 @@ public class File : IFilesystemItem
 
         try
         {
-            System.IO.File.Copy(fileToCopy.Location, Location, true);      
+            File.Copy(fileToCopy.Location, Location, true);      
         }
         catch (Exception ex)
         {
@@ -241,7 +241,7 @@ public class File : IFilesystemItem
 
 
     /// <summary>
-    /// Generates a name for a file, appending a suffix when the name is taken by a sibling.
+    /// Generates a name for a savefile, appending a suffix when the name is taken by a sibling.
     /// </summary>
     /// <param name="name"></param>
     /// <param name="siblings"></param>

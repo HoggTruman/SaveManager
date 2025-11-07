@@ -354,7 +354,7 @@ public partial class SaveWindow : Window
 
     private void LoadSaveButton_Click(object sender, RoutedEventArgs e)
     {
-        if (SaveViewModel.ActiveGame == null || SaveViewModel.ActiveGame.ActiveProfile == null || SaveViewModel.SelectedEntry is not File)
+        if (SaveViewModel.ActiveGame == null || SaveViewModel.ActiveGame.ActiveProfile == null || SaveViewModel.SelectedEntry is not Savefile)
         {
             return;
         }
@@ -390,7 +390,7 @@ public partial class SaveWindow : Window
 
     private void ReplaceSaveButton_Click(object sender, RoutedEventArgs e)
     {
-        if (SaveViewModel.ActiveGame == null || SaveViewModel.ActiveGame.ActiveProfile == null || SaveViewModel.SelectedEntry is not File)
+        if (SaveViewModel.ActiveGame == null || SaveViewModel.ActiveGame.ActiveProfile == null || SaveViewModel.SelectedEntry is not Savefile)
         {
             return;
         }
@@ -553,7 +553,7 @@ public partial class SaveWindow : Window
         if (!SaveViewModel.CanDelete)
             return;
 
-        string message = SaveViewModel.SelectedEntry is File? $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}'?":
+        string message = SaveViewModel.SelectedEntry is Savefile? $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}'?":
             $"Are you sure you want to delete '{SaveViewModel.SelectedEntry!.Name}' and all its contents?";
 
         YesNoDialog confirmDeleteDialog = new($"Delete '{SaveViewModel.SelectedEntry!.Name}'", message);
@@ -595,7 +595,7 @@ public partial class SaveWindow : Window
         }
         catch (ValidationException ex)
         {
-            new OkDialog($"{(draggedItem is File ? "File" : "Folder")} already exists", ex.Message, ImageSources.Warning).ShowDialog(this);
+            new OkDialog($"{(draggedItem is Savefile ? "File" : "Folder")} already exists", ex.Message, ImageSources.Warning).ShowDialog(this);
         }
         catch (FilesystemMismatchException)
         {
@@ -604,7 +604,7 @@ public partial class SaveWindow : Window
         }
         catch (FilesystemException)
         {
-            CreateErrorDialog($"An error occurred while moving the {(draggedItem is File ? "File" : "Folder")}.").ShowDialog(this);
+            CreateErrorDialog($"An error occurred while moving the {(draggedItem is Savefile ? "File" : "Folder")}.").ShowDialog(this);
         }
     }
 

@@ -43,8 +43,8 @@ public class SaveViewModel : NotifyPropertyChanged
     public bool CanRename => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry != null;
     public bool CanRefresh => ActiveGame != null;
     public bool CanImportSave => ActiveGame != null && ActiveGame.ActiveProfile != null;
-    public bool CanLoadSave => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry is File;
-    public bool CanReplaceSave => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry is File;
+    public bool CanLoadSave => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry is Savefile;
+    public bool CanReplaceSave => ActiveGame != null && ActiveGame.ActiveProfile != null && SelectedEntry is Savefile;
 
 
 
@@ -130,7 +130,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// </summary>
     public void OpenCloseSelectedEntry()
     {
-        if (SelectedEntry == null || SelectedEntry is File)
+        if (SelectedEntry == null || SelectedEntry is Savefile)
         {
             return;
         }            
@@ -254,7 +254,7 @@ public class SaveViewModel : NotifyPropertyChanged
         try
         {
             Folder parent = GetParentFromSelection(SelectedEntry);        
-            File copiedSavefile = ActiveGame.Savefile.CopyTo(parent);
+            Savefile copiedSavefile = ActiveGame.Savefile.CopyTo(parent);
             parent.IsOpen = true;
             ActiveGame.ActiveProfile.UpdateSaveListEntries();
             SelectedEntry = copiedSavefile;
@@ -280,14 +280,14 @@ public class SaveViewModel : NotifyPropertyChanged
     /// <exception cref="FilesystemMismatchException"></exception>
     public void LoadSelectedEntry()
     {
-        if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null || SelectedEntry is not File)
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null || SelectedEntry is not Savefile)
         {
             return;
         }
 
         try
         {
-            ActiveGame.Savefile.OverwriteContents((File)SelectedEntry);
+            ActiveGame.Savefile.OverwriteContents((Savefile)SelectedEntry);
         }
         catch (FilesystemMismatchException ex)
         {
@@ -310,14 +310,14 @@ public class SaveViewModel : NotifyPropertyChanged
     /// <exception cref="FilesystemException"></exception>
     public void ReplaceSelectedEntry()
     {
-        if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null || SelectedEntry is not File)
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null || SelectedEntry is not Savefile)
         {
             return;
         }
 
         try
         {
-            ((File)SelectedEntry).OverwriteContents(ActiveGame.Savefile);
+            ((Savefile)SelectedEntry).OverwriteContents(ActiveGame.Savefile);
         }
         catch (FilesystemMismatchException ex)
         {
@@ -353,7 +353,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// <returns></returns>
     public static bool IsValidDropTarget(IFilesystemItem dragged, IFilesystemItem? drop)
     {
-        if (dragged is File || drop == null || dragged == drop)
+        if (dragged is Savefile || drop == null || dragged == drop)
         {
             return true;
         }
@@ -374,7 +374,7 @@ public class SaveViewModel : NotifyPropertyChanged
         if (selection is Folder)
             return (Folder)selection;
 
-        if (selection is File)
+        if (selection is Savefile)
             return selection.Parent!;
         
         return ActiveGame.ActiveProfile.Folder;
