@@ -8,7 +8,7 @@ namespace SaveManager.ViewModels;
 
 public class SaveViewModel : NotifyPropertyChanged
 {
-    private readonly AppdataService _appdataService;
+    private readonly IAppdataService _appdataService;
 
     private ObservableCollection<Game> _games = [];
     private Game? _activeGame;
@@ -52,7 +52,7 @@ public class SaveViewModel : NotifyPropertyChanged
     /// Instantiates a new GameEditViewModel.
     /// </summary>
     /// <param name="appdataService"></param>
-    public SaveViewModel(AppdataService appdataService)
+    public SaveViewModel(IAppdataService appdataService)
     {
         _appdataService = appdataService;
     }

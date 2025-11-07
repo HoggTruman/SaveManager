@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace SaveManager.Services.Appdata;
 
-public class AppdataService
+public class AppdataService : IAppdataService
 {
     private const string AppdataDirectoryName = "Save Manager";
     private static readonly string AppdataDirectory;
@@ -76,7 +76,7 @@ public class AppdataService
 
 
     /// <summary>
-    /// Saves / overwrites the appdata file with the current data.
+    /// Overwrites the appdata file with the current data.
     /// </summary>
     /// <exception cref="AppdataException"></exception>
     public void SaveAppdata()

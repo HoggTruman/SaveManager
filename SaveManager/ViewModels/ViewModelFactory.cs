@@ -5,13 +5,13 @@ namespace SaveManager.ViewModels;
 
 public static class ViewModelFactory
 {
-    private static AppdataService? _appdataService;
+    private static IAppdataService? _appdataService;
 
     /// <summary>
     /// Sets up ViewModelFactory with the dependencies needed to create view models.
     /// </summary>
     /// <param name="appdataService"></param>
-    public static void Initialize(AppdataService appdataService)
+    public static void Initialize(IAppdataService appdataService)
     {
         _appdataService = appdataService;
     }
