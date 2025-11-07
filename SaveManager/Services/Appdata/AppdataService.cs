@@ -43,7 +43,7 @@ public class AppdataService : IAppdataService
     /// Loads the appdata file if it exists. Ensures the appdata folder exists.
     /// </summary>
     /// <exception cref="AppdataException"></exception>
-    internal void Initialize()
+    private void Initialize()
     {
         try
         {

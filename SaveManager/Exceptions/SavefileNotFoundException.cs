@@ -3,7 +3,7 @@
 /// <summary>
 /// An exception thrown when a game's savefile does not exist in the filesystem.
 /// </summary>
-internal class SavefileNotFoundException : Exception
+public class SavefileNotFoundException : Exception
 {
     public SavefileNotFoundException() { }
 

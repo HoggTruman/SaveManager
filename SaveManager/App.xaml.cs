@@ -49,7 +49,7 @@ public partial class App : Application
     /// <param name="appdataService"></param>
     /// <returns>A list of loaded games</returns>
     /// <exception cref="FilesystemException"></exception>
-    internal static List<Game> LoadGames(AppdataService appdataService)
+    private static List<Game> LoadGames(AppdataService appdataService)
     {
         List<Game> games = [];
         int invalidGameCount = 0;

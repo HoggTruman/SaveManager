@@ -227,7 +227,7 @@ public class Savefile : IFilesystemItem
     /// </summary>
     /// <param name="name"></param>
     /// <exception cref="ValidationException"></exception>
-    internal static void ValidateFileName(string name, IEnumerable<IFilesystemItem> siblings)
+    private static void ValidateFileName(string name, IEnumerable<IFilesystemItem> siblings)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ValidationException("File name can not be empty or whitespace.");
@@ -246,7 +246,7 @@ public class Savefile : IFilesystemItem
     /// <param name="name"></param>
     /// <param name="siblings"></param>
     /// <returns>A unique filename among its siblings.</returns>
-    internal static string GenerateFileName(string name, IEnumerable<IFilesystemItem> siblings)
+    public static string GenerateFileName(string name, IEnumerable<IFilesystemItem> siblings)
     {
         long suffix = 1;
         string generatedName = name;

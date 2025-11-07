@@ -112,10 +112,10 @@ public class Profile : NotifyPropertyChanged
     /// </summary>
     /// <param name="folder"></param>
     /// <returns></returns>
-    internal static List<IFilesystemItem> GetSaveListEntries(Folder folder)
+    private static List<IFilesystemItem> GetSaveListEntries(Folder folder)
     {
         List<IFilesystemItem> entries = [];
-        foreach (IFilesystemItem item in folder.Children.OrderByDescending(x => x is Folder)) // this maintains alphabetical??
+        foreach (IFilesystemItem item in folder.Children.OrderByDescending(x => x is Folder))
         {
             entries.Add(item);
             if (item is Folder childFolder && childFolder.IsOpen)
