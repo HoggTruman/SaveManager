@@ -134,10 +134,10 @@ public class GameEditViewModel : NotifyPropertyChanged
             return;
         }
 
-        IEnumerable<string> profilesDirectories = Games.Select(x => x.ProfilesDirectory).OfType<string>();
+        IEnumerable<string> profilesDirectories = Games.Where(x => x != ActiveGame).Select(x => x.ProfilesDirectory).OfType<string>();
         IEnumerable<string> savefileLocations = Games.Select(x => x.SavefileLocation).OfType<string>();
 
-        if (profilesDirectories.Contains(location))
+        if (profilesDirectories.Any(x => x.FilesystemEquals(location)))
             throw new ValidationException("Another game uses this folder as a profiles directory.");
 
         if (profilesDirectories.Any(x => x.IsDescendantOf(location) || location.IsDescendantOf(x)))
