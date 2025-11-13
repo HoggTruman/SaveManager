@@ -87,7 +87,7 @@ public class DirectoryService : IDirectoryService
     }
 
 
-    public string[] GetChildFiles(string directoryPath)
+    public string[] GetFiles(string directoryPath)
     {
         try
         {

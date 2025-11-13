@@ -42,5 +42,5 @@ public interface IDirectoryService
     /// <param name="directoryPath">The full path of the directory.</param>
     /// <returns>An array containing the full path of each file.</returns>
     /// <exception cref="FilesystemException"></exception>
-    public string[] GetChildFiles(string directoryPath);
+    public string[] GetFiles(string directoryPath);
 }

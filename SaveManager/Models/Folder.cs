@@ -1,5 +1,6 @@
 ﻿using SaveManager.Exceptions;
 using SaveManager.Helpers;
+using SaveManager.Services.FilesystemServices;
 using System.Collections.ObjectModel;
 using System.IO;
 
@@ -9,7 +10,9 @@ public class Folder : IFilesystemItem
 {
     private string _location;
 
-    public override string ToString() => Name;
+    
+    public static IDirectoryService DirectoryService { get; set; } = new DirectoryService();
+
 
     /// <summary>
     /// The full filesystem path of the underlying file / directory.<br/>
@@ -30,7 +33,7 @@ public class Folder : IFilesystemItem
     }
 
     public string Name => Path.GetFileName(Location);
-    public bool Exists => Directory.Exists(Location);
+    public bool Exists => DirectoryService.Exists(Location);
     public ObservableCollection<IFilesystemItem> Children { get; set; } = [];
 
     /// <summary>
@@ -76,24 +79,14 @@ public class Folder : IFilesystemItem
         if (!parent.Exists)
             throw new FilesystemMismatchException(parent.Location, "The parent folder does not exist.");
 
-        if (Directory.Exists(location))
+        if (DirectoryService.Exists(location))
             throw new FilesystemMismatchException(location, "A folder already exists at the creation location");
 
-        try
-        {
-            Directory.CreateDirectory(location);
-            Folder newFolder = new(location, parent);
-            parent.Children.Add(newFolder);
-            parent.SortChildren();
-            return newFolder;
-        }
-        catch (Exception ex)
-        {
-            if (ex is IOException or UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException or NotSupportedException)
-                throw new FilesystemException(ex.Message, ex);
-
-            throw;
-        }        
+        DirectoryService.Create(location);
+        Folder newFolder = new(location, parent);
+        parent.Children.Add(newFolder);
+        parent.SortChildren();
+        return newFolder;      
     }
 
 
@@ -115,22 +108,12 @@ public class Folder : IFilesystemItem
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The folder you are trying to rename does not exist.");
 
-        if (Directory.Exists(newLocation))
+        if (DirectoryService.Exists(newLocation))
             throw new FilesystemMismatchException(newLocation, "A folder already exists at the renamed location.");
 
-        try
-        {
-            Directory.Move(Location, newLocation);
-            Location = newLocation;
-            Parent.SortChildren();
-        }
-        catch(Exception ex)
-        {
-            if (ex is IOException or UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException)
-                throw new FilesystemException(ex.Message, ex);
-                
-            throw;
-        }
+        DirectoryService.Move(Location, newLocation);
+        Location = newLocation;
+        Parent.SortChildren();
     }
 
 
@@ -147,18 +130,8 @@ public class Folder : IFilesystemItem
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The folder you are trying to delete does not exist.");
 
-        try
-        {
-            Directory.Delete(Location, true);
-            Parent.Children = [..Parent.Children.Where(x => x != this)];
-        }
-        catch (Exception ex)
-        {
-            if (ex is IOException or UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException)
-                throw new FilesystemException(ex.Message, ex);
-
-            throw;
-        }
+        DirectoryService.Delete(Location);
+        Parent.Children = [..Parent.Children.Where(x => x != this)];
     }
 
 
@@ -188,27 +161,15 @@ public class Folder : IFilesystemItem
 
         string newLocation = Path.Join(newParent.Location, Name);
 
-        if (Directory.Exists(newLocation))
+        if (DirectoryService.Exists(newLocation))
             throw new FilesystemMismatchException(newLocation, "A folder already exists at the new location");
 
-        try
-        {
-            Directory.Move(Location, newLocation);
-            Parent.Children = [..Parent.Children.Where(x => x != this)];
-            Location = newLocation;            
-            newParent.Children.Add(this);
-            newParent.SortChildren();
-            Parent = newParent;
-        }
-        catch (Exception ex)
-        {
-            if (ex is IOException or UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException)
-            {
-                throw new FilesystemException(ex.Message, ex);
-            }
-
-            throw;
-        }
+        DirectoryService.Move(Location, newLocation);
+        Parent.Children = [..Parent.Children.Where(x => x != this)];
+        Location = newLocation;            
+        newParent.Children.Add(this);
+        newParent.SortChildren();
+        Parent = newParent;
     }
 
 
@@ -220,28 +181,18 @@ public class Folder : IFilesystemItem
     /// <exception cref="FilesystemException"/>
     public void LoadChildren()
     {
-        try
+        Children = [];
+        foreach (string childDirectoryLocation in DirectoryService.GetChildDirectories(Location))
         {
-            Children = [];
-            foreach (string childDirectoryLocation in Directory.GetDirectories(Location))
-            {
-                Children.Add(new Folder(childDirectoryLocation, this));
-            }
-
-            foreach (string childFileLocation in Directory.GetFiles(Location))
-            {
-                Children.Add(new Savefile(childFileLocation, this));
-            }
-
-            SortChildren();
+            Children.Add(new Folder(childDirectoryLocation, this));
         }
-        catch (Exception ex)
+
+        foreach (string childFileLocation in DirectoryService.GetFiles(Location))
         {
-            if (ex is UnauthorizedAccessException or ArgumentException or PathTooLongException or IOException or DirectoryNotFoundException)
-                throw new FilesystemException(ex.Message, ex);
-
-            throw;
+            Children.Add(new Savefile(childFileLocation, this));
         }
+
+        SortChildren();
     }
 
 
@@ -269,5 +220,11 @@ public class Folder : IFilesystemItem
 
         if (siblings.Any(x => x.Name.FilesystemEquals(name)))
             throw new ValidationException("A folder already exists with this name.");
+    }
+
+
+    public override string ToString()
+    {
+        return Name;
     }
 }
