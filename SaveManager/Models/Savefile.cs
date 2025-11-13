@@ -1,16 +1,17 @@
 ﻿using SaveManager.Exceptions;
 using SaveManager.Helpers;
+using SaveManager.Services.FilesystemServices;
 using System.IO;
 
 namespace SaveManager.Models;
 
 public class Savefile : IFilesystemItem
 {
-    public override string ToString() => Name;
+    public static IFileService FileService { get; set; } = new FileService();
 
     public string Location { get; set; }
     public string Name => Path.GetFileName(Location);
-    public bool Exists => File.Exists(Location);
+    public bool Exists => FileService.Exists(Location);
 
     /// <summary>
     /// The parent folder. It is only null for a game's current savefile.
@@ -51,25 +52,14 @@ public class Savefile : IFilesystemItem
 
         string copyLocation = Path.Join(destinationFolder.Location, GenerateFileName(Name, destinationFolder.Children));
 
-        if (File.Exists(copyLocation))
+        if (FileService.Exists(copyLocation))
             throw new FilesystemMismatchException(copyLocation, "A file already exists at the copy location");
 
-        try
-        {
-            File.Copy(Location, copyLocation);            
-            Savefile copiedFile = new(copyLocation, destinationFolder);
-            destinationFolder.Children.Add(copiedFile);
-            destinationFolder.SortChildren();
-            return copiedFile;
-        }
-        catch(Exception ex)
-        {
-            if (ex is UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException or 
-                FileNotFoundException or IOException or NotSupportedException)
-                throw new FilesystemException(ex.Message, ex);
-
-            throw;
-        }
+        FileService.Copy(Location, copyLocation);            
+        Savefile copiedFile = new(copyLocation, destinationFolder);
+        destinationFolder.Children.Add(copiedFile);
+        destinationFolder.SortChildren();
+        return copiedFile;
     }
 
 
@@ -91,23 +81,12 @@ public class Savefile : IFilesystemItem
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The file you are trying to rename does not exist.");
 
-        if (File.Exists(newLocation))
+        if (FileService.Exists(newLocation))
             throw new FilesystemMismatchException(newLocation, "A file already exists at the renamed location");
 
-        try
-        {
-            File.Move(Location, newLocation);
-            Location = newLocation;
-            Parent.SortChildren();
-        }
-        catch(Exception ex)
-        {
-            if (ex is IOException or FileNotFoundException or ArgumentException or UnauthorizedAccessException or 
-                PathTooLongException or DirectoryNotFoundException or NotSupportedException)
-                throw new FilesystemException(ex.Message, ex);
-                
-            throw;
-        }
+        FileService.Move(Location, newLocation);
+        Location = newLocation;
+        Parent.SortChildren();
     }
 
 
@@ -124,19 +103,8 @@ public class Savefile : IFilesystemItem
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The file you are trying to delete does not exist.");
 
-        try
-        {
-            File.Delete(Location);
-            Parent.Children = [..Parent.Children.Where(x => x != this)];
-        }
-        catch (Exception ex)
-        {
-            if (ex is ArgumentException or DirectoryNotFoundException or IOException or NotSupportedException or PathTooLongException 
-                or UnauthorizedAccessException)
-                throw new FilesystemException(ex.Message, ex);
-
-            throw;
-        }
+        FileService.Delete(Location);
+        Parent.Children = [..Parent.Children.Where(x => x != this)];
     }
 
 
@@ -166,28 +134,15 @@ public class Savefile : IFilesystemItem
 
         string newLocation = Path.Join(newParent.Location, Name);
 
-        if (File.Exists(newLocation))
+        if (FileService.Exists(newLocation))
             throw new FilesystemMismatchException(newLocation, "A file already exists at the new location");
 
-        try
-        {
-            File.Move(Location, newLocation);
-            Parent.Children = [..Parent.Children.Where(x => x != this)];
-            Location = newLocation;
-            newParent.Children.Add(this);
-            newParent.SortChildren();
-            Parent = newParent;
-        }
-        catch (Exception ex)
-        {
-            if (ex is IOException or FileNotFoundException or ArgumentException or UnauthorizedAccessException or 
-                PathTooLongException or DirectoryNotFoundException or NotSupportedException)
-            {
-                throw new FilesystemException(ex.Message, ex);
-            }
-
-            throw;
-        }
+        FileService.Move(Location, newLocation);
+        Parent.Children = [..Parent.Children.Where(x => x != this)];
+        Location = newLocation;
+        newParent.Children.Add(this);
+        newParent.SortChildren();
+        Parent = newParent;
     }
 
 
@@ -205,18 +160,7 @@ public class Savefile : IFilesystemItem
         if (!fileToCopy.Exists)
             throw new FilesystemMismatchException(fileToCopy.Location, "The file you provided to copy the contents of does not exist.");
 
-        try
-        {
-            File.Copy(fileToCopy.Location, Location, true);      
-        }
-        catch (Exception ex)
-        {
-            if (ex is UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException or 
-                FileNotFoundException or IOException or NotSupportedException)
-                throw new FilesystemException(ex.Message, ex);
-
-            throw;
-        }
+        FileService.Copy(fileToCopy.Location, Location, true);
     }
 
 
@@ -256,5 +200,11 @@ public class Savefile : IFilesystemItem
         }
 
         return generatedName;
+    }
+
+
+    public override string ToString()
+    {
+        return Name;
     }
 }
