@@ -2,6 +2,7 @@
 using SaveManager.Exceptions;
 using SaveManager.Models;
 using SaveManager.Services.Appdata;
+using SaveManager.Services.FilesystemServices;
 using SaveManager.ViewModels;
 
 namespace SaveManagerTests.ViewModels;
@@ -206,16 +207,35 @@ public class GameEditViewModelTests
     [Fact]
     public void SetSavefileLocation_WithLocationWithinItsProfilesDirectory_ThrowsValidationException()
     {
-        // write once figured out filesystem method coupling
-        Assert.Fail();
+        // mock out filesystem interaction
+        Folder.DirectoryService = Mock.Of<IDirectoryService>();
+
+        string profilesDirectory = @"C:\Folder";
+        string savefileLocation = Path.Join(profilesDirectory, "savefile.file");
+
+        Game game = new("test") { ProfilesDirectory = profilesDirectory };
+        _gameEditViewModel.Games = [game];
+        _gameEditViewModel.ActiveGame = game;
+
+        Assert.Throws<ValidationException>(() => _gameEditViewModel.SetSavefileLocation(savefileLocation));
     }
 
 
     [Fact]
     public void SetSavefileLocation_WithLocationWithinProfilesDirectoryOfAnotherGame_ThrowsValidationException()
     {
-        // write once figured out filesystem method coupling
-        Assert.Fail();
+        // mock out filesystem interaction
+        Folder.DirectoryService = Mock.Of<IDirectoryService>();
+
+        string profilesDirectory = @"C:\Folder";
+        string savefileLocation = Path.Join(profilesDirectory, "savefile.file");
+
+        Game game = new("test") { ProfilesDirectory = profilesDirectory };
+        Game gameBeingChanged = new("gameBeingChanged");
+        _gameEditViewModel.Games = [game, gameBeingChanged];
+        _gameEditViewModel.ActiveGame = gameBeingChanged;
+
+        Assert.Throws<ValidationException>(() => _gameEditViewModel.SetSavefileLocation(savefileLocation));
     }
 
     #endregion
@@ -236,17 +256,137 @@ public class GameEditViewModelTests
     [Fact]
     public void SetProfilesDirectory_WithSameLocation_DoesNotThrow()
     {
-        // write once figured out filesystem method coupling
-        Assert.Fail();
-        Game game = new("test")
-        {
-            ProfilesDirectory = "ProfilesDirectory" // will load files / directories from filesystem currently
-        };
+        // mock out filesystem interaction
+        Folder.DirectoryService = Mock.Of<IDirectoryService>();
+        
+        Game game = new("test") { ProfilesDirectory = "ProfilesDirectory" };
         _gameEditViewModel.Games = [game];
         _gameEditViewModel.ActiveGame = game;
 
         Exception exception = Record.Exception(() => _gameEditViewModel.SetProfilesDirectory(game.ProfilesDirectory));
         Assert.Null(exception);
+    }
+
+
+    [Fact]
+    public void SetProfilesDirectory_WithProfilesDirectoryOfAnotherGame_ThrowsValidationException()
+    {
+        // mock out filesystem interaction
+        Folder.DirectoryService = Mock.Of<IDirectoryService>();
+
+        Game game = new("test") { ProfilesDirectory = "ProfilesDirectory" };
+        Game gameBeingChanged = new("gameBeingChanged");
+        _gameEditViewModel.Games = [game, gameBeingChanged];
+        _gameEditViewModel.ActiveGame = gameBeingChanged;
+
+        Assert.Throws<ValidationException>(() => _gameEditViewModel.SetProfilesDirectory(game.ProfilesDirectory));
+    }
+
+
+    [Fact]
+    public void SetProfilesDirectory_WithParentOfOwnProfilesDirectory_DoesNotThrow()
+    {
+        // mock out filesystem interaction
+        Folder.DirectoryService = Mock.Of<IDirectoryService>();
+
+        string parentDirectory = @"C:\Folder\";
+        string childDirectory = Path.Join(parentDirectory, "Subfolder");
+
+        Game game = new("test") { ProfilesDirectory = childDirectory };
+        _gameEditViewModel.Games = [game];
+        _gameEditViewModel.ActiveGame = game;
+
+        Exception exception = Record.Exception(() => _gameEditViewModel.SetProfilesDirectory(parentDirectory));
+        Assert.Null(exception);
+    }
+
+
+    [Fact]
+    public void SetProfilesDirectory_WithChildOfOwnProfilesDirectory_DoesNotThrow()
+    {
+        // mock out filesystem interaction
+        Folder.DirectoryService = Mock.Of<IDirectoryService>();
+
+        string parentDirectory = @"C:\Folder\";
+        string childDirectory = Path.Join(parentDirectory, "Subfolder");
+
+        Game game = new("test") { ProfilesDirectory = parentDirectory };
+        _gameEditViewModel.Games = [game];
+        _gameEditViewModel.ActiveGame = game;
+
+        Exception exception = Record.Exception(() => _gameEditViewModel.SetProfilesDirectory(childDirectory));
+        Assert.Null(exception);
+    }
+
+
+    [Fact]
+    public void SetProfilesDirectory_WithParentOfAnotherProfilesDirectory_ThrowsValidationException()
+    {
+        // mock out filesystem interaction
+        Folder.DirectoryService = Mock.Of<IDirectoryService>();
+
+        string parentDirectory = @"C:\Folder\";
+        string childDirectory = Path.Join(parentDirectory, "Subfolder");
+
+        Game game = new("test") { ProfilesDirectory = childDirectory };
+        Game gameBeingChanged = new("gameBeingChanged");
+        _gameEditViewModel.Games = [game, gameBeingChanged];
+        _gameEditViewModel.ActiveGame = gameBeingChanged;
+
+        Assert.Throws<ValidationException>(() => _gameEditViewModel.SetProfilesDirectory(parentDirectory));
+    }
+
+
+    [Fact]
+    public void SetProfilesDirectory_WithChildOfAnotherProfilesDirectory_ThrowsValidationException()
+    {
+        // mock out filesystem interaction
+        Folder.DirectoryService = Mock.Of<IDirectoryService>();
+
+        string parentDirectory = @"C:\Folder\";
+        string childDirectory = Path.Join(parentDirectory, "Subfolder");
+
+        Game game = new("test") { ProfilesDirectory = parentDirectory };
+        Game gameBeingChanged = new("gameBeingChanged");
+        _gameEditViewModel.Games = [game, gameBeingChanged];
+        _gameEditViewModel.ActiveGame = gameBeingChanged;
+
+        Assert.Throws<ValidationException>(() => _gameEditViewModel.SetProfilesDirectory(childDirectory));
+    }
+
+
+    [Fact]
+    public void SetProfilesDirectory_WithParentOfOwnSavefileLocation_ThrowsValidationException()
+    {
+        // mock out filesystem interaction
+        Folder.DirectoryService = Mock.Of<IDirectoryService>();
+
+        string parentDirectory = @"C:\Folder\";
+        string savefileLocation = Path.Join(parentDirectory, "savefile.file");
+
+        Game game = new("test") { SavefileLocation = savefileLocation };
+        _gameEditViewModel.Games = [game];
+        _gameEditViewModel.ActiveGame = game;
+
+        Assert.Throws<ValidationException>(() => _gameEditViewModel.SetProfilesDirectory(parentDirectory));
+    }
+
+
+    [Fact]
+    public void SetProfilesDirectory_WithParentOfAnotherSavefileLocation_ThrowsValidationException()
+    {
+        // mock out filesystem interaction
+        Folder.DirectoryService = Mock.Of<IDirectoryService>();
+
+        string parentDirectory = @"C:\Folder\";
+        string savefileLocation = Path.Join(parentDirectory, "savefile.file");
+
+        Game game = new("test") { SavefileLocation = savefileLocation };
+        Game gameBeingChanged = new("gameBeingChanged");
+        _gameEditViewModel.Games = [game, gameBeingChanged];
+        _gameEditViewModel.ActiveGame = gameBeingChanged;
+
+        Assert.Throws<ValidationException>(() => _gameEditViewModel.SetProfilesDirectory(parentDirectory));
     }
 
     #endregion
