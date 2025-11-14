@@ -67,8 +67,8 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile fileToCopy = (Savefile)folder.Children.First(x => x is Savefile);
-        Folder targetFolder = (Folder)folder.Children.First(x => x is Folder);
+        Savefile fileToCopy = folder.Children.OfType<Savefile>().First();
+        Folder targetFolder = folder.Children.OfType<Folder>().First();
         int beforeChildrenCount = targetFolder.Children.Count;
 
         Savefile copyResult = fileToCopy.CopyTo(targetFolder);
@@ -87,7 +87,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile fileToCopy = (Savefile)folder.Children.First(x => x is Savefile);
+        Savefile fileToCopy = folder.Children.OfType<Savefile>().First();
         int beforeChildrenCount = folder.Children.Count;
 
         Savefile copyResult = fileToCopy.CopyTo(folder);
@@ -120,7 +120,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile fileToCopy = (Savefile)folder.Children.First(x => x is Savefile);
+        Savefile fileToCopy = folder.Children.OfType<Savefile>().First();
         Directory.Delete(folder.Location, true);
 
         Assert.Throws<FilesystemMismatchException>(() => fileToCopy.CopyTo(folder));
@@ -136,8 +136,8 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder destination = (Folder)folder.Children.First(x => x is Folder);
-        Savefile fileToCopy = (Savefile)folder.Children.First(x => x is Savefile);
+        Folder destination = folder.Children.OfType<Folder>().First();
+        Savefile fileToCopy = folder.Children.OfType<Savefile>().First();
         string copyLocation = Path.Join(destination.Location, fileToCopy.Name);
         using FileStream stream = File.Create(copyLocation);
 
@@ -160,7 +160,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile testFile = (Savefile)folder.Children.First(x => x is Savefile);
+        Savefile testFile = folder.Children.OfType<Savefile>().First();
         string oldName = testFile.Name;
         string newName = "renamed" + testFile.Name;
         testFile.Rename(newName);
@@ -193,7 +193,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile testFile = (Savefile)folder.Children.First(x => x is Savefile);
+        Savefile testFile = folder.Children.OfType<Savefile>().First();
         string newName = "newName.file";
         string renamedLocation = Path.Join(folder.Location, newName);
         using FileStream stream = File.Create(renamedLocation);
@@ -217,7 +217,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile testFile = (Savefile)folder.Children.First(x => x is Savefile);
+        Savefile testFile = folder.Children.OfType<Savefile>().First();
         int oldChildCount = folder.Children.Count;
         testFile.Delete();
 
@@ -255,8 +255,8 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile movingFile = (Savefile)folder.Children.First(x => x is Savefile);
-        Folder destination = (Folder)folder.Children.First(x => x is Folder);
+        Savefile movingFile = folder.Children.OfType<Savefile>().First();
+        Folder destination = folder.Children.OfType<Folder>().First();
         movingFile.Move(destination);
 
         Assert.Equal(destination, movingFile.Parent);
@@ -275,8 +275,8 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile movingFile = (Savefile)folder.Children.First(x => x is Savefile);
-        Folder destination = (Folder)folder.Children.First(x => x is Folder);
+        Savefile movingFile = folder.Children.OfType<Savefile>().First();
+        Folder destination = folder.Children.OfType<Folder>().First();
         File.Delete(movingFile.Location);
 
         Assert.Throws<FilesystemMismatchException>(() => movingFile.Move(destination));
@@ -292,8 +292,8 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile movingFile = (Savefile)folder.Children.First(x => x is Savefile);
-        Folder destination = (Folder)folder.Children.First(x => x is Folder);
+        Savefile movingFile = folder.Children.OfType<Savefile>().First();
+        Folder destination = folder.Children.OfType<Folder>().First();
         Directory.Delete(destination.Location);
 
         Assert.Throws<FilesystemMismatchException>(() => movingFile.Move(destination));
@@ -309,8 +309,8 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile movingFile = (Savefile)folder.Children.First(x => x is Savefile);
-        Folder destination = (Folder)folder.Children.First(x => x is Folder);
+        Savefile movingFile = folder.Children.OfType<Savefile>().First();
+        Folder destination = folder.Children.OfType<Folder>().First();
         string newFileLocation = Path.Join(destination.Location, movingFile.Name);
         using FileStream stream = File.Create(newFileLocation);
 
@@ -334,7 +334,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
         Savefile testFile = new(Path.Join(testCaseDirectory, "fileThatDoesNotExist.file"), folder);
-        Savefile fileToCopy = (Savefile)folder.Children.First(x => x is Savefile);
+        Savefile fileToCopy = folder.Children.OfType<Savefile>().First();
         Assert.Throws<FilesystemMismatchException>(() => testFile.OverwriteContents(fileToCopy));
     }
 
@@ -348,7 +348,7 @@ public class FileTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder folder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Savefile testFile = (Savefile)folder.Children.First(x => x is Savefile);
+        Savefile testFile = folder.Children.OfType<Savefile>().First();
         Savefile fileToCopy = new(Path.Join(testCaseDirectory, "fileThatDoesNotExist.file"), folder);
         Assert.Throws<FilesystemMismatchException>(() => testFile.OverwriteContents(fileToCopy));
     }

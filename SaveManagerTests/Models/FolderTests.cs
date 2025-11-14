@@ -128,7 +128,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder renameFolder = (Folder)parent.Children.First(x => x is Folder);
+        Folder renameFolder = parent.Children.OfType<Folder>().First();
         string oldName = renameFolder.Name;
         string newName = "Renamed Folder";        
         renameFolder.Rename(newName);
@@ -146,7 +146,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder renameFolder = (Folder)parent.Children.First(x => x is Folder);      
+        Folder renameFolder = parent.Children.OfType<Folder>().First();      
         renameFolder.Rename("Renamed Folder");
 
         IEnumerable<IFilesystemItem> children = renameFolder.Children;
@@ -157,7 +157,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
                 Assert.Equal(Path.Join(child.Parent!.Location, child.Name), child.Location);
             }
             
-            children = children.SelectMany(x => x is Folder folder ? folder.Children: []);
+            children = children.OfType<Folder>().SelectMany(x => x.Children);
         }        
     }
 
@@ -171,7 +171,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder renameFolder = (Folder)parent.Children.First(x => x is Folder);      
+        Folder renameFolder = parent.Children.OfType<Folder>().First();      
         Directory.Delete(renameFolder.Location, true);
 
         Assert.Throws<FilesystemMismatchException>(() => renameFolder.Rename("Renamed Folder"));
@@ -187,7 +187,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder renameFolder = (Folder)parent.Children.First(x => x is Folder);
+        Folder renameFolder = parent.Children.OfType<Folder>().First();
         string newName = "Renamed Folder";
         string newLocation = Path.Join(parent.Location, newName);
         Directory.CreateDirectory(newLocation);
@@ -211,7 +211,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder deleteFolder = (Folder)parent.Children.First(x => x is Folder);
+        Folder deleteFolder = parent.Children.OfType<Folder>().First();
         deleteFolder.Delete();
 
         Assert.DoesNotContain(deleteFolder, parent.Children);
@@ -228,7 +228,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder parent = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder folderToDelete = (Folder)parent.Children.First(x => x is Folder);      
+        Folder folderToDelete = parent.Children.OfType<Folder>().First();      
         Directory.Delete(folderToDelete.Location, true);
 
         Assert.Throws<FilesystemMismatchException>(folderToDelete.Delete);
@@ -250,8 +250,8 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder movingFolder = (Folder)baseFolder.Children.Last(x => x is Folder);
-        Folder destination = (Folder)baseFolder.Children.First(x => x is Folder);
+        Folder movingFolder = baseFolder.Children.OfType<Folder>().Last();
+        Folder destination = baseFolder.Children.OfType<Folder>().First();
         movingFolder.Move(destination);
 
         Assert.DoesNotContain(movingFolder, baseFolder.Children);
@@ -269,7 +269,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
                 Assert.Equal(item.Parent!.Location, Path.GetDirectoryName(item.Location));
             }
 
-            movedDescendants = [..movedDescendants.SelectMany(x => x is Folder f? f.Children: [])];
+            movedDescendants = [..movedDescendants.OfType<Folder>().SelectMany(x => x.Children)];
         }
     }
 
@@ -283,7 +283,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
+        Folder movingFolder = baseFolder.Children.OfType<Folder>().First();
         Assert.Throws<ArgumentException>(() => movingFolder.Move(movingFolder));
     }
 
@@ -297,8 +297,8 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder folder && folder.Children.Count > 0);
-        Folder childFolder = (Folder)movingFolder.Children.First(x => x is Folder);
+        Folder movingFolder = baseFolder.Children.OfType<Folder>().First(x => x.Children.Count > 0);
+        Folder childFolder = movingFolder.Children.OfType<Folder>().First();
         Assert.Throws<ArgumentException>(() => movingFolder.Move(childFolder));
     }
 
@@ -312,9 +312,9 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder folder && folder.Children.Count > 0);
-        Folder childFolder = (Folder)movingFolder.Children.First(x => x is Folder);
-        Folder descendantFolder = (Folder)childFolder.Children.First(x => x is Folder);
+        Folder movingFolder = baseFolder.Children.OfType<Folder>().First(x => x.Children.Count > 0);
+        Folder childFolder = movingFolder.Children.OfType<Folder>().First();
+        Folder descendantFolder = childFolder.Children.OfType<Folder>().First();
         Assert.Throws<ArgumentException>(() => movingFolder.Move(descendantFolder));
     }
 
@@ -328,7 +328,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
+        Folder movingFolder = baseFolder.Children.OfType<Folder>().First();
         Assert.Throws<ArgumentException>(() => movingFolder.Move(movingFolder.Parent!));
     }
 
@@ -342,8 +342,8 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
-        Folder destination = (Folder)baseFolder.Children.Last(x => x is Folder);
+        Folder movingFolder = baseFolder.Children.OfType<Folder>().First();
+        Folder destination = baseFolder.Children.OfType<Folder>().Last();
         Directory.Delete(movingFolder.Location);
         Assert.Throws<FilesystemMismatchException>(() => movingFolder.Move(destination));
     }
@@ -358,8 +358,8 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
-        Folder destination = (Folder)baseFolder.Children.Last(x => x is Folder);
+        Folder movingFolder = baseFolder.Children.OfType<Folder>().First();
+        Folder destination = baseFolder.Children.OfType<Folder>().Last();
         Directory.Delete(destination.Location, true);
         Assert.Throws<FilesystemMismatchException>(() => movingFolder.Move(destination));
     }
@@ -374,8 +374,8 @@ public class FolderTests : IClassFixture<FilesystemFixture>
 
         // test
         Folder baseFolder = new(Path.Join(testCaseDirectory, TestFolder.Name), null);
-        Folder movingFolder = (Folder)baseFolder.Children.First(x => x is Folder);
-        Folder destination = (Folder)baseFolder.Children.Last(x => x is Folder);
+        Folder movingFolder = baseFolder.Children.OfType<Folder>().First();
+        Folder destination = baseFolder.Children.OfType<Folder>().Last();
         string newLocation = Path.Join(destination.Location, movingFolder.Name);
         Directory.CreateDirectory(newLocation);
 
@@ -410,7 +410,7 @@ public class FolderTests : IClassFixture<FilesystemFixture>
                 Assert.Equal(Path.Join(child.Parent!.Location, child.Name), child.Location);
             }
             
-            children = children.SelectMany(x => x is Folder folder ? folder.Children: []);
+            children = children.OfType<Folder>().SelectMany(x => x.Children);
         }  
     }
 

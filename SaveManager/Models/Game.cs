@@ -80,7 +80,7 @@ public class Game : NotifyPropertyChanged
             {              
                 Folder newProfilesFolder = new(value, null);
                 SetProperty(ref _profilesFolder, newProfilesFolder);
-                Profiles = [..newProfilesFolder.Children.Where(x => x is Folder).Select(x => new Profile((Folder)x, this))];             
+                Profiles = [..newProfilesFolder.Children.OfType<Folder>().Select(x => new Profile(x, this))];             
             }
         }
     }
@@ -143,7 +143,7 @@ public class Game : NotifyPropertyChanged
 
         string? oldActiveProfileName = ActiveProfile?.Name;
         _profilesFolder.LoadChildren();
-        Profiles = [.._profilesFolder.Children.Where(x => x is Folder).Select(x => new Profile((Folder)x, this))];
+        Profiles = [.._profilesFolder.Children.OfType<Folder>().Select(x => new Profile(x, this))];
         TrySetActiveProfileByName(oldActiveProfileName);
     }
 
