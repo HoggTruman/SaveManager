@@ -1,7 +1,7 @@
 ﻿using SaveManager.Assets;
 using SaveManager.Components.Dialogs;
 using SaveManager.Exceptions;
-using SaveManager.Extensions;
+using SaveManager.Helpers;
 using SaveManager.Models;
 using SaveManager.Services.Appdata;
 using SaveManager.ViewModels;

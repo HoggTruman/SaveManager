@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace SaveManager.Extensions;
+namespace SaveManager.Helpers;
 
 public static class WindowExtensions
 {
