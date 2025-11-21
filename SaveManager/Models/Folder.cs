@@ -1,6 +1,6 @@
 ﻿using SaveManager.Exceptions;
 using SaveManager.Helpers;
-using SaveManager.Services.FilesystemServices;
+using SaveManager.Services.FilesystemService;
 using System.Collections.ObjectModel;
 using System.IO;
 
@@ -8,10 +8,8 @@ namespace SaveManager.Models;
 
 public class Folder : IFilesystemItem
 {
-    private string _location;
-
-    
-    public static IDirectoryService DirectoryService { get; set; } = new DirectoryService();
+    private readonly IFilesystemService _filesystemService;
+    private string _location;        
 
 
     /// <summary>
@@ -33,7 +31,7 @@ public class Folder : IFilesystemItem
     }
 
     public string Name => Path.GetFileName(Location);
-    public bool Exists => DirectoryService.Exists(Location);
+    public bool Exists => _filesystemService.DirectoryExists(Location);
     public ObservableCollection<IFilesystemItem> Children { get; set; } = [];
 
     /// <summary>
@@ -52,18 +50,19 @@ public class Folder : IFilesystemItem
     /// <param name="location">The absolute path of the folder.</param>
     /// <param name="parent">The parent <see cref="Folder"/>.</param>
     /// <exception cref="FilesystemException"></exception>
-    public Folder(string location, Folder? parent)
+    public Folder(string location, Folder? parent, IFilesystemService filesystemService)
     {
-        _location = location;        
+        _location = location;
         Parent = parent;
-        LoadChildren();
+        _filesystemService = filesystemService;
+        LoadChildren();        
     }
 
 
 
 
     /// <summary>
-    /// Creates a new directory in the filesystem and returns a <see cref="Folder"/> that represents it.
+    /// Creates a new child directory in the filesystem and returns a <see cref="Folder"/> that represents it.
     /// </summary>
     /// <param name="name"></param>
     /// <param name="parent"></param>
@@ -71,21 +70,21 @@ public class Folder : IFilesystemItem
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemMismatchException"></exception>
-    public static Folder Create(string name, Folder parent)
+    public Folder CreateChildFolder(string name)
     {
-        ValidateFolderName(name, parent.Children);
-        string location = Path.Join(parent.Location, name);
+        ValidateFolderName(name, Children);
+        string location = Path.Join(Location, name);
 
-        if (!parent.Exists)
-            throw new FilesystemMismatchException(parent.Location, "The parent folder does not exist.");
+        if (!Exists)
+            throw new FilesystemMismatchException(Location, "The parent folder does not exist.");
 
-        if (DirectoryService.Exists(location))
-            throw new FilesystemMismatchException(location, "A folder already exists at the creation location");
+        if (_filesystemService.DirectoryExists(location))
+            throw new FilesystemMismatchException(location, "A child folder already exists with the provided name.");
 
-        DirectoryService.Create(location);
-        Folder newFolder = new(location, parent);
-        parent.Children.Add(newFolder);
-        parent.SortChildren();
+        _filesystemService.CreateDirectory(location);
+        Folder newFolder = FilesystemItemFactory.NewFolder(location, this);
+        Children.Add(newFolder);
+        SortChildren();
         return newFolder;      
     }
 
@@ -108,10 +107,10 @@ public class Folder : IFilesystemItem
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The folder you are trying to rename does not exist.");
 
-        if (DirectoryService.Exists(newLocation))
+        if (_filesystemService.DirectoryExists(newLocation))
             throw new FilesystemMismatchException(newLocation, "A folder already exists at the renamed location.");
 
-        DirectoryService.Move(Location, newLocation);
+        _filesystemService.MoveDirectory(Location, newLocation);
         Location = newLocation;
         Parent.SortChildren();
     }
@@ -130,7 +129,7 @@ public class Folder : IFilesystemItem
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The folder you are trying to delete does not exist.");
 
-        DirectoryService.Delete(Location);
+        _filesystemService.DeleteDirectory(Location);
         Parent.Children = [..Parent.Children.Where(x => x != this)];
     }
 
@@ -161,10 +160,10 @@ public class Folder : IFilesystemItem
 
         string newLocation = Path.Join(newParent.Location, Name);
 
-        if (DirectoryService.Exists(newLocation))
+        if (_filesystemService.DirectoryExists(newLocation))
             throw new FilesystemMismatchException(newLocation, "A folder already exists at the new location");
 
-        DirectoryService.Move(Location, newLocation);
+        _filesystemService.MoveDirectory(Location, newLocation);
         Parent.Children = [..Parent.Children.Where(x => x != this)];
         Location = newLocation;            
         newParent.Children.Add(this);
@@ -182,14 +181,14 @@ public class Folder : IFilesystemItem
     public void LoadChildren()
     {
         Children = [];
-        foreach (string childDirectoryLocation in DirectoryService.GetChildDirectories(Location))
+        foreach (string childDirectoryLocation in _filesystemService.GetChildDirectories(Location))
         {
-            Children.Add(new Folder(childDirectoryLocation, this));
+            Children.Add(FilesystemItemFactory.NewFolder(childDirectoryLocation, this));
         }
 
-        foreach (string childFileLocation in DirectoryService.GetFiles(Location))
+        foreach (string childFileLocation in _filesystemService.GetFiles(Location))
         {
-            Children.Add(new Savefile(childFileLocation, this));
+            Children.Add(FilesystemItemFactory.NewSavefile(childFileLocation, this));
         }
 
         SortChildren();

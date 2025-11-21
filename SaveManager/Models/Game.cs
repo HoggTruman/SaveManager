@@ -49,7 +49,7 @@ public class Game : NotifyPropertyChanged
             }
             else
             {
-                Savefile savefile = new(value, null);
+                Savefile savefile = FilesystemItemFactory.NewSavefile(value, null);
                 SetProperty(ref _savefile, savefile); 
             }            
         }
@@ -78,7 +78,7 @@ public class Game : NotifyPropertyChanged
             }
             else
             {              
-                Folder newProfilesFolder = new(value, null);
+                Folder newProfilesFolder = FilesystemItemFactory.NewFolder(value, null);
                 SetProperty(ref _profilesFolder, newProfilesFolder);
                 Profiles = [..newProfilesFolder.Children.OfType<Folder>().Select(x => new Profile(x, this))];             
             }

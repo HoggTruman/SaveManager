@@ -182,7 +182,7 @@ public class SaveViewModel : NotifyPropertyChanged
             throw new InvalidOperationException("The ActiveGame and its ActiveProfile can not be null.");
 
         Folder parentFolder = GetParentFromSelection(SelectedEntry);
-        Folder newFolder = Folder.Create(name, parentFolder);
+        Folder newFolder = parentFolder.CreateChildFolder(name);
         parentFolder.IsOpen = true;
         ActiveGame.ActiveProfile.UpdateSaveListEntries();
         SelectedEntry = newFolder;

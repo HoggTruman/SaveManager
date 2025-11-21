@@ -51,7 +51,7 @@ public class Profile : NotifyPropertyChanged
             throw new ValidationException($"A profile already exists with this name.");
         }
 
-        Folder profileFolder = Folder.Create(name, game.ProfilesFolder);
+        Folder profileFolder = game.ProfilesFolder.CreateChildFolder(name);
         Profile profile = new(profileFolder, game);
         game.Profiles.Add(profile);
         game.SortProfiles();

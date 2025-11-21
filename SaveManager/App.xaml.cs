@@ -1,6 +1,7 @@
 ﻿using SaveManager.Exceptions;
 using SaveManager.Models;
 using SaveManager.Services.Appdata;
+using SaveManager.Services.FilesystemService;
 using SaveManager.ViewModels;
 using SaveManager.Views.Save;
 using System.IO;
@@ -19,7 +20,9 @@ public partial class App : Application
         try
         {
             AppdataService appdataService = new();
+            FilesystemService filesystemService = new();
             ViewModelFactory.Initialize(appdataService);
+            FilesystemItemFactory.SetDependencies(filesystemService);
 
             // update game data once games are loaded to remove any invalid/outdated data.
             List<Game> games = LoadGames(appdataService);

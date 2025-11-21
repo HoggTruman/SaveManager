@@ -1,17 +1,17 @@
 ﻿using SaveManager.Exceptions;
 using SaveManager.Helpers;
-using SaveManager.Services.FilesystemServices;
+using SaveManager.Services.FilesystemService;
 using System.IO;
 
 namespace SaveManager.Models;
 
 public class Savefile : IFilesystemItem
 {
-    public static IFileService FileService { get; set; } = new FileService();
+    private readonly IFilesystemService _filesystemService;
 
     public string Location { get; set; }
     public string Name => Path.GetFileName(Location);
-    public bool Exists => FileService.Exists(Location);
+    public bool Exists => _filesystemService.FileExists(Location);
 
     /// <summary>
     /// The parent folder. It is only null for a game's current savefile.
@@ -26,10 +26,11 @@ public class Savefile : IFilesystemItem
     /// </summary>
     /// <param name="location">The absolute path of the savefile.</param>
     /// <param name="parent">The parent <See cref="Folder"/>.</param>
-    public Savefile(string location, Folder? parent)
+    public Savefile(string location, Folder? parent, IFilesystemService filesystemService)
     {
         Location = location;
         Parent = parent;
+        _filesystemService = filesystemService;
     }
     
 
@@ -52,11 +53,11 @@ public class Savefile : IFilesystemItem
 
         string copyLocation = Path.Join(destinationFolder.Location, GenerateFileName(Name, destinationFolder.Children));
 
-        if (FileService.Exists(copyLocation))
+        if (_filesystemService.FileExists(copyLocation))
             throw new FilesystemMismatchException(copyLocation, "A file already exists at the copy location");
 
-        FileService.Copy(Location, copyLocation);            
-        Savefile copiedFile = new(copyLocation, destinationFolder);
+        _filesystemService.CopyFile(Location, copyLocation);            
+        Savefile copiedFile = FilesystemItemFactory.NewSavefile(copyLocation, destinationFolder);
         destinationFolder.Children.Add(copiedFile);
         destinationFolder.SortChildren();
         return copiedFile;
@@ -81,10 +82,10 @@ public class Savefile : IFilesystemItem
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The file you are trying to rename does not exist.");
 
-        if (FileService.Exists(newLocation))
+        if (_filesystemService.FileExists(newLocation))
             throw new FilesystemMismatchException(newLocation, "A file already exists at the renamed location");
 
-        FileService.Move(Location, newLocation);
+        _filesystemService.MoveFile(Location, newLocation);
         Location = newLocation;
         Parent.SortChildren();
     }
@@ -103,7 +104,7 @@ public class Savefile : IFilesystemItem
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The file you are trying to delete does not exist.");
 
-        FileService.Delete(Location);
+        _filesystemService.DeleteFile(Location);
         Parent.Children = [..Parent.Children.Where(x => x != this)];
     }
 
@@ -134,10 +135,10 @@ public class Savefile : IFilesystemItem
 
         string newLocation = Path.Join(newParent.Location, Name);
 
-        if (FileService.Exists(newLocation))
+        if (_filesystemService.FileExists(newLocation))
             throw new FilesystemMismatchException(newLocation, "A file already exists at the new location");
 
-        FileService.Move(Location, newLocation);
+        _filesystemService.MoveFile(Location, newLocation);
         Parent.Children = [..Parent.Children.Where(x => x != this)];
         Location = newLocation;
         newParent.Children.Add(this);
@@ -160,7 +161,7 @@ public class Savefile : IFilesystemItem
         if (!fileToCopy.Exists)
             throw new FilesystemMismatchException(fileToCopy.Location, "The file you provided to copy the contents of does not exist.");
 
-        FileService.Copy(fileToCopy.Location, Location, true);
+        _filesystemService.CopyFile(fileToCopy.Location, Location, true);
     }
 
 

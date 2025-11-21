@@ -1,20 +1,83 @@
 ﻿using SaveManager.Exceptions;
 using System.IO;
 
-namespace SaveManager.Services.FilesystemServices;
+namespace SaveManager.Services.FilesystemService;
 
 /// <summary>
-/// A class to handle operations which interact with directories in the filesystem.
+/// A class to handle operations which interact with the filesystem.
 /// </summary>
-public class DirectoryService : IDirectoryService
+public class FilesystemService : IFilesystemService
 {
-    public bool Exists(string location)
+    public bool FileExists(string location)
+    {
+        return File.Exists(location);
+    }
+
+
+    public void CopyFile(string sourceLocation, string destinationLocation, bool overwrite=false)
+    {
+        try
+        {
+            File.Copy(sourceLocation, destinationLocation, overwrite);
+        }
+        catch (Exception ex)
+        {
+            if (ex is UnauthorizedAccessException or ArgumentException or PathTooLongException or DirectoryNotFoundException or 
+                FileNotFoundException or IOException or NotSupportedException)
+            {
+                throw new FilesystemException(ex.Message, ex);
+            }                
+
+            throw;
+        }
+    }
+
+
+    public void MoveFile(string sourceLocation, string destinationLocation)
+    {
+        try
+        {
+            File.Move(sourceLocation, destinationLocation);
+        }
+        catch(Exception ex)
+        {
+            if (ex is IOException or FileNotFoundException or ArgumentException or UnauthorizedAccessException or 
+                PathTooLongException or DirectoryNotFoundException or NotSupportedException)
+            {
+                throw new FilesystemException(ex.Message, ex);
+            }                
+                
+            throw;
+        }
+    }
+
+
+    public void DeleteFile(string location)
+    {
+        try
+        {
+            File.Delete(location);
+        }
+        catch (Exception ex)
+        {
+            if (ex is ArgumentException or DirectoryNotFoundException or IOException or NotSupportedException or PathTooLongException 
+                or UnauthorizedAccessException)
+            {
+                throw new FilesystemException(ex.Message, ex);
+            }                
+
+            throw;
+        }
+    }
+
+
+    public bool DirectoryExists(string location)
     {
         return Directory.Exists(location);
     }
 
 
-    public void Create(string location)
+    public void CreateDirectory(string location)
     {
         try
         {
@@ -33,7 +96,7 @@ public class DirectoryService : IDirectoryService
     }
 
 
-    public void Move(string sourceLocation, string destinationLocation)
+    public void MoveDirectory(string sourceLocation, string destinationLocation)
     {
         try
         {
@@ -51,7 +114,7 @@ public class DirectoryService : IDirectoryService
     }
 
 
-    public void Delete(string location)
+    public void DeleteDirectory(string location)
     {
         try
         {
