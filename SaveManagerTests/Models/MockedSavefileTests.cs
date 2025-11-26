@@ -8,13 +8,16 @@ namespace SaveManagerTests.Models;
 [Collection("Sequential")]
 public class MockedSavefileTests
 {
+    private readonly string _root = Path.Join(Directory.GetCurrentDirectory(), "Test");
+
+
     #region Location Tests
 
     [Fact]
     public void LocationSetter_UpdatesLocation()
     {
-        string location = Path.Join(@"C:\Root", "file.file");
-        string newLocation = Path.Join(@"C:\Root", "newlocation.file");
+        string location = Path.Join(_root, "file.file");
+        string newLocation = Path.Join(_root, "newlocation.file");
         Savefile file = FilesystemItemFactory.NewSavefile(location, null);
         
         file.Location = newLocation;
@@ -31,9 +34,10 @@ public class MockedSavefileTests
     [Fact]
     public void CopyTo_FolderWithoutMatchingFilename_CopiesFile()
     {
-        string destinationFolderPath = @"C:\Root\Folder\";
-        string fileLocation = @"C:\Root\file.file";
-        string copyLocation = @"C:\Root\Folder\file.file";
+        string destinationFolderPath = Path.Join(_root, "Folder");
+        string filename = "file.file";
+        string fileLocation = Path.Join(_root, filename);
+        string copyLocation = Path.Join(destinationFolderPath, filename);
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(fileLocation) == true &&
             x.DirectoryExists(destinationFolderPath) == true &&
@@ -54,9 +58,10 @@ public class MockedSavefileTests
     [Fact]
     public void CopyTo_FolderWithMatchingFilename_CopiesFileButGivesDifferentName()
     {
-        string destinationFolderPath = @"C:\Root\Folder\";
-        string fileLocation = @"C:\Root\file.file";
-        string intendedCopyLocation = @"C:\Root\Folder\file.file";
+        string destinationFolderPath = Path.Join(_root, "Folder");
+        string filename = "file.file";
+        string fileLocation = Path.Join(_root, filename);
+        string intendedCopyLocation = Path.Join(destinationFolderPath, filename);
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(fileLocation) == true &&
             x.DirectoryExists(destinationFolderPath) == true &&
@@ -78,8 +83,8 @@ public class MockedSavefileTests
     [Fact]
     public void CopyTo_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
     {
-        string destinationFolderPath = @"C:\Root\Folder\";
-        string fileLocation = @"C:\Root\file.file";
+        string destinationFolderPath = Path.Join(_root, "Folder");
+        string fileLocation = Path.Join(_root, "file.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(fileLocation) == false));
 
@@ -93,8 +98,8 @@ public class MockedSavefileTests
     [Fact]
     public void CopyTo_WhenDestinationFolderDoesNotExist_ThrowsFilesystemMismatchException()
     {
-        string destinationFolderPath = @"C:\Root\Folder\";
-        string fileLocation = @"C:\Root\file.file";
+        string destinationFolderPath = Path.Join(_root, "Folder");
+        string fileLocation = Path.Join(_root, "file.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(fileLocation) == true &&
             x.DirectoryExists(destinationFolderPath) == false));
@@ -109,9 +114,10 @@ public class MockedSavefileTests
     [Fact]
     public void CopyTo_WhenCopyExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
     {
-        string destinationFolderPath = @"C:\Root\Folder\";
-        string fileLocation = @"C:\Root\file.file";
-        string copyLocation = @"C:\Root\Folder\file.file";
+        string destinationFolderPath = Path.Join(_root, "Folder");
+        string filename = "file.file";
+        string fileLocation = Path.Join(_root, filename);
+        string copyLocation = Path.Join(destinationFolderPath, filename);
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(fileLocation) == true &&
             x.DirectoryExists(destinationFolderPath) == true &&
@@ -133,7 +139,7 @@ public class MockedSavefileTests
     [Fact]
     public void Rename_RenamesFile()
     {
-        string folderPath = @"C:\Root\Folder\";
+        string folderPath = Path.Join(_root, "Folder");
         string originalFilename = "file.file";
         string originalFilepath = Path.Join(folderPath, originalFilename);
         string renamedFilename = "renamedFile.file";
@@ -159,7 +165,7 @@ public class MockedSavefileTests
     {
         // A file without a parent can't check its siblings for naming collisions so this is disallowed.
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
-        Savefile file = FilesystemItemFactory.NewSavefile(@"C:\Root\Folder\file.file", null);
+        Savefile file = FilesystemItemFactory.NewSavefile(Path.Join(_root, "file.file"), null);
         Assert.Throws<InvalidOperationException>(() => file.Rename("newName.file"));
     }
 
@@ -167,7 +173,7 @@ public class MockedSavefileTests
     [Fact]
     public void Rename_WithOwnName_ThrowsValidationException()
     {
-        string folderPath = @"C:\Root\Folder\";
+        string folderPath = Path.Join(_root, "Folder");
         string originalFilepath = Path.Join(folderPath, "file.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(originalFilepath) == true &&
@@ -184,7 +190,7 @@ public class MockedSavefileTests
     [Fact]
     public void Rename_WithSiblingsName_ThrowsValidationException()
     {
-        string folderPath = @"C:\Root\Folder\";
+        string folderPath = Path.Join(_root, "Folder");
         string originalFilepath = Path.Join(folderPath, "file.file");
         string siblingFilepath = Path.Join(folderPath, "sibling.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
@@ -203,7 +209,7 @@ public class MockedSavefileTests
     [Fact]
     public void Rename_WithInvalidCharacterInFilename_ThrowsValidationException()
     {
-        string folderPath = @"C:\Root\Folder\";
+        string folderPath = Path.Join(_root, "Folder");
         string originalFilepath = Path.Join(folderPath, "file.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(originalFilepath) == true &&
@@ -220,7 +226,7 @@ public class MockedSavefileTests
     [Fact]
     public void Rename_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
     {
-        string folderPath = @"C:\Root\Folder\";
+        string folderPath = Path.Join(_root, "Folder");
         string originalFilepath = Path.Join(folderPath, "file.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(originalFilepath) == false &&
@@ -237,7 +243,7 @@ public class MockedSavefileTests
     [Fact]
     public void Rename_WhenRenamedFilepathExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
     {
-        string folderPath = @"C:\Root\Folder\";
+        string folderPath = Path.Join(_root, "Folder");
         string originalFilepath = Path.Join(folderPath, "file.file");
         string newName = "renamedFile.file";
         string renamedFilepath = Path.Join(folderPath, newName);
@@ -263,7 +269,7 @@ public class MockedSavefileTests
     [Fact]
     public void Delete_RemovesFileFromParentsChildren()
     {
-        string folderPath = @"C:\Root\Folder\";
+        string folderPath = Path.Join(_root, "Folder");
         string filePath = Path.Join(folderPath, "file.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(filePath) == true &&
@@ -284,7 +290,7 @@ public class MockedSavefileTests
     public void Delete_WithoutParent_ThrowsInvalidOperationException()
     {
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
-        Savefile file = FilesystemItemFactory.NewSavefile(@"C:\Root\file.file", null);
+        Savefile file = FilesystemItemFactory.NewSavefile(Path.Join(_root, "file.file"), null);
         Assert.Throws<InvalidOperationException>(file.Delete);
 
     }
@@ -293,7 +299,7 @@ public class MockedSavefileTests
     [Fact]
     public void Delete_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
     {
-        string folderPath = @"C:\Root\Folder\";
+        string folderPath = Path.Join(_root, "Folder");
         string filePath = Path.Join(folderPath, "file.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(filePath) == false));
@@ -316,9 +322,9 @@ public class MockedSavefileTests
     [Fact]
     public void Move_MovesFile()
     {
-        string parentFolderPath = @"C:\Root\Folder\";
-        string destinationFolderPath = @"C:\Root\Target\";
-        string filename = @"file.file";
+        string parentFolderPath = Path.Join(_root, "Folder");
+        string destinationFolderPath = Path.Join(_root, "Target");
+        string filename = "file.file";
         string originalFilepath = Path.Join(parentFolderPath, filename);
         string destinationFilepath = Path.Join(destinationFolderPath, filename);
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
@@ -345,8 +351,8 @@ public class MockedSavefileTests
     public void Move_WithoutParent_ThrowsInvalidOperationException()
     {
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
-        Savefile file = FilesystemItemFactory.NewSavefile(@"C:\Root\file.file", null);
-        Folder destination = FilesystemItemFactory.NewFolder(@"C:\Root\Target\", null);
+        Savefile file = FilesystemItemFactory.NewSavefile(Path.Join(_root, "file.file"), null);
+        Folder destination = FilesystemItemFactory.NewFolder(Path.Join(_root, "Target"), null);
         Assert.Throws<InvalidOperationException>(() => file.Move(destination));
     }
 
@@ -355,7 +361,7 @@ public class MockedSavefileTests
     public void Move_ToItsOwnParent_ThrowsInvalidOperationException()
     {
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
-        Folder parent = FilesystemItemFactory.NewFolder(@"C:\Root\Folder\", null);
+        Folder parent = FilesystemItemFactory.NewFolder(Path.Join(_root, "Folder"), null);
         Savefile file = FilesystemItemFactory.NewSavefile(Path.Join(parent.Location, "file.file"), parent);
         parent.Children = [file];
         Assert.Throws<InvalidOperationException>(() => file.Move(parent));
@@ -366,10 +372,10 @@ public class MockedSavefileTests
     public void Move_WhenDestinationFolderContainsFileWithSameName_ThrowsValidationException()
     {
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
-        Folder parent = FilesystemItemFactory.NewFolder(@"C:\Root\Folder\", null);
+        Folder parent = FilesystemItemFactory.NewFolder(Path.Join(_root, "Folder"), null);
         Savefile file = FilesystemItemFactory.NewSavefile(Path.Join(parent.Location, "file.file"), parent);
         parent.Children = [file];
-        Folder destination = FilesystemItemFactory.NewFolder(@"C:\Root\Target\", null);
+        Folder destination = FilesystemItemFactory.NewFolder(Path.Join(_root, "Target"), null);
         Savefile destinationFile = FilesystemItemFactory.NewSavefile(Path.Join(destination.Location, file.Name), destination);
         destination.Children = [destinationFile];
         
@@ -380,9 +386,9 @@ public class MockedSavefileTests
     [Fact]
     public void Move_WhenMovingFileDoesNotExist_ThrowsFilesystemMismatchException()
     {
-        string parentFolderPath = @"C:\Root\Folder\";
-        string destinationFolderPath = @"C:\Root\Target\";
-        string filename = @"file.file";
+        string parentFolderPath = Path.Join(_root, "Folder");
+        string destinationFolderPath = Path.Join(_root, "Target");
+        string filename = "file.file";
         string originalFilepath = Path.Join(parentFolderPath, filename);
         string destinationFilepath = Path.Join(destinationFolderPath, filename);
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
@@ -403,9 +409,9 @@ public class MockedSavefileTests
     [Fact]
     public void Move_WhenDestinationDoesNotExist_ThrowsFilesystemMismatchException()
     {
-        string parentFolderPath = @"C:\Root\Folder\";
-        string destinationFolderPath = @"C:\Root\Target\";
-        string filename = @"file.file";
+        string parentFolderPath = Path.Join(_root, "Folder");
+        string destinationFolderPath = Path.Join(_root, "Target");
+        string filename = "file.file";
         string originalFilepath = Path.Join(parentFolderPath, filename);
         string destinationFilepath = Path.Join(destinationFolderPath, filename);
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
@@ -426,9 +432,9 @@ public class MockedSavefileTests
     [Fact]
     public void Move_WhenNewLocationExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
     {
-        string parentFolderPath = @"C:\Root\Folder\";
-        string destinationFolderPath = @"C:\Root\Target\";
-        string filename = @"file.file";
+        string parentFolderPath = Path.Join(_root, "Folder");
+        string destinationFolderPath = Path.Join(_root, "Target");
+        string filename = "file.file";
         string originalFilepath = Path.Join(parentFolderPath, filename);
         string destinationFilepath = Path.Join(destinationFolderPath, filename);
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
@@ -455,8 +461,8 @@ public class MockedSavefileTests
     [Fact]
     public void OverwriteContents_WhenBothFilesExist_DoesNotThrow()
     {
-        string filepath = @"C:\Root\file.file";
-        string filepathToCopy = @"C:\Root\fileToCopy.file";
+        string filepath = Path.Join(_root, "file.file");
+        string filepathToCopy = Path.Join(_root, "fileToCopy.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(filepath) == true &&
             x.FileExists(filepathToCopy) == true));
@@ -473,7 +479,7 @@ public class MockedSavefileTests
     public void OverwriteContents_WithItself_ThrowsInvalidOperationException()
     {
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
-        Savefile file = FilesystemItemFactory.NewSavefile(@"C:\Root\file.file", null);
+        Savefile file = FilesystemItemFactory.NewSavefile(Path.Join(_root, "file.file"), null);
         Assert.Throws<InvalidOperationException>(() => file.OverwriteContents(file));
     }
 
@@ -481,8 +487,8 @@ public class MockedSavefileTests
     [Fact]
     public void OverwriteContents_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
     {
-        string filepath = @"C:\Root\file.file";
-        string filepathToCopy = @"C:\Root\fileToCopy.file";
+        string filepath = Path.Join(_root, "file.file");
+        string filepathToCopy = Path.Join(_root, "fileToCopy.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(filepath) == false &&
             x.FileExists(filepathToCopy) == true));
@@ -497,8 +503,8 @@ public class MockedSavefileTests
     [Fact]
     public void OverwriteContents_WhenFileToCopyDoesNotExist_ThrowsFilesystemMismatchException()
     {
-        string filepath = @"C:\Root\file.file";
-        string filepathToCopy = @"C:\Root\fileToCopy.file";
+        string filepath = Path.Join(_root, "file.file");
+        string filepathToCopy = Path.Join(_root, "fileToCopy.file");
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
             x.FileExists(filepath) == true &&
             x.FileExists(filepathToCopy) == false));
