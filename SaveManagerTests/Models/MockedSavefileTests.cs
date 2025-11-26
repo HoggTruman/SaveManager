@@ -320,4 +320,145 @@ public class MockedSavefileTests
 
     #endregion
 
+
+
+    
+
+    #region Move Tests
+
+    [Fact]
+    public void Move_MovesFile()
+    {
+        string parentFolderPath = @"C:\Root\Folder\";
+        string destinationFolderPath = @"C:\Root\Target\";
+        string filename = @"file.file";
+        string originalFilepath = Path.Join(parentFolderPath, filename);
+        string destinationFilepath = Path.Join(destinationFolderPath, filename);
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentFolderPath) == true &&
+            x.DirectoryExists(destinationFolderPath) == true &&
+            x.FileExists(originalFilepath) == true &&
+            x.FileExists(destinationFilepath) == false));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentFolderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, parent);
+        parent.Children = [file];
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+
+        file.Move(destination);
+
+        Assert.Equal(destination, file.Parent);
+        Assert.Contains(file, destination.Children);
+        Assert.DoesNotContain(file, parent.Children);
+        Assert.Equal(destinationFilepath, file.Location);
+    }
+
+
+    [Fact]
+    public void Move_WithoutParent_ThrowsInvalidOperationException()
+    {
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
+        Savefile file = FilesystemItemFactory.NewSavefile(@"C:\Root\file.file", null);
+        Folder destination = FilesystemItemFactory.NewFolder(@"C:\Root\Target\", null);
+        Assert.Throws<InvalidOperationException>(() => file.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_ToItsOwnParent_ThrowsInvalidOperationException()
+    {
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
+        Folder parent = FilesystemItemFactory.NewFolder(@"C:\Root\Folder\", null);
+        Savefile file = FilesystemItemFactory.NewSavefile(Path.Join(parent.Location, "file.file"), parent);
+        parent.Children = [file];
+        Assert.Throws<InvalidOperationException>(() => file.Move(parent));
+    }
+
+
+    [Fact]
+    public void Move_WhenDestinationFolderContainsFileWithSameName_ThrowsValidationException()
+    {
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
+        Folder parent = FilesystemItemFactory.NewFolder(@"C:\Root\Folder\", null);
+        Savefile file = FilesystemItemFactory.NewSavefile(Path.Join(parent.Location, "file.file"), parent);
+        parent.Children = [file];
+        Folder destination = FilesystemItemFactory.NewFolder(@"C:\Root\Target\", null);
+        Savefile destinationFile = FilesystemItemFactory.NewSavefile(Path.Join(destination.Location, file.Name), destination);
+        destination.Children = [destinationFile];
+        
+        Assert.Throws<ValidationException>(() => file.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_WhenMovingFileDoesNotExist_ThrowsFilesystemMismatchException()
+    {
+        string parentFolderPath = @"C:\Root\Folder\";
+        string destinationFolderPath = @"C:\Root\Target\";
+        string filename = @"file.file";
+        string originalFilepath = Path.Join(parentFolderPath, filename);
+        string destinationFilepath = Path.Join(destinationFolderPath, filename);
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentFolderPath) == true &&
+            x.DirectoryExists(destinationFolderPath) == true &&
+            x.FileExists(originalFilepath) == false &&
+            x.FileExists(destinationFilepath) == false));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentFolderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, parent);
+        parent.Children = [file];
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+
+        Assert.Throws<FilesystemMismatchException>(() => file.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_WhenDestinationDoesNotExist_ThrowsFilesystemMismatchException()
+    {
+        string parentFolderPath = @"C:\Root\Folder\";
+        string destinationFolderPath = @"C:\Root\Target\";
+        string filename = @"file.file";
+        string originalFilepath = Path.Join(parentFolderPath, filename);
+        string destinationFilepath = Path.Join(destinationFolderPath, filename);
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentFolderPath) == true &&
+            x.DirectoryExists(destinationFolderPath) == false &&
+            x.FileExists(originalFilepath) == true &&
+            x.FileExists(destinationFilepath) == false));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentFolderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, parent);
+        parent.Children = [file];
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+
+        Assert.Throws<FilesystemMismatchException>(() => file.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_WhenNewLocationExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
+    {
+        string parentFolderPath = @"C:\Root\Folder\";
+        string destinationFolderPath = @"C:\Root\Target\";
+        string filename = @"file.file";
+        string originalFilepath = Path.Join(parentFolderPath, filename);
+        string destinationFilepath = Path.Join(destinationFolderPath, filename);
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentFolderPath) == true &&
+            x.DirectoryExists(destinationFolderPath) == true &&
+            x.FileExists(originalFilepath) == true &&
+            x.FileExists(destinationFilepath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentFolderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, parent);
+        parent.Children = [file];
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+
+        Assert.Throws<FilesystemMismatchException>(() => file.Move(destination));
+    }
+
+    #endregion
+
+
 }
