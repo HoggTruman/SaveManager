@@ -2,25 +2,12 @@
 using SaveManager.Exceptions;
 using SaveManager.Models;
 using SaveManager.Services.FilesystemService;
-using SaveManagerTests.TestHelpers;
-using System.Reflection;
-using System.Windows.Controls;
 
 namespace SaveManagerTests.Models;
 
 [Collection("Sequential")]
 public class MockedSavefileTests
 {
-
-
-    public MockedSavefileTests()
-    {
-        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
-    }
-
-
-
-
     #region Location Tests
 
     [Fact]
