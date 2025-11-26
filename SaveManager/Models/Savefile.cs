@@ -155,6 +155,9 @@ public class Savefile : IFilesystemItem
     /// <exception cref="FilesystemException"></exception>
     public void OverwriteContents(Savefile fileToCopy)
     {
+        if (fileToCopy == this)
+            throw new InvalidOperationException("A file can not be overwritten with itself");
+
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The file you are trying to overwrite does not exist.");
 

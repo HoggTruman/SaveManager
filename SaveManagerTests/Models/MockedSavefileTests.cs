@@ -461,4 +461,66 @@ public class MockedSavefileTests
     #endregion
 
 
+
+
+    #region OverwriteContents
+
+    [Fact]
+    public void OverwriteContents_WhenBothFilesExist_DoesNotThrow()
+    {
+        string filepath = @"C:\Root\file.file";
+        string filepathToCopy = @"C:\Root\fileToCopy.file";
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(filepath) == true &&
+            x.FileExists(filepathToCopy) == true));
+
+        Savefile file = FilesystemItemFactory.NewSavefile(filepath, null);
+        Savefile fileToCopy = FilesystemItemFactory.NewSavefile(filepathToCopy, null);
+
+        Exception? exception = Record.Exception(() => file.OverwriteContents(fileToCopy));
+        Assert.Null(exception);
+    }
+
+
+    [Fact]
+    public void OverwriteContents_WithItself_ThrowsInvalidOperationException()
+    {
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
+        Savefile file = FilesystemItemFactory.NewSavefile(@"C:\Root\file.file", null);
+        Assert.Throws<InvalidOperationException>(() => file.OverwriteContents(file));
+    }
+
+
+    [Fact]
+    public void OverwriteContents_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
+    {
+        string filepath = @"C:\Root\file.file";
+        string filepathToCopy = @"C:\Root\fileToCopy.file";
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(filepath) == false &&
+            x.FileExists(filepathToCopy) == true));
+
+        Savefile file = FilesystemItemFactory.NewSavefile(filepath, null);
+        Savefile fileToCopy = FilesystemItemFactory.NewSavefile(filepathToCopy, null);
+
+        Assert.Throws<FilesystemMismatchException>(() => file.OverwriteContents(fileToCopy));
+    }
+
+
+    [Fact]
+    public void OverwriteContents_WhenFileToCopyDoesNotExist_ThrowsFilesystemMismatchException()
+    {
+        string filepath = @"C:\Root\file.file";
+        string filepathToCopy = @"C:\Root\fileToCopy.file";
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(filepath) == true &&
+            x.FileExists(filepathToCopy) == false));
+
+        Savefile file = FilesystemItemFactory.NewSavefile(filepath, null);
+        Savefile fileToCopy = FilesystemItemFactory.NewSavefile(filepathToCopy, null);
+
+        Assert.Throws<FilesystemMismatchException>(() => file.OverwriteContents(fileToCopy));
+    }
+
+    #endregion
 }
