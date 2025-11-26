@@ -2,6 +2,8 @@
 using SaveManager.Exceptions;
 using SaveManager.Models;
 using SaveManager.Services.FilesystemService;
+using SaveManagerTests.TestHelpers;
+using System.Reflection;
 
 namespace SaveManagerTests.Models;
 
@@ -119,7 +121,6 @@ public class MockedSavefileTests
     [Fact]
     public void CopyTo_WhenCopyExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
     {
-        // setup
         string destinationFolderPath = @"C:\Root\Folder\";
         string fileLocation = @"C:\Root\file.file";
         string copyLocation = @"C:\Root\Folder\file.file";
@@ -135,4 +136,136 @@ public class MockedSavefileTests
     }
 
     #endregion
+
+
+
+
+    #region Rename Tests
+
+    [Fact]
+    public void Rename_RenamesFile()
+    {
+        string folderPath = @"C:\Root\Folder\";
+        string originalFilename = "file.file";
+        string originalFilepath = Path.Join(folderPath, originalFilename);
+        string renamedFilename = "renamedFile.file";
+        string renamedFilepath = Path.Join(folderPath, renamedFilename);
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(originalFilepath) == true &&
+            x.DirectoryExists(folderPath) == true && 
+            x.FileExists(renamedFilepath) == false));
+
+        Folder folder = FilesystemItemFactory.NewFolder(folderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, folder);
+        folder.Children.Add(file);
+
+        file.Rename(renamedFilename);
+
+        Assert.Equal(renamedFilename, file.Name);
+        Assert.DoesNotContain(folder.Children, x => x.Name == originalFilename);
+    }
+
+
+    [Fact]
+    public void Rename_WithoutParent_ThrowsInvalidOperationException()
+    {
+        // A file without a parent can't check its siblings for naming collisions so this is disallowed.
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
+        Savefile file = FilesystemItemFactory.NewSavefile(@"C:\Root\Folder\file.file", null);
+        Assert.Throws<InvalidOperationException>(() => file.Rename("newName.file"));
+    }
+
+
+    [Fact]
+    public void Rename_WithOwnName_ThrowsValidationException()
+    {
+        string folderPath = @"C:\Root\Folder\";
+        string originalFilepath = Path.Join(folderPath, "file.file");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(originalFilepath) == true &&
+            x.DirectoryExists(folderPath) == true));
+
+        Folder folder = FilesystemItemFactory.NewFolder(folderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, folder);
+        folder.Children.Add(file);
+
+        Assert.Throws<ValidationException>(() => file.Rename(file.Name));
+    }
+
+
+    [Fact]
+    public void Rename_WithSiblingsName_ThrowsValidationException()
+    {
+        string folderPath = @"C:\Root\Folder\";
+        string originalFilepath = Path.Join(folderPath, "file.file");
+        string siblingFilepath = Path.Join(folderPath, "sibling.file");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(originalFilepath) == true &&
+            x.DirectoryExists(folderPath) == true));
+
+        Folder folder = FilesystemItemFactory.NewFolder(folderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, folder);
+        Savefile sibling = FilesystemItemFactory.NewSavefile(siblingFilepath, folder);
+        folder.Children = [file, sibling];
+
+        Assert.Throws<ValidationException>(() => file.Rename(sibling.Name));
+    }
+
+
+    [Fact]
+    public void Rename_WithInvalidCharacterInFilename_ThrowsValidationException()
+    {
+        string folderPath = @"C:\Root\Folder\";
+        string originalFilepath = Path.Join(folderPath, "file.file");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(originalFilepath) == true &&
+            x.DirectoryExists(folderPath) == true));
+
+        Folder folder = FilesystemItemFactory.NewFolder(folderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, folder);
+        folder.Children.Add(file);
+
+        Assert.Throws<ValidationException>(() => file.Rename(@"\\\\"));
+    }
+
+
+    [Fact]
+    public void Rename_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
+    {
+        string folderPath = @"C:\Root\Folder\";
+        string originalFilepath = Path.Join(folderPath, "file.file");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(originalFilepath) == false &&
+            x.DirectoryExists(folderPath) == true));
+
+        Folder folder = FilesystemItemFactory.NewFolder(folderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, folder);
+        folder.Children.Add(file);
+
+        Assert.Throws<FilesystemMismatchException>(() => file.Rename("newName"));
+    }
+
+
+    [Fact]
+    public void Rename_WhenRenamedFilepathExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
+    {
+        string folderPath = @"C:\Root\Folder\";
+        string originalFilepath = Path.Join(folderPath, "file.file");
+        string newName = "renamedFile.file";
+        string renamedFilepath = Path.Join(folderPath, newName);
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(originalFilepath) == true &&
+            x.DirectoryExists(folderPath) == true &&
+            x.FileExists(renamedFilepath) == true));
+
+        Folder folder = FilesystemItemFactory.NewFolder(folderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, folder);
+        folder.Children.Add(file);
+
+        Assert.Throws<FilesystemMismatchException>(() => file.Rename(newName));
+    }
+
+    #endregion
+
+
 }

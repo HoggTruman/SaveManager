@@ -74,7 +74,7 @@ public class Savefile : IFilesystemItem
     public void Rename(string newName)
     {
         if (Parent == null)
-            throw new InvalidOperationException("A file without a parent should not be renamed.");
+            throw new InvalidOperationException("A file without a parent can not be renamed.");
 
         ValidateFileName(newName, Parent.Children);
         string newLocation = Path.Join(Parent.Location, newName);
