@@ -206,8 +206,12 @@ public class MockedSavefileTests
     }
 
 
-    [Fact]
-    public void Rename_WithInvalidCharacterInFilename_ThrowsValidationException()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData(@"\\\\")]
+    public void Rename_WithInvalidFilename_ThrowsValidationException(string newName)
     {
         string folderPath = Path.Join(_root, "Folder");
         string originalFilepath = Path.Join(folderPath, "file.file");
@@ -219,7 +223,7 @@ public class MockedSavefileTests
         Savefile file = FilesystemItemFactory.NewSavefile(originalFilepath, folder);
         folder.Children.Add(file);
 
-        Assert.Throws<ValidationException>(() => file.Rename(@"\\\\"));
+        Assert.Throws<ValidationException>(() => file.Rename(newName));
     }
 
 
