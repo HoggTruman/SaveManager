@@ -4,6 +4,7 @@ using SaveManager.Models;
 using SaveManager.Services.FilesystemService;
 using SaveManagerTests.TestHelpers;
 using System.Reflection;
+using System.Windows.Controls;
 
 namespace SaveManagerTests.Models;
 
@@ -267,5 +268,56 @@ public class MockedSavefileTests
 
     #endregion
 
+
+
+
+    #region Delete Tests
+
+    [Fact]
+    public void Delete_RemovesFileFromParentsChildren()
+    {
+        string folderPath = @"C:\Root\Folder\";
+        string filePath = Path.Join(folderPath, "file.file");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(filePath) == true &&
+            x.DirectoryExists(folderPath) == true));
+
+        Folder folder = FilesystemItemFactory.NewFolder(folderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(filePath, folder);
+        folder.Children = [file];
+
+        file.Delete();
+
+        Assert.DoesNotContain(file, folder.Children);
+        Assert.Empty(folder.Children);
+    }
+
+
+    [Fact]
+    public void Delete_WithoutParent_ThrowsInvalidOperationException()
+    {
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
+        Savefile file = FilesystemItemFactory.NewSavefile(@"C:\Root\file.file", null);
+        Assert.Throws<InvalidOperationException>(file.Delete);
+
+    }
+
+
+    [Fact]
+    public void Delete_WhenFileDoesNotExist_ThrowsFilesystemMismatchException()
+    {
+        string folderPath = @"C:\Root\Folder\";
+        string filePath = Path.Join(folderPath, "file.file");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.FileExists(filePath) == false));
+
+        Folder folder = FilesystemItemFactory.NewFolder(folderPath, null);
+        Savefile file = FilesystemItemFactory.NewSavefile(filePath, folder);
+        folder.Children = [file];
+
+        Assert.Throws<FilesystemMismatchException>(file.Delete);
+    }
+
+    #endregion
 
 }

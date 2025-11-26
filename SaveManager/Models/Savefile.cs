@@ -99,7 +99,7 @@ public class Savefile : IFilesystemItem
     public void Delete()
     {
         if (Parent == null)
-            throw new InvalidOperationException("A file without a parent should not be deleted.");
+            throw new InvalidOperationException("A file without a parent can not be deleted.");
 
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The file you are trying to delete does not exist.");
