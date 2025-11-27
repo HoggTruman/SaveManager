@@ -99,7 +99,7 @@ public class Folder : IFilesystemItem
     public void Rename(string newName)
     {
         if (Parent == null)
-            throw new InvalidOperationException("A Folder representing a game's profiles directory should not be renamed. Create a new instance instead");
+            throw new InvalidOperationException("A Folder representing a game's profiles directory can not be renamed. Create a new instance instead");
 
         ValidateFolderName(newName, Parent.Children);
         string newLocation = Path.Join(Parent.Location, newName);
@@ -124,7 +124,7 @@ public class Folder : IFilesystemItem
     public void Delete()
     {
         if (Parent == null)
-            throw new InvalidOperationException("A Folder representing a game's profiles directory should not be deleted.");
+            throw new InvalidOperationException("A Folder representing a game's profiles directory can not be deleted.");
 
         if (!Exists)
             throw new FilesystemMismatchException(Location, "The folder you are trying to delete does not exist.");

@@ -267,4 +267,56 @@ public class MockedFolderTests
     #endregion
 
 
+
+    
+    #region Delete Tests
+
+    [Fact]
+    public void Delete_UpdatesParentsChildren()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string deletePath = Path.Join(parentPath, "ToDelete");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(deletePath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder deleteFolder = FilesystemItemFactory.NewFolder(deletePath, parent);
+        parent.Children = [deleteFolder];
+
+        deleteFolder.Delete();
+
+        Assert.Empty(parent.Children);
+        Assert.DoesNotContain(deleteFolder, parent.Children);
+        Assert.DoesNotContain(parent.Children, x => x.Name == deleteFolder.Name);
+    }
+
+
+    [Fact]
+    public void Delete_WithoutParent_ThrowsInvalidOperationException()
+    {
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
+        Folder folder = FilesystemItemFactory.NewFolder(Path.Join(_root, "Folder"), null);
+        Assert.Throws<InvalidOperationException>(folder.Delete);
+    }
+
+
+    [Fact]
+    public void Delete_WhenFolderDoesNotExist_ThrowsFilesystemMismatchException()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string deletePath = Path.Join(parentPath, "ToDelete");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(deletePath) == false));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder deleteFolder = FilesystemItemFactory.NewFolder(deletePath, parent);
+        parent.Children = [deleteFolder];
+
+        Assert.Throws<FilesystemMismatchException>(deleteFolder.Delete);
+    }
+
+    #endregion
+
+
+
 }
