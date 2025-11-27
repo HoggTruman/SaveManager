@@ -42,7 +42,6 @@ public static class FilesystemItemFactory
     /// <param name="parent">The parent folder of the new folder.</param>
     /// <returns>A new Folder instance.</returns>
     /// <exception cref="InvalidOperationException">The FilesystemItemFactory has not been initialized.</exception>
-    /// <exception cref="FilesystemException"></exception>
     public static Folder NewFolder(string location, Folder? parent)
     {
         if (_filesystemService == null)

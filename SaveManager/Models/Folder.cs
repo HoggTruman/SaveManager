@@ -45,17 +45,15 @@ public class Folder : IFilesystemItem
 
 
     /// <summary>
-    /// Instantiates a new Folder and automatically loads children from the filesystem.
+    /// Instantiates a new Folder.
     /// </summary>
     /// <param name="location">The absolute path of the folder.</param>
-    /// <param name="parent">The parent <see cref="Folder"/>.</param>
-    /// <exception cref="FilesystemException"></exception>
+    /// <param name="parent">The parent folder.</param>
     public Folder(string location, Folder? parent, IFilesystemService filesystemService)
     {
         _location = location;
         Parent = parent;
-        _filesystemService = filesystemService;
-        LoadChildren();        
+        _filesystemService = filesystemService; 
     }
 
 
@@ -181,17 +179,20 @@ public class Folder : IFilesystemItem
     /// <exception cref="FilesystemException"/>
     public void LoadChildren()
     {
-        Children = [];
+        ObservableCollection<IFilesystemItem> newChildren = [];
         foreach (string childDirectoryLocation in _filesystemService.GetChildDirectories(Location))
         {
-            Children.Add(FilesystemItemFactory.NewFolder(childDirectoryLocation, this));
+            Folder childFolder = FilesystemItemFactory.NewFolder(childDirectoryLocation, this);
+            childFolder.LoadChildren();
+            newChildren.Add(childFolder);
         }
 
         foreach (string childFileLocation in _filesystemService.GetFiles(Location))
         {
-            Children.Add(FilesystemItemFactory.NewSavefile(childFileLocation, this));
+            newChildren.Add(FilesystemItemFactory.NewSavefile(childFileLocation, this));
         }
 
+        Children = newChildren;
         SortChildren();
     }
 
