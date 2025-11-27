@@ -561,4 +561,36 @@ public class MockedFolderTests
     }
 
     #endregion
+
+
+
+
+    
+    #region Location Tests
+
+    [Fact]
+    public void LocationSetter_UpdatesDescendantLocations()
+    {
+        string folderPath = Path.Join(_root, "Parent");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
+
+        Folder folder = FilesystemItemFactory.NewFolder(folderPath, null);
+        Folder childFolder = FilesystemItemFactory.NewFolder(Path.Join(folder.Location, "ChildFolder"), folder);
+        Savefile childFile = FilesystemItemFactory.NewSavefile(Path.Join(folder.Location, "Child.file"), folder);
+        folder.Children = [childFolder, childFile];        
+        Folder gChildFolder = FilesystemItemFactory.NewFolder(Path.Join(childFolder.Location, "GChildFolder"), childFolder);
+        Savefile gChildFile = FilesystemItemFactory.NewSavefile(Path.Join(childFolder.Location, "GChild.file"), childFolder);
+        childFolder.Children = [gChildFile, gChildFolder];
+
+        string newLocation = Path.Join(folder.Location, "New");
+        folder.Location = newLocation;
+
+        Assert.Equal(newLocation, folder.Location);
+        Assert.Equal(Path.Join(folder.Location, childFolder.Name), childFolder.Location);
+        Assert.Equal(Path.Join(folder.Location, childFile.Name), childFile.Location);
+        Assert.Equal(Path.Join(childFolder.Location, gChildFolder.Name), gChildFolder.Location);
+        Assert.Equal(Path.Join(childFolder.Location, gChildFile.Name), gChildFile.Location);
+    }
+
+    #endregion
 }
