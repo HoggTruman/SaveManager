@@ -2,12 +2,10 @@
 using SaveManager.Exceptions;
 using SaveManager.Models;
 using SaveManager.Services.FilesystemService;
-using SaveManagerTests.TestHelpers;
-using System.Reflection;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace SaveManagerTests.Models;
 
+[Collection("Sequential")]
 public class MockedFolderTests
 {
     private readonly string _root = Path.Join(Directory.GetCurrentDirectory(), "Test");
@@ -562,6 +560,60 @@ public class MockedFolderTests
 
     #endregion
 
+
+
+
+    #region LoadChildren Tests
+
+    [Fact]
+    public void LoadChildren_LoadsCompleteTree()
+    {
+        string folderPath = Path.Join(_root, "Folder");
+        string[] childFiles = [
+            Path.Join(folderPath, "child1.file"),
+            Path.Join(folderPath, "child2.file"),
+            Path.Join(folderPath, "child3.file")];
+        string childFolderPath = Path.Join(folderPath, "ChildFolder1");
+        string[] childFolders = [childFolderPath];
+        string[] gChildFiles = [
+            Path.Join(childFolderPath, "gchild1.file"),
+            Path.Join(childFolderPath, "gchild2.file")];
+        string gChildFolderPath = Path.Join(childFolderPath, "gChildFolder1");
+        string[] gChildFolders = [
+            gChildFolderPath,
+            Path.Join(childFolderPath, "gChildFolder2"),
+            Path.Join(childFolderPath, "gChildFolder3")];
+        string[] ggChildFiles = [
+            Path.Join(gChildFolderPath, "ggChild1.file")];
+        string[] ggChildFolders = [];
+
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.GetFiles(folderPath) == childFiles &&
+            x.GetChildDirectories(folderPath) == childFolders &&
+            x.GetFiles(childFolderPath) == gChildFiles &&
+            x.GetChildDirectories(childFolderPath) == gChildFolders &&
+            x.GetFiles(gChildFolderPath) == ggChildFiles &&
+            x.GetChildDirectories(gChildFolderPath) == ggChildFolders));
+
+        Folder folder = FilesystemItemFactory.NewFolder(folderPath, null);
+        folder.LoadChildren();
+
+        Assert.Equal(childFiles.Length + childFolders.Length, folder.Children.Count);
+        Assert.True(childFiles.All(x => folder.Children.Any(y => y.Location == x)));
+        Assert.True(childFolders.All(x => folder.Children.Any(y => y.Location == x)));
+
+        Folder childFolder = folder.Children.OfType<Folder>().First(x => x.Location == childFolderPath);
+        Assert.Equal(gChildFiles.Length + gChildFolders.Length, childFolder.Children.Count);
+        Assert.True(gChildFiles.All(x => childFolder.Children.Any(y => y.Location == x)));
+        Assert.True(gChildFolders.All(x => childFolder.Children.Any(y => y.Location == x)));
+
+        Folder gChildFolder = childFolder.Children.OfType<Folder>().First(x => x.Location == gChildFolderPath);
+        Assert.Equal(ggChildFiles.Length + ggChildFolders.Length, gChildFolder.Children.Count);
+        Assert.True(ggChildFiles.All(x => gChildFolder.Children.Any(y => y.Location == x)));
+        Assert.True(ggChildFolders.All(x => gChildFolder.Children.Any(y => y.Location == x)));
+    }
+
+    #endregion
 
 
 

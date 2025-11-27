@@ -176,6 +176,7 @@ public class Folder : IFilesystemItem
 
     /// <summary>
     /// Loads child files and directories from the filesystem and sets Children.
+    /// This method is called recursively for the new child folders.
     /// </summary>
     /// <exception cref="FilesystemException"/>
     public void LoadChildren()
