@@ -319,4 +319,246 @@ public class MockedFolderTests
 
 
 
+    
+    #region Move Tests
+
+    [Fact]
+    public void Move_UpdatesParentAndDestination()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string originalPath = Path.Join(parentPath, "Moving");
+        string destinationFolderPath = Path.Join(_root, "Destination");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentPath) == true &&
+            x.DirectoryExists(originalPath) == true &&
+            x.DirectoryExists(destinationFolderPath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, parent);
+        parent.Children = [moving];
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+
+        moving.Move(destination);
+
+        Assert.Empty(parent.Children);
+        Assert.Contains(moving, destination.Children);
+        Assert.Equal(destination, moving.Parent);     
+    }
+
+
+    [Fact]
+    public void Move_UpdatesDescendantLocations()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string originalPath = Path.Join(parentPath, "Moving");
+        string destinationFolderPath = Path.Join(_root, "Destination");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentPath) == true &&
+            x.DirectoryExists(originalPath) == true &&
+            x.DirectoryExists(destinationFolderPath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, parent);
+        parent.Children = [moving];
+        Savefile childFile = FilesystemItemFactory.NewSavefile(Path.Join(moving.Location, "Child.file"), moving);
+        Folder childFolder = FilesystemItemFactory.NewFolder(Path.Join(moving.Location, "ChildFolder"), moving);
+        moving.Children = [childFile, childFolder];
+        Savefile gChildFile = FilesystemItemFactory.NewSavefile(Path.Join(childFolder.Location, "GChild.file"), childFolder);
+        Folder gChildFolder = FilesystemItemFactory.NewFolder(Path.Join(childFolder.Location, "GChildFolder"), childFolder);
+        childFolder.Children = [gChildFile, gChildFolder];
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+
+        moving.Move(destination);
+
+        Assert.Equal(Path.Join(destination.Location, moving.Name), moving.Location);
+        Assert.Equal(Path.Join(moving.Location, childFile.Name), childFile.Location);
+        Assert.Equal(Path.Join(moving.Location, childFolder.Name), childFolder.Location);
+        Assert.Equal(Path.Join(childFolder.Location, gChildFile.Name), gChildFile.Location);
+        Assert.Equal(Path.Join(childFolder.Location, gChildFolder.Name), gChildFolder.Location);
+    }
+
+
+    [Fact]
+    public void Move_WithNullParent_ThrowsInvalidOperationException()
+    {
+        string originalPath = Path.Join(_root, "Moving");
+        string destinationFolderPath = Path.Join(_root, "Destination");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(originalPath) == true &&
+            x.DirectoryExists(destinationFolderPath) == true));
+
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, null);
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+
+        Assert.Throws<InvalidOperationException>(() => moving.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_ToItself_ThrowsArgumentException()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string originalPath = Path.Join(parentPath, "Moving");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentPath) == true &&
+            x.DirectoryExists(originalPath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, parent);
+        parent.Children = [moving];
+
+        Assert.Throws<ArgumentException>(() => moving.Move(moving));
+    }
+
+
+    [Fact]
+    public void Move_ToChild_ThrowsArgumentException()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string originalPath = Path.Join(parentPath, "Moving");
+        string childPath = Path.Join(originalPath, "Child");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentPath) == true &&
+            x.DirectoryExists(originalPath) == true &&
+            x.DirectoryExists(childPath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, parent);
+        parent.Children = [moving];
+        Folder child = FilesystemItemFactory.NewFolder(childPath, moving);
+        moving.Children = [child];
+
+        Assert.Throws<ArgumentException>(() => moving.Move(child));
+    }
+
+
+    [Fact]
+    public void Move_ToDescendant_ThrowsArgumentException()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string originalPath = Path.Join(parentPath, "Moving");
+        string childPath = Path.Join(originalPath, "Child");
+        string gChildPath = Path.Join(originalPath, "Grandchild");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentPath) == true &&
+            x.DirectoryExists(originalPath) == true &&
+            x.DirectoryExists(childPath) == true &&
+            x.DirectoryExists(gChildPath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, parent);
+        parent.Children = [moving];
+        Folder child = FilesystemItemFactory.NewFolder(childPath, moving);
+        moving.Children = [child];
+        Folder gChild = FilesystemItemFactory.NewFolder(gChildPath, child);
+
+        Assert.Throws<ArgumentException>(() => moving.Move(gChild));
+    }
+
+
+    [Fact]
+    public void Move_ToItsCurrentParent_ThrowsArgumentException()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string originalPath = Path.Join(parentPath, "Moving");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentPath) == true &&
+            x.DirectoryExists(originalPath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, parent);
+        parent.Children = [moving];
+
+        Assert.Throws<ArgumentException>(() => moving.Move(parent));
+    }
+
+
+    [Fact]
+    public void Move_WhenDestinationHasFolderWithSameName_ThrowsValidationException()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string movingName = "Moving";
+        string originalPath = Path.Join(parentPath, movingName);
+        string destinationFolderPath = Path.Join(_root, "Destination");
+        string targetPath = Path.Join(destinationFolderPath, movingName);
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentPath) == true &&
+            x.DirectoryExists(originalPath) == true &&
+            x.DirectoryExists(destinationFolderPath) == true &&
+            x.DirectoryExists(targetPath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, parent);
+        parent.Children = [moving];
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+        Folder destinationChild = FilesystemItemFactory.NewFolder(targetPath, destination);
+        destination.Children = [destinationChild];
+
+        Assert.Throws<ValidationException>(() => moving.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_WhenFolderDoesNotExist_ThrowsFilesystemMismatchException()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string originalPath = Path.Join(parentPath, "Moving");
+        string destinationFolderPath = Path.Join(_root, "Destination");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentPath) == true &&
+            x.DirectoryExists(originalPath) == false &&
+            x.DirectoryExists(destinationFolderPath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, parent);
+        parent.Children = [moving];
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+
+        Assert.Throws<FilesystemMismatchException>(() => moving.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_WhenDestinationDoesNotExist_ThrowsFilesystemMismatchException()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string originalPath = Path.Join(parentPath, "Moving");
+        string destinationFolderPath = Path.Join(_root, "Destination");
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentPath) == true &&
+            x.DirectoryExists(originalPath) == true &&
+            x.DirectoryExists(destinationFolderPath) == false));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, parent);
+        parent.Children = [moving];
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+
+        Assert.Throws<FilesystemMismatchException>(() => moving.Move(destination));
+    }
+
+
+    [Fact]
+    public void Move_WhenTargetPathExistsInFilesystemButNotInternally_ThrowsFilesystemMismatchException()
+    {
+        string parentPath = Path.Join(_root, "Parent");
+        string movingName = "Moving";
+        string originalPath = Path.Join(parentPath, movingName);
+        string destinationFolderPath = Path.Join(_root, "Destination");
+        string targetPath = Path.Join(destinationFolderPath, movingName);
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>(x =>
+            x.DirectoryExists(parentPath) == true &&
+            x.DirectoryExists(originalPath) == true &&
+            x.DirectoryExists(destinationFolderPath) == true &&
+            x.DirectoryExists(targetPath) == true));
+
+        Folder parent = FilesystemItemFactory.NewFolder(parentPath, null);
+        Folder moving = FilesystemItemFactory.NewFolder(originalPath, parent);
+        parent.Children = [moving];
+        Folder destination = FilesystemItemFactory.NewFolder(destinationFolderPath, null);
+
+        Assert.Throws<FilesystemMismatchException>(() => moving.Move(destination));
+    }
+
+    #endregion
 }
