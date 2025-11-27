@@ -1,4 +1,5 @@
 ﻿using SaveManager.Exceptions;
+using SaveManager.Helpers;
 using SaveManager.ViewModels;
 using System.Collections.ObjectModel;
 
@@ -57,12 +58,6 @@ public class Game : NotifyPropertyChanged
 
 
     /// <summary>
-    /// The <see cref="Folder"/> representing the profiles directory if one has been set. Otherwise, null.
-    /// </summary>
-    public Folder? ProfilesFolder => _profilesFolder;
-
-
-    /// <summary>
     /// The full path of the directory containing the game's profiles.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
@@ -80,7 +75,7 @@ public class Game : NotifyPropertyChanged
             {              
                 Folder newProfilesFolder = FilesystemItemFactory.NewFolder(value, null);
                 newProfilesFolder.LoadChildren();
-                SetProperty(ref _profilesFolder, newProfilesFolder);
+                _profilesFolder = newProfilesFolder;
                 Profiles = [..newProfilesFolder.Children.OfType<Folder>().Select(x => new Profile(x, this))];             
             }
         }
@@ -118,6 +113,34 @@ public class Game : NotifyPropertyChanged
     public Game(string name)
     {
         Name = name;     
+    }
+
+
+    /// <summary>
+    /// Creates a new profile in the game's profiles directory.
+    /// Returns a profile instance representing it.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="FilesystemException"></exception>
+    /// <exception cref="FilesystemMismatchException"></exception>
+    public Profile CreateProfile(string name)
+    {
+        if (_profilesFolder == null || ProfilesDirectory == null)
+        {
+            throw new InvalidOperationException("ProfilesDirectory must be set before a profile can be created.");
+        }
+
+        if (Profiles.Any(x => x.Name.FilesystemEquals(name)))
+        {
+            throw new ValidationException($"A profile already exists with this name.");
+        }
+
+        Folder profileFolder = _profilesFolder.CreateChildFolder(name);
+        Profile profile = new(profileFolder, this);
+        Profiles.Add(profile);
+        SortProfiles();
+        return profile;
     }
 
 

@@ -30,33 +30,6 @@ public class Profile : NotifyPropertyChanged
     }
 
 
-    /// <summary>
-    /// Creates a new profile in the provided game's profiles directory.
-    /// Returns a <see cref="Profile"/> instance representing it.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="game"></param>
-    /// <exception cref="ValidationException"></exception>
-    /// <exception cref="FilesystemException"></exception>
-    /// <exception cref="FilesystemMismatchException"></exception>
-    public static Profile Create(string name, Game game)
-    {
-        if (game.ProfilesFolder == null)
-        {
-            throw new InvalidOperationException("ProfilesDirectory must be set before a profile can be created.");
-        }
-
-        if (game.Profiles.Any(x => x.Name.FilesystemEquals(name)))
-        {
-            throw new ValidationException($"A profile already exists with this name.");
-        }
-
-        Folder profileFolder = game.ProfilesFolder.CreateChildFolder(name);
-        Profile profile = new(profileFolder, game);
-        game.Profiles.Add(profile);
-        game.SortProfiles();
-        return profile;
-    }
 
 
     /// <summary>
