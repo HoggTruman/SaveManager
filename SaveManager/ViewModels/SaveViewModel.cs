@@ -153,16 +153,23 @@ public class SaveViewModel : NotifyPropertyChanged
     public void MoveEntry(IFilesystemItem movingEntry, IFilesystemItem? targetEntry)
     {
         if (ActiveGame == null || ActiveGame.ActiveProfile == null)
-            throw new InvalidOperationException("The ActiveGame and ActiveProfile can not be null");
-        
-        Folder newParent = GetParentFromSelection(targetEntry);
-
-        if (movingEntry.Parent != newParent && movingEntry != newParent)
         {
+            return;
+        }
+        
+        try
+        {
+            Folder newParent = GetParentFromSelection(targetEntry);
             movingEntry.Move(newParent);
             newParent.IsOpen = true;
             ActiveGame.ActiveProfile.UpdateSaveListEntries();
             SelectedEntry = movingEntry;
+        }
+        catch (ArgumentException)
+        {
+            // An invalid input that you don't need to notify the user about.
+            // 1) Trying to move to it to the folder it is already located at
+            // 2) Trying to move a folder to a folder within itself.
         }
     }
 

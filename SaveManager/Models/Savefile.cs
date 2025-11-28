@@ -113,16 +113,18 @@ public class Savefile : IFilesystemItem
     /// Moves the savefile into the folder provided in the filesystem.
     /// </summary>
     /// <param name="newParent"></param>
-    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="ValidationException">An invalid input that you would like to notify the user about</exception>
+    /// <exception cref="ArgumentException">An invalid input that you would not like to notify the user about</exception>
     /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
+    
     public void Move(Folder newParent)
     {
         if (Parent == null)
             throw new InvalidOperationException("A file without a parent can not be moved.");
 
         if (newParent == Parent)
-            throw new InvalidOperationException("The file is already a child of the new parent.");
+            throw new ArgumentException("The file is already a child of the new parent.");
 
         if (newParent.Children.Any(x => x.Name == Name))
             throw new ValidationException("The destination already contains a file with this name.");

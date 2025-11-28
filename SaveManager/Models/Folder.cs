@@ -136,7 +136,8 @@ public class Folder : IFilesystemItem
     /// Moves the underlying directory into the folder provided.
     /// </summary>
     /// <param name="newParent"></param>
-    /// <exception cref="ValidationException"></exception>
+    /// <exception cref="ValidationException">An invalid input that you would like to notify the user about</exception>
+    /// <exception cref="ArgumentException">An invalid input that you would not like to notify the user about</exception>
     /// <exception cref="FilesystemMismatchException"></exception>
     /// <exception cref="FilesystemException"></exception>
     public void Move(Folder newParent)
