@@ -18,7 +18,7 @@ public class Profile : NotifyPropertyChanged
     }
 
     /// <summary>
-    /// Initializes a new <see cref="Profile"/> instance.
+    /// Initializes a new Profile instance.
     /// </summary>
     /// <param name="folder"></param>
     /// <param name="game"></param>
@@ -53,7 +53,7 @@ public class Profile : NotifyPropertyChanged
 
 
     /// <summary>
-    /// Deletes the <see cref="Profile"/>.
+    /// Deletes the profile and all underlying files.
     /// </summary>
     /// <exception cref="FilesystemException"></exception>
     /// <exception cref="FilesystemMismatchException"></exception>
@@ -65,7 +65,7 @@ public class Profile : NotifyPropertyChanged
 
 
     /// <summary>
-    /// Updates <see cref="SaveListEntries"/> based on the current state of <see cref="Folder"/>.
+    /// Updates the profile's SaveListEntries based on the current state of its Folder.
     /// </summary>
     public void UpdateSaveListEntries()
     {
@@ -80,11 +80,10 @@ public class Profile : NotifyPropertyChanged
 
 
     /// <summary>
-    /// Returns a list of visible entries for a given <see cref="Folder"/>, ordered by folder then alphabetical.
-    /// The <see cref="Folder"/> for the active <see cref="Profile"/> should be passed in.
+    /// Returns a list of visible entries for a given Folder, ordered by folder then alphabetical.
     /// </summary>
-    /// <param name="folder"></param>
-    /// <returns></returns>
+    /// <param name="folder">The folder to generate entries from.</param>
+    /// <returns>A list of IFilesystemItems to be displayed.</returns>
     private static List<IFilesystemItem> GetSaveListEntries(Folder folder)
     {
         List<IFilesystemItem> entries = [];
