@@ -88,9 +88,9 @@ public class Game : NotifyPropertyChanged
         set 
         {
             SetProperty(ref _profiles, value);
-            if (ActiveProfile == null || !_profiles.Contains(ActiveProfile))
+            if (ActiveProfile == null || !value.Contains(ActiveProfile))
             {
-                ActiveProfile = _profiles.FirstOrDefault();
+                ActiveProfile = value.FirstOrDefault();
             }                
         }
     }
