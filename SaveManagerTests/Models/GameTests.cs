@@ -10,6 +10,42 @@ public class GameTests
 {
     private readonly string _root = Path.Join(Directory.GetCurrentDirectory(), "Test");
 
+
+    #region Profiles Setter
+
+    [Fact]
+    public void ProfilesSetter_WithNullActiveProfile_SetsAnActiveProfile()
+    {
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
+        Game game = new("Game");
+        Profile profile = new(FilesystemItemFactory.NewFolder("Profile", null), game);
+        
+        game.Profiles = [profile];
+
+        Assert.NotNull(game.ActiveProfile);        
+    }
+
+
+    [Fact]
+    public void ProfilesSetter_WhenNewProfilesDontContainActiveProfile_SetsNewActiveProfile()
+    {
+        FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
+        Game game = new("Game");
+        Profile oldProfile = new(FilesystemItemFactory.NewFolder("Old Profile", null), game);
+        game.Profiles = [oldProfile];
+        game.ActiveProfile = oldProfile;
+        Profile newProfile = new(FilesystemItemFactory.NewFolder("New Profile", null), game);
+
+        game.Profiles = [newProfile];        
+
+        Assert.Equal(newProfile, game.ActiveProfile);   
+    }
+
+    #endregion
+
+
+
+
     #region CreateProfile Tests
 
     [Fact]
