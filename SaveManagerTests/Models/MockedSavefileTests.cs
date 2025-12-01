@@ -362,13 +362,13 @@ public class MockedSavefileTests
 
 
     [Fact]
-    public void Move_ToItsOwnParent_ThrowsInvalidOperationException()
+    public void Move_ToItsOwnParent_ThrowsArgumentException()
     {
         FilesystemItemFactory.SetDependencies(Mock.Of<IFilesystemService>());
         Folder parent = FilesystemItemFactory.NewFolder(Path.Join(_root, "Folder"), null);
         Savefile file = FilesystemItemFactory.NewSavefile(Path.Join(parent.Location, "file.file"), parent);
         parent.Children = [file];
-        Assert.Throws<InvalidOperationException>(() => file.Move(parent));
+        Assert.Throws<ArgumentException>(() => file.Move(parent));
     }
 
 
