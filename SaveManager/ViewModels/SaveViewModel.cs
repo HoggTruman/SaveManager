@@ -186,7 +186,9 @@ public class SaveViewModel : NotifyPropertyChanged
     public void AddFolder(string name)
     {
         if (ActiveGame == null || ActiveGame.ActiveProfile == null)
-            throw new InvalidOperationException("The ActiveGame and its ActiveProfile can not be null.");
+        {
+            return;
+        }
 
         Folder parentFolder = GetParentFromSelection(SelectedEntry);
         Folder newFolder = parentFolder.CreateChildFolder(name);
@@ -204,7 +206,9 @@ public class SaveViewModel : NotifyPropertyChanged
     public void DeleteSelectedEntry()
     {
         if (ActiveGame == null || ActiveGame.ActiveProfile == null || SelectedEntry == null)
-            throw new InvalidOperationException("The ActiveGame, ActiveProfile and SelectedEntry can not be null");
+        {
+            return;
+        }
 
         SelectedEntry.Delete();
         ActiveGame.ActiveProfile.UpdateSaveListEntries();
@@ -222,7 +226,9 @@ public class SaveViewModel : NotifyPropertyChanged
     public void RenameSelectedEntry(string newName)
     {
         if (ActiveGame == null || ActiveGame.ActiveProfile == null || SelectedEntry == null)
-            throw new InvalidOperationException("The ActiveGame, ActiveProfile and SelectedEntry can not be null");
+        {
+            return;
+        }
 
         SelectedEntry.Rename(newName);
         ActiveGame.ActiveProfile.UpdateSaveListEntries();
@@ -237,7 +243,9 @@ public class SaveViewModel : NotifyPropertyChanged
     public void RefreshProfiles()
     {
         if (ActiveGame == null)
+        {
             return;
+        }            
 
         SelectedEntry = null;
         ActiveGame.RefreshProfiles();
