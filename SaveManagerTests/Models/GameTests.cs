@@ -59,10 +59,11 @@ public class GameTests
             x.DirectoryExists(profilePath) == false));
 
         Game game = new("Game") { ProfilesDirectory = profilesDirectory };
-        Profile profile = game.CreateProfile(profileName);
+        Profile newProfile = game.CreateProfile(profileName);
 
-        Assert.Contains(profile, game.Profiles);
-        Assert.Equal(game, profile.Game);
+        Assert.Contains(newProfile, game.Profiles);
+        Assert.Equal(game, newProfile.Game);
+        Assert.Equal(newProfile, game.ActiveProfile);
     }
 
 

@@ -140,6 +140,7 @@ public class Game : NotifyPropertyChanged
         Profile profile = new(profileFolder, this);
         Profiles.Add(profile);
         SortProfiles();
+        ActiveProfile = profile;
         return profile;
     }
 

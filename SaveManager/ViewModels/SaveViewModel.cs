@@ -88,7 +88,7 @@ public class SaveViewModel : NotifyPropertyChanged
             return;
         }
 
-        ActiveGame.ActiveProfile = ActiveGame.CreateProfile(name);
+        ActiveGame.CreateProfile(name);
     }
 
 
