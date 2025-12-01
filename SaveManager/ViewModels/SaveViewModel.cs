@@ -262,9 +262,14 @@ public class SaveViewModel : NotifyPropertyChanged
     /// <exception cref="FilesystemException"></exception>
     public void ImportSavefile()
     {
-        if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null)
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null)
         {
             return;
+        }
+
+        if (ActiveGame.SavefileLocation == null || ActiveGame.Savefile == null)
+        {
+            throw new InvalidOperationException("The active game's savefile location has not been set.");
         }
 
         try
@@ -296,9 +301,14 @@ public class SaveViewModel : NotifyPropertyChanged
     /// <exception cref="FilesystemMismatchException"></exception>
     public void LoadSelectedEntry()
     {
-        if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null || SelectedEntry is not Savefile)
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null || SelectedEntry is not Savefile)
         {
             return;
+        }
+
+        if (ActiveGame.SavefileLocation == null || ActiveGame.Savefile == null)
+        {
+            throw new InvalidOperationException("The active game's savefile location has not been set.");
         }
 
         try
@@ -326,9 +336,14 @@ public class SaveViewModel : NotifyPropertyChanged
     /// <exception cref="FilesystemException"></exception>
     public void ReplaceSelectedEntry()
     {
-        if (ActiveGame == null || ActiveGame.ActiveProfile == null || ActiveGame.Savefile == null || SelectedEntry is not Savefile)
+        if (ActiveGame == null || ActiveGame.ActiveProfile == null || SelectedEntry is not Savefile)
         {
             return;
+        }
+
+        if (ActiveGame.SavefileLocation == null || ActiveGame.Savefile == null)
+        {
+            throw new InvalidOperationException("The active game's savefile location has not been set.");
         }
 
         try

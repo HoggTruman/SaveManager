@@ -798,13 +798,12 @@ public class SaveViewModelTests : IClassFixture<FilesystemFixture>, IDisposable
 
 
     [Fact]
-    public void ImportSavefile_WithNullSavefileLocation_ReturnsWithoutThrowing()
+    public void ImportSavefile_WithNullSavefileLocation_ThrowsInvalidOperationException()
     {
         Game game = new("game") { ProfilesDirectory = _game1ProfilesDirectoryPath };
         _saveViewModel.Games = [game];
         _saveViewModel.ActiveGame = game;
-        Exception? exception = Record.Exception(_saveViewModel.ImportSavefile);
-        Assert.Null(exception);
+        Assert.Throws<InvalidOperationException>(_saveViewModel.ImportSavefile);
     }
 
 
@@ -904,13 +903,13 @@ public class SaveViewModelTests : IClassFixture<FilesystemFixture>, IDisposable
 
 
     [Fact]
-    public void LoadSelectedEntry_WithNullSavefileLocation_ReturnsWithoutThrowing()
+    public void LoadSelectedEntry_WithNullSavefileLocation_ThrowsInvalidOperationException()
     {
         Game game = new("game") { ProfilesDirectory = _game1ProfilesDirectoryPath };
         _saveViewModel.Games = [game];
         _saveViewModel.ActiveGame = game;
-        Exception? exception = Record.Exception(_saveViewModel.LoadSelectedEntry);
-        Assert.Null(exception);
+        _saveViewModel.SelectedEntry = _saveViewModel.ActiveGame.ActiveProfile!.SaveListEntries.OfType<Savefile>().First();
+        Assert.Throws<InvalidOperationException>(_saveViewModel.LoadSelectedEntry);
     }
 
 
@@ -993,13 +992,13 @@ public class SaveViewModelTests : IClassFixture<FilesystemFixture>, IDisposable
 
 
     [Fact]
-    public void ReplaceSelectedEntry_WithNullSavefileLocation_ReturnsWithoutThrowing()
+    public void ReplaceSelectedEntry_WithNullSavefileLocation_ThrowsInvalidOperationException()
     {
         Game game = new("game") { ProfilesDirectory = _game1ProfilesDirectoryPath };
         _saveViewModel.Games = [game];
         _saveViewModel.ActiveGame = game;
-        Exception? exception = Record.Exception(_saveViewModel.ReplaceSelectedEntry);
-        Assert.Null(exception);
+        _saveViewModel.SelectedEntry = _saveViewModel.ActiveGame.ActiveProfile!.SaveListEntries.OfType<Savefile>().First();
+        Assert.Throws<InvalidOperationException>(_saveViewModel.ReplaceSelectedEntry);
     }
 
 
