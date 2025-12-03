@@ -102,20 +102,23 @@ public class GameEditViewModel : NotifyPropertyChanged
     /// <param name="location"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    public void SetSavefileLocation(string location)
+    public void SetSavefileLocation(string? location)
     {
         if (ActiveGame == null || ActiveGame.SavefileLocation == location)
         {
             return;
         }
 
-        IEnumerable<string> profilesDirectories = Games.Select(x => x.ProfilesDirectory).OfType<string>();
+        if (location != null)
+        {
+            IEnumerable<string> profilesDirectories = Games.Select(x => x.ProfilesDirectory).OfType<string>();
 
-        if (Games.Any(x => x.SavefileLocation != null && x.SavefileLocation.FilesystemEquals(location)))
-            throw new ValidationException("Another game uses this savefile.");
+            if (Games.Any(x => x.SavefileLocation != null && x.SavefileLocation.FilesystemEquals(location)))
+                throw new ValidationException("Another game uses this savefile.");
 
-        if (profilesDirectories.Any(location.IsDescendantOf))
-            throw new ValidationException("This file is a descendant of a game's profiles directory.");
+            if (profilesDirectories.Any(location.IsDescendantOf))
+                throw new ValidationException("This file is a descendant of a game's profiles directory.");
+        }
 
         ActiveGame.SavefileLocation = location;
     }
@@ -127,24 +130,27 @@ public class GameEditViewModel : NotifyPropertyChanged
     /// <param name="location"></param>
     /// <exception cref="ValidationException"></exception>
     /// <exception cref="FilesystemException"></exception>
-    public void SetProfilesDirectory(string location)
+    public void SetProfilesDirectory(string? location)
     {
         if (ActiveGame == null || ActiveGame.ProfilesDirectory == location)
         {
             return;
         }
 
-        IEnumerable<string> profilesDirectories = Games.Where(x => x != ActiveGame).Select(x => x.ProfilesDirectory).OfType<string>();
-        IEnumerable<string> savefileLocations = Games.Select(x => x.SavefileLocation).OfType<string>();
+        if (location != null)
+        {
+            IEnumerable<string> profilesDirectories = Games.Where(x => x != ActiveGame).Select(x => x.ProfilesDirectory).OfType<string>();
+            IEnumerable<string> savefileLocations = Games.Select(x => x.SavefileLocation).OfType<string>();
 
-        if (profilesDirectories.Any(x => x.FilesystemEquals(location)))
-            throw new ValidationException("Another game uses this folder as a profiles directory.");
+            if (profilesDirectories.Any(x => x.FilesystemEquals(location)))
+                throw new ValidationException("Another game uses this folder as a profiles directory.");
 
-        if (profilesDirectories.Any(x => x.IsDescendantOf(location) || location.IsDescendantOf(x)))
-            throw new ValidationException("This folder is the parent / child of another game's profiles directory.");
+            if (profilesDirectories.Any(x => x.IsDescendantOf(location) || location.IsDescendantOf(x)))
+                throw new ValidationException("This folder is the parent / child of another game's profiles directory.");
 
-        if (savefileLocations.Any(x => x.IsDescendantOf(location)))
-            throw new ValidationException("This folder contains a game's savefile.");
+            if (savefileLocations.Any(x => x.IsDescendantOf(location)))
+                throw new ValidationException("This folder contains a game's savefile.");
+        }        
 
         ActiveGame.ProfilesDirectory = location;        
     }

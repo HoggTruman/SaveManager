@@ -75,7 +75,7 @@ public class Game : NotifyPropertyChanged
             {              
                 Folder newProfilesFolder = FilesystemItemFactory.NewFolder(value, null);
                 newProfilesFolder.LoadChildren();
-                _profilesFolder = newProfilesFolder;
+                SetProperty(ref _profilesFolder, newProfilesFolder);
                 Profiles = [..newProfilesFolder.Children.OfType<Folder>().Select(x => new Profile(x, this))];             
             }
         }

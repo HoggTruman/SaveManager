@@ -120,7 +120,13 @@ public partial class GameEditWindow : Window
                 CreateErrorDialog("An error occurred while setting the savefile location.").ShowDialog(this);
             }
         }
-    }   
+    }
+
+
+    private void SavefileResetButton_Click(object sender, RoutedEventArgs e)
+    {
+        GameEditViewModel.SetSavefileLocation(null);
+    }
 
 
     private void ProfilesDirectoryBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -152,6 +158,12 @@ public partial class GameEditWindow : Window
                 CreateErrorDialog("An error occurred while setting the profiles directory.").ShowDialog(this);
             }
         }
+    }
+
+
+    private void ProfilesDirectoryResetButton_Click(object sender, RoutedEventArgs e)
+    {
+        GameEditViewModel.SetProfilesDirectory(null);
     }
 
 

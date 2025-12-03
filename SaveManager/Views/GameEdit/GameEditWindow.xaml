@@ -27,7 +27,7 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="124" />
         </Grid.ColumnDefinitions>
 
 
@@ -48,7 +48,7 @@
                   Grid.Row="1"
                   Margin="10" />
 
-        <StackPanel Width="80"
+        <StackPanel Width="Auto"
                     Margin="10,0"
                     Orientation="Horizontal"
                     Grid.Row="1"
@@ -57,7 +57,7 @@
                     Click="AddGameButton_Click"
                     Width="24"
                     Height="24"
-                    Margin="0,0,4,0"
+                    Margin="8,0,8,0"
                     ToolTip="Add Game">
                 <Image Source="/Assets/PlusIcon.png" />
             </Button>
@@ -74,7 +74,7 @@
                     Click="RemoveGameButton_Click"
                     Width="24"
                     Height="24"
-                    Margin="4,0,0,0"
+                    Margin="8,0,8,0"
                     ToolTip="Remove Game">
                 <Image Source="/Assets/DeleteIcon.png" />
             </Button>
@@ -106,14 +106,28 @@
                Background="White" />
 
 
-        <Button x:Name="SavefileBrowseButton"
-                Click="SavefileBrowseButton_Click"
-                Content="Browse"
-                Width="Auto"
-                Height="24"
-                Grid.Row="4"
-                Grid.Column="1"
-                Margin="10" />
+        <DockPanel Width="Auto"
+                   Height="Auto"
+                   Grid.Row="4"
+                   Grid.Column="1"
+                   Margin="10,0"
+                   LastChildFill="True">
+            <Button x:Name="SavefileResetButton"
+                    Click="SavefileResetButton_Click"
+                    DockPanel.Dock="Right"
+                    Width="24"
+                    Height="24"
+                    ToolTip="Reset savefile location">
+                <Image Source="/Assets/CrossIcon.png" />
+            </Button>
+
+            <Button x:Name="SavefileBrowseButton"
+                    Click="SavefileBrowseButton_Click"
+                    Content="Browse"
+                    Width="Auto"
+                    Height="24"
+                    Margin="0,0,10,0"/>            
+        </DockPanel>
 
         <Label Content="Profiles Directory:"
                HorizontalAlignment="Left"
@@ -133,13 +147,29 @@
                BorderBrush="DarkGray"
                Background="White" />
 
-        <Button x:Name="ProfilesDirectoryBrowseButton"
-                Click="ProfilesDirectoryBrowseButton_Click"
-                Content="Browse"
-                Width="Auto"
-                Height="24"
-                Grid.Row="6"
-                Grid.Column="1"
-                Margin="10" />
+
+        <DockPanel Width="Auto"
+                   Height="Auto"
+                   Grid.Row="6"
+                   Grid.Column="1"
+                   Margin="10,0"
+                   LastChildFill="True">
+            <Button x:Name="ProfilesDirectoryResetButton"
+                    Click="ProfilesDirectoryResetButton_Click"
+                    DockPanel.Dock="Right"
+                    Width="24"
+                    Height="24"
+                    ToolTip="Reset profiles directory">
+                <Image Source="/Assets/CrossIcon.png" />
+            </Button>
+
+            <Button x:Name="ProfilesDirectoryBrowseButton"
+                    Click="ProfilesDirectoryBrowseButton_Click"
+                    Content="Browse"
+                    Width="Auto"
+                    Height="24"
+                    Margin="0,0,10,0" />
+        </DockPanel>
+        
     </Grid>
 </Window>

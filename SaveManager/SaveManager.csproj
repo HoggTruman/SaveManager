@@ -54,6 +54,7 @@
     <Resource Include="Assets\Settings.png" />
     <Resource Include="Assets\Success.png" />
     <Resource Include="Assets\Warning.png" />
+    <Resource Include="Assets\CrossIcon.png" />
   </ItemGroup>
 
 </Project>
