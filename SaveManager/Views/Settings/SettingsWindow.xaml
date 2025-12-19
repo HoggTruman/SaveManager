@@ -6,38 +6,30 @@
         xmlns:local="clr-namespace:SaveManager.Views.Settings"
         mc:Ignorable="d"
         Background="GhostWhite"
-        Title="Settings" 
-        Height="Auto" 
-        Width="300"
-        ResizeMode="NoResize">
-    <Window.Resources>
-        <Style x:Key="HotkeyBox"
-               TargetType="Label">
-            <Setter Property="Width"
-                    Value="60" />
-            <Setter Property="Height"
-                    Value="24" />
-            <Setter Property="Padding"
-                    Value="5,0" />
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center" />
-            <Setter Property="BorderThickness"
-                    Value="1" />
-            <Setter Property="BorderBrush"
-                    Value="DarkGray" />
-            <Setter Property="Background"
-                    Value="White" />
-        </Style>
-    </Window.Resources>
-    
-    <Grid Width="Auto"
-          Margin="5">
+        Title="Settings"
+        Height="Auto"
+        Width="400"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        MouseDown="Window_MouseDown">
+    <Grid x:Name="RootGrid"
+          Margin="5"
+          Focusable="True"
+          KeyboardNavigation.IsTabStop="False">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+
+
         <GroupBox Header="Hotkeys">
             <StackPanel Orientation="Vertical"
                         Margin="10,10,10,0">
-                <CheckBox Content="Enabled"
-                          Margin="0,0,0,10"/>
-                
+                <CheckBox Content="Global Hotkeys"
+                          Margin="0,0,0,10" />
+
                 <StackPanel Orientation="Vertical">
                     <StackPanel.Resources>
                         <Style TargetType="DockPanel">
@@ -52,9 +44,8 @@
                                VerticalAlignment="Center"
                                Padding="0" />
 
-                        <Label Content="{Binding Path=}"
-                               DockPanel.Dock="Right"
-                               Style="{StaticResource HotkeyBox}" />
+                        <local:HotkeyInputControl x:Name="LoadSaveInputControl"
+                                                  DockPanel.Dock="Right" />
                     </DockPanel>
 
                     <DockPanel>
@@ -62,15 +53,29 @@
                                VerticalAlignment="Center"
                                Padding="0" />
 
-                        <Label Content="{Binding Path=}"
-                               DockPanel.Dock="Right"
-                               Style="{StaticResource HotkeyBox}" />
+                        <local:HotkeyInputControl x:Name="ImportSaveInputControl"
+                                                  DockPanel.Dock="Right" />
                     </DockPanel>
                 </StackPanel>
             </StackPanel>
-            
         </GroupBox>
 
+        <StackPanel Grid.Row="1"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Margin="0 10 0 5">
+            
+            <Button x:Name="SaveButton"
+                    Content="Save"
+                    Width="60"
+                    Grid.Row="1" 
+                    Margin="20, 0"/>
 
+            <Button x:Name="CancelButton"
+                    Content="Cancel"
+                    Width="60"
+                    Grid.Row="1" />
+        </StackPanel>
+        
     </Grid>
 </Window>
