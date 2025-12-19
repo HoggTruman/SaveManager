@@ -102,7 +102,7 @@ public class AppdataService : IAppdataService
     /// <summary>
     /// Sets the game data in the internal appdata representation.
     /// </summary>
-    /// <param name="games"></param>
+    /// <param name="games">A list of games.</param>
     public void SetGameData(IEnumerable<Game> games)
     {
         _appdata.Games = games.Select(ConvertToGameDTO).OrderBy(x => x.Name);
@@ -122,7 +122,7 @@ public class AppdataService : IAppdataService
     /// <summary>
     /// Sets the startup preferences in the internal appdata representation.
     /// </summary>
-    /// <param name="startupPreferences"></param>
+    /// <param name="startupPreferences">The startup preferences object to set.</param>
     public void SetStartupPreferences(StartupPreferences startupPreferences)
     {
         _appdata.StartupPreferences = startupPreferences;
@@ -132,11 +132,34 @@ public class AppdataService : IAppdataService
     /// <summary>
     /// Gets the startup preferences from the internal appdata representation.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A startup preferences object.</returns>
     public StartupPreferences GetStartupPreferences()
     {
         return _appdata.StartupPreferences;
     }
+
+
+    /// <summary>
+    /// Sets the settings in the internal appdata representation.
+    /// </summary>
+    /// <param name="settings">The settings object to set.</param>
+    public void SetSettings(Settings settings)
+    {
+        _appdata.Settings = settings;
+    }
+
+
+    /// <summary>
+    /// Gets the settings from the internal appdata representation.
+    /// </summary>
+    /// <returns>The settings object from the internal appdata.</returns>
+    public Settings GetSettings()
+    {
+        return _appdata.Settings;
+    }
+
+
+
 
 
     private static GameDTO ConvertToGameDTO(Game game)

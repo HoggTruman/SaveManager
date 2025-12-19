@@ -14,7 +14,7 @@ public interface IAppdataService
     /// <summary>
     /// Sets the game data in the internal appdata representation.
     /// </summary>
-    /// <param name="games"></param>
+    /// <param name="games">A list of games.</param>
     public void SetGameData(IEnumerable<Game> games);
 
     /// <summary>
@@ -26,12 +26,24 @@ public interface IAppdataService
     /// <summary>
     /// Sets the startup preferences in the internal appdata representation.
     /// </summary>
-    /// <param name="startupPreferences"></param>
+    /// <param name="startupPreferences">The startup preferences object to set.</param>
     public void SetStartupPreferences(StartupPreferences startupPreferences);
 
     /// <summary>
     /// Gets the startup preferences from the internal appdata representation.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A startup preferences object.</returns>
     public StartupPreferences GetStartupPreferences();
+
+    /// <summary>
+    /// Sets the settings in the internal appdata representation.
+    /// </summary>
+    /// <param name="settings">The Settings object to set.</param>
+    public void SetSettings(Settings settings);
+
+    /// <summary>
+    /// Gets the settings from the internal appdata representation.
+    /// </summary>
+    /// <returns>A Settings object.</returns>
+    public Settings GetSettings();
 }
