@@ -426,6 +426,7 @@
             </Button>
 
             <Button x:Name="SettingsButton"
+                    Click="SettingsButton_Click"
                     Width="30"
                     Height="30"
                     Grid.Column="3"

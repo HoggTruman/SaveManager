@@ -6,6 +6,7 @@ using SaveManager.Models;
 using SaveManager.Services.Appdata;
 using SaveManager.ViewModels;
 using SaveManager.Views.GameEdit;
+using SaveManager.Views.Settings;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -478,6 +479,15 @@ public partial class SaveWindow : Window
     private void RefreshMenuItem_Click(object sender, RoutedEventArgs e)
     {
         RefreshProfiles();        
+    }
+
+
+
+
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
+    {
+        SettingsWindow settingsWindow = new();
+        settingsWindow.ShowDialog(this);
     }
 
 
