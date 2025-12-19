@@ -3,14 +3,13 @@
 namespace SaveManager.Services.Appdata;
 
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Skip)]
-public class Appdata
+public class Settings
 {
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IEnumerable<GameDTO> Games { get; set; } = [];
+    public bool GlobalHotkeys { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public StartupPreferences StartupPreferences { get; set; } = new();
+    public Hotkey.Hotkey? LoadSelectedSaveHotkey { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Settings Settings { get; set; } = new();
+    public Hotkey.Hotkey? ImportSaveHotkey { get; set; }
 }
