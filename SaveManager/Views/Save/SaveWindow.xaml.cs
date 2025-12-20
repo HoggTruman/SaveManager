@@ -4,6 +4,7 @@ using SaveManager.Exceptions;
 using SaveManager.Helpers;
 using SaveManager.Models;
 using SaveManager.Services.Appdata;
+using SaveManager.Services.Hotkey;
 using SaveManager.ViewModels;
 using SaveManager.Views.GameEdit;
 using SaveManager.Views.Settings;
@@ -22,6 +23,8 @@ public partial class SaveWindow : Window
     private const Key RenameKey = Key.F2;
     private const Key DeleteKey = Key.Delete;
 
+    private IHotkeyService _hotkeyService = null!;
+
     /// <summary>
     /// The position of mouse left click used to determine if the mouse has moved enough to start a drag.
     /// </summary>
@@ -34,8 +37,8 @@ public partial class SaveWindow : Window
     private IFilesystemItem? _draggedItem;
 
 
-
     public SaveViewModel SaveViewModel { get; }
+
 
     public SaveWindow(SaveViewModel saveViewModel, StartupPreferences startupPreferences)
     {
@@ -51,6 +54,15 @@ public partial class SaveWindow : Window
             SaveViewModel.ActiveGame = SaveViewModel.Games.First(x => x.Name == startupPreferences.ActiveGame);
             SaveViewModel.ActiveGame.TrySetActiveProfileByName(startupPreferences.ActiveProfile);
         }
+    }
+
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        _hotkeyService = new HotkeyService(this);
+        //_hotkeyService.HotkeyActions[HotkeyActionId.LoadSave] = LoadSaveButton_Click;
+        //_hotkeyService.HotkeyActions[HotkeyActionId.ImportSave] = ImportSaveButton_Click;
     }
 
 
@@ -486,7 +498,7 @@ public partial class SaveWindow : Window
 
     private void SettingsButton_Click(object sender, RoutedEventArgs e)
     {
-        SettingsWindow settingsWindow = new();
+        SettingsWindow settingsWindow = new(ViewModelFactory.CreateSettingsViewModel(_hotkeyService));
         settingsWindow.ShowDialog(this);
     }
 
