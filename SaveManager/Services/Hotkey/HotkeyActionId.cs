@@ -6,6 +6,6 @@
 public enum HotkeyActionId
 {
     ToggleGlobalHotkeys = 9000,
-    LoadSave,
-    ImportSave,    
+    LoadSave = 9001,
+    ImportSave = 9002,    
 }
